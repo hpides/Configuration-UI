@@ -4,7 +4,6 @@ import Sidebar from './Sidebar/Sidebar'
 import './App.css';
 import { Views } from './Views';
 import GraphView from './GraphView/GraphView';
-import { timingSafeEqual } from 'crypto';
 import ApisEditor from './ApisEditor/ApisEditor';
 import Testconfig from './Testconfig/Testconfig';
 
