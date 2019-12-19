@@ -1,0 +1,26 @@
+.sidebar {
+    height: 100%;
+    width: 15%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #505460;
+    overflow-x: hidden;
+    padding-top: 20px;
+    border-right: 5px solid #282c34;
+  }
+  
+  .sidebar a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    text-align: left;
+    margin-left: 10px;
+    font-size: 20px;
+    color: #e3e3e3;
+    display: block;
+    transition: all 0.3s ease 0s, left 0.3s ease 0s;
+  }
+  
+  .sidebar a:hover {
+    color: #7986ae;
+  }
