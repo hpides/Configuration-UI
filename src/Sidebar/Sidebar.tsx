@@ -1,13 +1,52 @@
 import React from 'react';
-import './Sidebar.css'
+import './Sidebar.css';
+import { Views } from '../Views';
 
-class Sidebar extends React.Component {
+interface Props {
+    currentView: Views,
+    changeView: (view: Views) => void
+}
+
+interface State {}
+
+class Sidebar extends React.Component<Props, State> {
+    changeView = (event: React.MouseEvent<HTMLButtonElement>) => {
+        let nextView;
+        switch(event.currentTarget.getAttribute("name")) {
+            case "apis":
+                nextView = Views.Apis;
+                break;
+            case "testconfig":
+                nextView = Views.Testconfig;
+                break;
+            case "userstories":
+                nextView = Views.UserStories;
+                break;
+            default:
+                nextView = Views.Apis;
+                break;
+        }
+        this.props.changeView(nextView);
+    }
     render() {
+        let cv = this.props.currentView;
         return (
             <div className="sidebar">
-                <a href="#">Data Generation</a>
-                <a href="#">Data Generation</a>
-                <a href="#">Delay</a>
+                <button
+                    name="apis"
+                    className={cv === Views.Apis ? "active" : ""}
+                    onClick={this.changeView}
+                >Apis</button>
+                <button
+                    name="testconfig"
+                    className={cv === Views.Testconfig ? "active" : ""}
+                    onClick={this.changeView}
+                >Testconfig</button>
+                <button
+                    name="userstories"
+                    className={cv === Views.UserStories ? "active" : ""}
+                    onClick={this.changeView}
+                >UserStories</button>
             </div>
         );
     }
