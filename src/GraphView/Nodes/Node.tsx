@@ -1,5 +1,6 @@
-import React from 'react'
-import './Node.css'
+import React from 'react';
+import './Node.css';
+import Draggable from 'react-draggable';
 
 type Point = {x: number, y: number};
 
@@ -7,7 +8,8 @@ interface Props {
 }
 
 interface State {
-    origin: Point
+    origin: Point,
+    dragging: boolean
 }
 
 class Node extends React.Component<Props, State> {
@@ -15,7 +17,8 @@ class Node extends React.Component<Props, State> {
         super(props);
 
         this.state = {
-            origin: {x: 10, y: 10}
+            origin: {x: 10, y: 10},
+            dragging: false
         }
     }
 
@@ -25,7 +28,9 @@ class Node extends React.Component<Props, State> {
             top: this.state.origin.y
         }
         return (
-            <div className="node" style={style}></div>
+            <Draggable>
+                <div className="node" style={style}></div>
+            </Draggable>
         );
     }
 }
