@@ -4,7 +4,31 @@
     position: absolute;
     padding: 4px;
     border: 1px solid #a2a9b5;
-    min-width: 100px;
+    width: 150px;
     min-height: 100px;
     background: #282c34;
+}
+
+#graphview .node .conn {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: 10px;
+    background-color: rgb(255, 255, 75); 
+    border-radius: 5px;
+    border: 1px solid black;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#graphview .node .conn:hover {
+    background-color: rgb(181, 181, 62);
+}
+
+#graphview .node .conn.conn-in {
+    left: -6px;
+}
+
+#graphview .node .conn.conn-out {
+    right: -6px;
 }

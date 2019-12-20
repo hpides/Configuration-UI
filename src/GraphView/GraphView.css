@@ -16,3 +16,8 @@
     width: 4000px;
     height: 4000px;
 }
+
+#graphview .graph svg {
+    width: 100%;
+    height: 100%;
+}

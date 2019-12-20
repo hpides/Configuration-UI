@@ -12,7 +12,7 @@ class NodeAdder extends React.Component<Props, State> {
         return (
             <div className="nodeadder">
                 <button onClick={this.props.onAddNode}>Node</button>
-                <button>Delay</button>
+                <button onClick={this.props.onAddNode}>Delay</button>
             </div>
         );
     }
