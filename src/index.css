@@ -17,3 +17,21 @@ code {
 h1 {
   font-size: 30px;
 }
+
+button {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  text-align: left;
+  margin-left: 10px;
+  font-size: 20px;
+  color: #e3e3e3;
+  background-color: transparent;
+  border: none;
+  display: block;
+  transition: all 0.3s ease 0s, left 0.3s ease 0s;
+  cursor: pointer;
+}
+
+button:hover {
+  color: #7986ae;
+}

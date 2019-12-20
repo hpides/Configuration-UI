@@ -1,0 +1,10 @@
+.nodeadder {
+    position: absolute;
+    margin: 20px;
+    width: 200px;
+    bottom: 20px;
+    background-color: #282c34;
+    color: white;
+    border: 3px solid #565d6a;
+    border-radius: 10px;
+}
