@@ -8,7 +8,7 @@ interface Props {}
 
 interface State {
     nodes: JSX.Element[],
-    edges: JSX.Element[],
+    edges: {startNode: Node, endNode: Node}[],
     connecting: boolean,
     connStartNode: any,
     connEndNode: any
@@ -53,12 +53,15 @@ class GraphView extends React.Component<Props, State> {
     handleMouseUp = () => {
         if (this.state.connStartNode && this.state.connEndNode) {
             var edges = this.state.edges;
-            let newEdge = <Edge
-                startNode={this.state.connStartNode}
-                endNode={this.state.connEndNode}
-            />;
-            edges.push(newEdge);
-            this.setState({edges: edges});
+            edges.push({
+                startNode: this.state.connStartNode,
+                endNode: this.state.connEndNode
+            });
+            this.setState({
+                edges: edges,
+                connStartNode: null,
+                connEndNode: null
+            });
         }
     }
 
@@ -73,13 +76,35 @@ class GraphView extends React.Component<Props, State> {
         this.setState({nodes: nodes});
     }
 
+    renderEdge(i: number) {
+        let startNodePosition = this.state.edges[i].startNode.getPosition();
+        let endNodePosition = this.state.edges[i].endNode.getPosition();
+        return (
+            <Edge
+                startNodePosition={startNodePosition}
+                endNodePosition={endNodePosition}
+            />
+        );
+    }
+
+    renderEdges = () => {
+        console.log("rendering edges");
+        let edges = []
+
+        for (let i=0; i < this.state.edges.length; i++) {
+            edges.push(this.renderEdge(i));
+        }
+
+        return edges;
+    }
+
     render() {
         return (
             <div id="graphview" onMouseUp={this.handleMouseUp}>
                 <div className="container">
                     <div className="graph">
                         <svg>
-                            {this.state.edges}
+                            {this.renderEdges()}
                         </svg>
                         <div className="nodes-container">
                             {this.state.nodes}

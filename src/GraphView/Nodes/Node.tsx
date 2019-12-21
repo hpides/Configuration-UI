@@ -2,7 +2,7 @@ import React from 'react';
 import './Node.css';
 import Draggable from 'react-draggable';
 
-type Point = {x: number, y: number};
+export type Point = {x: number, y: number};
 
 interface Props {
     handleConnMouseDown: (node: Node) => void,
@@ -20,7 +20,7 @@ class Node extends React.Component<Props, State> {
         super(props);
 
         this.state = {
-            origin: {x: 10, y: 10},
+            origin: {x: 0, y: 0},
             deltaPosition: {x: 0, y: 0},
         }
     }
@@ -53,7 +53,7 @@ class Node extends React.Component<Props, State> {
             top: this.state.origin.y
         }
         return (
-            <Draggable cancel=".conn">
+            <Draggable onDrag={this.handleDrag} cancel=".conn">
                 <div
                     onMouseEnter={this.handleMouseEnter}
                     onMouseLeave={this.props.handleMouseLeave}
