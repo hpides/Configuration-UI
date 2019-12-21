@@ -17,7 +17,7 @@ class App extends React.Component<Props, State> {
   constructor(props: any) {
     super(props);
     this.state = {
-      currentView: Views.UserStories
+      currentView: Views.Apis
     }
   }
   changeView = (view: Views) => {
