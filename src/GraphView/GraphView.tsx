@@ -65,12 +65,17 @@ class GraphView extends React.Component<Props, State> {
         }
     }
 
+    handleNodeDragged = (graddedNode: Node) => {
+        this.forceUpdate();
+    }
+
     addNode = () => {
         var nodes = this.state.nodes;
         let newNode = <Node
             handleConnMouseDown={this.startConnecting}
             handleMouseEnter={this.nodeMouseEnter}
             handleMouseLeave={this.nodeMouseLeave}
+            handleNodeDragged={this.handleNodeDragged}
         />;
         nodes.push(newNode);
         this.setState({nodes: nodes});
@@ -88,7 +93,6 @@ class GraphView extends React.Component<Props, State> {
     }
 
     renderEdges = () => {
-        console.log("rendering edges");
         let edges = []
 
         for (let i=0; i < this.state.edges.length; i++) {

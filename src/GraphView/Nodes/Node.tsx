@@ -8,6 +8,7 @@ interface Props {
     handleConnMouseDown: (node: Node) => void,
     handleMouseEnter: (node: Node) => void,
     handleMouseLeave: () => void,
+    handleNodeDragged: (draggedNode: Node) => void,
 }
 
 interface State {
@@ -37,6 +38,7 @@ class Node extends React.Component<Props, State> {
                 y: y + ui.deltaY,
             }
         });
+        this.props.handleNodeDragged(this);
     }
 
     handleMouseEnter = () => {
