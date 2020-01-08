@@ -2,6 +2,9 @@ import React from 'react'
 import './GraphView.css'
 import NodeAdder from './NodeAdder';
 import Node from './Nodes/Node';
+import DataGeneration from './Nodes/DataGeneration';
+import Request from './Nodes/Request';
+import Delay from './Nodes/Delay';
 import Edge from './Edge';
 
 interface Props {}
@@ -69,14 +72,39 @@ class GraphView extends React.Component<Props, State> {
         this.forceUpdate();
     }
 
-    addNode = () => {
+    addNode = (type: String) => {
         var nodes = this.state.nodes;
-        let newNode = <Node
-            handleConnMouseDown={this.startConnecting}
-            handleMouseEnter={this.nodeMouseEnter}
-            handleMouseLeave={this.nodeMouseLeave}
-            handleNodeDragged={this.handleNodeDragged}
-        />;
+
+        let newNode;
+        switch(type) {
+            case "data_generation":
+                newNode = <DataGeneration
+                    handleConnMouseDown={this.startConnecting}
+                    handleMouseEnter={this.nodeMouseEnter}
+                    handleMouseLeave={this.nodeMouseLeave}
+                    handleNodeDragged={this.handleNodeDragged}
+                />;
+                break;
+            case "request":
+                newNode = <Request
+                    handleConnMouseDown={this.startConnecting}
+                    handleMouseEnter={this.nodeMouseEnter}
+                    handleMouseLeave={this.nodeMouseLeave}
+                    handleNodeDragged={this.handleNodeDragged}
+                />;
+                break;
+            case "delay":
+                newNode = <Delay
+                    handleConnMouseDown={this.startConnecting}
+                    handleMouseEnter={this.nodeMouseEnter}
+                    handleMouseLeave={this.nodeMouseLeave}
+                    handleNodeDragged={this.handleNodeDragged}
+                />;
+                break;
+            default:
+                console.log("ERROR: Node type not supported: ", type);
+                return;
+        }
         nodes.push(newNode);
         this.setState({nodes: nodes});
     }

@@ -16,7 +16,7 @@ interface State {
     deltaPosition: Point
 }
 
-class Node extends React.Component<Props, State> {
+abstract class Node extends React.Component<Props, State> {
     constructor(props: any) {
         super(props);
 
@@ -49,11 +49,14 @@ class Node extends React.Component<Props, State> {
         this.props.handleConnMouseDown(this);
     }
 
+    abstract renderContent(): JSX.Element;
+
     render() {
         let style = {
             left: this.state.origin.x,
             top: this.state.origin.y
         }
+        let content = this.renderContent();
         return (
             <Draggable onDrag={this.handleDrag} cancel=".conn">
                 <div
@@ -64,6 +67,10 @@ class Node extends React.Component<Props, State> {
                 >
                     <div className="conn conn-in"></div>
                     <div onMouseDown={this.handleConnMouseDown} className="conn conn-out"></div>
+
+                    <div className="node-content">
+                        {content}
+                    </div>
                 </div>
             </Draggable>
         );

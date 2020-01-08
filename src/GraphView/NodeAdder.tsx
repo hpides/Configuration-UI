@@ -2,17 +2,34 @@ import React from 'react'
 import './NodeAdder.css'
 
 interface Props {
-    onAddNode: () => void
+    onAddNode: (type: String) => void
 }
 
 interface State {}
 
 class NodeAdder extends React.Component<Props, State> {
+
+    onAddNode = (event: React.MouseEvent<HTMLButtonElement>) => {
+        let name = event.currentTarget.getAttribute("name");
+        if (name) {
+            this.props.onAddNode(name);
+        }
+    }
     render() {
         return (
             <div className="nodeadder">
-                <button onClick={this.props.onAddNode}>Node</button>
-                <button onClick={this.props.onAddNode}>Delay</button>
+                <button
+                    name="data_generation"
+                    onClick={this.onAddNode}
+                >Data Generation</button>
+                <button
+                    name="request"
+                    onClick={this.onAddNode}
+                >Request</button>
+                <button
+                    name="delay"
+                    onClick={this.onAddNode}
+                >Delay</button>
             </div>
         );
     }
