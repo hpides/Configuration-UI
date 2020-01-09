@@ -20,7 +20,7 @@ interface State {
     selected: boolean,
 }
 
-abstract class Node extends React.Component<Props, State> {
+class Node extends React.Component<Props, State> {
     constructor(props: any) {
         super(props);
 
@@ -67,7 +67,12 @@ abstract class Node extends React.Component<Props, State> {
         this.setState({selected: false});
     }
 
-    abstract renderContent(): JSX.Element;
+    renderContent() {
+        let title = this.props.nodeConfig.getName();
+        return (
+            <h4>{title}</h4>
+        );
+    }
 
     render() {
         let style = {

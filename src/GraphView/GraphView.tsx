@@ -12,7 +12,7 @@ import NodeConfig from './Nodes/NodeConfig';
 interface Props {}
 
 interface State {
-    nodes: JSX.Element[],
+    nodes: {node: JSX.Element, ref: React.RefObject<Node>}[],
     edges: {startNode: Node, endNode: Node}[],
     connecting: boolean,
     connStartNode: any,
@@ -86,59 +86,40 @@ class GraphView extends React.Component<Props, State> {
         this.deselectAllNodes();
     }
 
+    handleInspectorUpdated = () => {
+        this.setState(this.state);
+        console.log("test");
+    }
+
     deselectAllNodes() {
         this.setState({activeNodeConfig: null});
         for (let i=0; i < this.state.nodes.length;i++) {
             let node = this.state.nodes[i];
-            
-            console.log(node.type);
+            if (node.ref.current) {
+                node.ref.current.deselect();
+            }
         }
     }
 
     addNode = (type: String) => {
         var nodes = this.state.nodes;
 
+        let ref = React.createRef<Node>();
+
         let newNode;
         let nodeConfig = new NodeConfig();
-        switch(type) {
-            case "data_generation":
-                nodeConfig.setName("Data Generation");
-                newNode = <DataGeneration
-                    handleConnMouseDown={this.startConnecting}
-                    handleMouseEnter={this.nodeMouseEnter}
-                    handleMouseLeave={this.nodeMouseLeave}
-                    handleNodeDragged={this.handleNodeDragged}
-                    handleNodeSelected={this.handleNodeSelected}
-                    nodeConfig={nodeConfig}
-                />;
-                break;
-            case "request":
-                nodeConfig.setName("Request");
-                newNode = <Request
-                    handleConnMouseDown={this.startConnecting}
-                    handleMouseEnter={this.nodeMouseEnter}
-                    handleMouseLeave={this.nodeMouseLeave}
-                    handleNodeDragged={this.handleNodeDragged}
-                    handleNodeSelected={this.handleNodeSelected}
-                    nodeConfig={nodeConfig}
-                />;
-                break;
-            case "delay":
-                nodeConfig.setName("Delay");
-                newNode = <Delay
-                    handleConnMouseDown={this.startConnecting}
-                    handleMouseEnter={this.nodeMouseEnter}
-                    handleMouseLeave={this.nodeMouseLeave}
-                    handleNodeDragged={this.handleNodeDragged}
-                    handleNodeSelected={this.handleNodeSelected}
-                    nodeConfig={nodeConfig}
-                />;
-                break;
-            default:
-                console.log("ERROR: Node type not supported: ", type);
-                return;
-        }
-        nodes.push(newNode);
+        nodeConfig.setName(type);
+        newNode = <Node
+            handleConnMouseDown={this.startConnecting}
+            handleMouseEnter={this.nodeMouseEnter}
+            handleMouseLeave={this.nodeMouseLeave}
+            handleNodeDragged={this.handleNodeDragged}
+            handleNodeSelected={this.handleNodeSelected}
+            nodeConfig={nodeConfig}
+            ref={ref}
+        />;
+        
+        nodes.push({node: newNode, ref: ref});
         this.setState({nodes: nodes});
     }
 
@@ -168,7 +149,12 @@ class GraphView extends React.Component<Props, State> {
         if (this.state.activeNodeConfig) {
             inspector = <Inspector
                             activeConfig={this.state.activeNodeConfig}
+                            onValueChanged={this.handleInspectorUpdated}
                         />;
+        }
+        let nodes: JSX.Element[] = [];
+        for (let i=0; i<this.state.nodes.length; i++) {
+            nodes.push(this.state.nodes[i].node);
         }
         return (
             <div id="graphview" onMouseUp={this.handleMouseUp}>
@@ -180,7 +166,7 @@ class GraphView extends React.Component<Props, State> {
                         <div
                             className="nodes-container"
                         >
-                            {this.state.nodes}
+                            {nodes}
                         </div>
                     </div>
                 </div>
