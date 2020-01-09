@@ -1,11 +1,13 @@
 import React from 'react'
 import './GraphView.css'
 import NodeAdder from './NodeAdder';
+import Inspector from './Inspector';
 import Node from './Nodes/Node';
 import DataGeneration from './Nodes/DataGeneration';
 import Request from './Nodes/Request';
 import Delay from './Nodes/Delay';
 import Edge from './Edge';
+import NodeConfig from './Nodes/NodeConfig';
 
 interface Props {}
 
@@ -14,7 +16,8 @@ interface State {
     edges: {startNode: Node, endNode: Node}[],
     connecting: boolean,
     connStartNode: any,
-    connEndNode: any
+    connEndNode: any,
+    activeNodeConfig: any
 }
 
 class GraphView extends React.Component<Props, State> {
@@ -26,7 +29,8 @@ class GraphView extends React.Component<Props, State> {
             edges: [],
             connecting: false,
             connStartNode: null,
-            connEndNode: null
+            connEndNode: null,
+            activeNodeConfig: null
         }
     }
 
@@ -68,37 +72,66 @@ class GraphView extends React.Component<Props, State> {
         }
     }
 
-    handleNodeDragged = (graddedNode: Node) => {
+    handleNodeDragged = (draggedNode: Node) => {
         this.forceUpdate();
+    }
+
+    handleNodeSelected = (node: Node) => {
+        this.deselectAllNodes();
+        node.select();
+        this.setState({activeNodeConfig: node.props.nodeConfig})
+    }
+
+    handleGraphClicked = () => {
+        this.deselectAllNodes();
+    }
+
+    deselectAllNodes() {
+        this.setState({activeNodeConfig: null});
+        for (let i=0; i < this.state.nodes.length;i++) {
+            let node = this.state.nodes[i];
+            
+            console.log(node.type);
+        }
     }
 
     addNode = (type: String) => {
         var nodes = this.state.nodes;
 
         let newNode;
+        let nodeConfig = new NodeConfig();
         switch(type) {
             case "data_generation":
+                nodeConfig.setName("Data Generation");
                 newNode = <DataGeneration
                     handleConnMouseDown={this.startConnecting}
                     handleMouseEnter={this.nodeMouseEnter}
                     handleMouseLeave={this.nodeMouseLeave}
                     handleNodeDragged={this.handleNodeDragged}
+                    handleNodeSelected={this.handleNodeSelected}
+                    nodeConfig={nodeConfig}
                 />;
                 break;
             case "request":
+                nodeConfig.setName("Request");
                 newNode = <Request
                     handleConnMouseDown={this.startConnecting}
                     handleMouseEnter={this.nodeMouseEnter}
                     handleMouseLeave={this.nodeMouseLeave}
                     handleNodeDragged={this.handleNodeDragged}
+                    handleNodeSelected={this.handleNodeSelected}
+                    nodeConfig={nodeConfig}
                 />;
                 break;
             case "delay":
+                nodeConfig.setName("Delay");
                 newNode = <Delay
                     handleConnMouseDown={this.startConnecting}
                     handleMouseEnter={this.nodeMouseEnter}
                     handleMouseLeave={this.nodeMouseLeave}
                     handleNodeDragged={this.handleNodeDragged}
+                    handleNodeSelected={this.handleNodeSelected}
+                    nodeConfig={nodeConfig}
                 />;
                 break;
             default:
@@ -131,19 +164,28 @@ class GraphView extends React.Component<Props, State> {
     }
 
     render() {
+        let inspector;
+        if (this.state.activeNodeConfig) {
+            inspector = <Inspector
+                            activeConfig={this.state.activeNodeConfig}
+                        />;
+        }
         return (
             <div id="graphview" onMouseUp={this.handleMouseUp}>
                 <div className="container">
-                    <div className="graph">
+                    <div className="graph" onClick={this.handleGraphClicked}>
                         <svg>
                             {this.renderEdges()}
                         </svg>
-                        <div className="nodes-container">
+                        <div
+                            className="nodes-container"
+                        >
                             {this.state.nodes}
                         </div>
                     </div>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
+                {inspector}
             </div>
         );
     }

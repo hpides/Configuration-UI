@@ -1,6 +1,7 @@
 import React from 'react';
 import './Node.css';
 import Draggable from 'react-draggable';
+import NodeConfig from './NodeConfig';
 
 export type Point = {x: number, y: number};
 
@@ -9,11 +10,14 @@ interface Props {
     handleMouseEnter: (node: Node) => void,
     handleMouseLeave: () => void,
     handleNodeDragged: (draggedNode: Node) => void,
+    handleNodeSelected: (node: Node) => void,
+    nodeConfig: NodeConfig,
 }
 
 interface State {
     origin: Point,
-    deltaPosition: Point
+    deltaPosition: Point,
+    selected: boolean,
 }
 
 abstract class Node extends React.Component<Props, State> {
@@ -23,6 +27,7 @@ abstract class Node extends React.Component<Props, State> {
         this.state = {
             origin: {x: 0, y: 0},
             deltaPosition: {x: 0, y: 0},
+            selected: false,
         }
     }
 
@@ -49,6 +54,19 @@ abstract class Node extends React.Component<Props, State> {
         this.props.handleConnMouseDown(this);
     }
 
+    handleClick = (e: React.MouseEvent) => {
+        this.props.handleNodeSelected(this);
+        e.stopPropagation();
+    }
+
+    select() {
+        this.setState({selected: true});
+    }
+
+    deselect() {
+        this.setState({selected: false});
+    }
+
     abstract renderContent(): JSX.Element;
 
     render() {
@@ -57,12 +75,14 @@ abstract class Node extends React.Component<Props, State> {
             top: this.state.origin.y
         }
         let content = this.renderContent();
+        let selected: String = this.state.selected ? " selected" : "";
         return (
             <Draggable onDrag={this.handleDrag} cancel=".conn">
                 <div
                     onMouseEnter={this.handleMouseEnter}
                     onMouseLeave={this.props.handleMouseLeave}
-                    className="node"
+                    onClick={this.handleClick}
+                    className={"node" + selected}
                     style={style}
                 >
                     <div className="conn conn-in"></div>
