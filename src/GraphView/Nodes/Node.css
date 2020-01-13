@@ -38,3 +38,17 @@
 #graphview .node .conn.conn-out {
     right: -6px;
 }
+
+#graphview table.node-attributes {
+    width: 100%;
+    margin-bottom: 10px;
+    color: #C8C8C8;
+}
+
+#graphview table.node-attributes td:first-child {
+    text-align: right;
+}
+
+#graphview table.node-attributes td:last-child {
+    text-align: left;
+}

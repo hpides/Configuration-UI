@@ -8,6 +8,9 @@ import Request from './Nodes/Request';
 import Delay from './Nodes/Delay';
 import Edge from './Edge';
 import NodeConfig from './Nodes/NodeConfig';
+import DelayConfig from './Nodes/DelayConfig';
+import DataGenerationConfig from './Nodes/DataGenerationConfig';
+import RequestConfig from './Nodes/RequestConfig';
 
 interface Props {}
 
@@ -86,9 +89,12 @@ class GraphView extends React.Component<Props, State> {
         this.deselectAllNodes();
     }
 
-    handleInspectorUpdated = () => {
-        this.setState(this.state);
-        console.log("test");
+    handleInspectorValueChanged = (key: string, value: string) => {
+        let conf: NodeConfig = this.state.activeNodeConfig;
+
+        conf.setAttribute(key, value);
+
+        this.setState({activeNodeConfig: conf});
     }
 
     deselectAllNodes() {
@@ -107,8 +113,23 @@ class GraphView extends React.Component<Props, State> {
         let ref = React.createRef<Node>();
 
         let newNode;
-        let nodeConfig = new NodeConfig();
-        nodeConfig.setName(type);
+        let nodeConfig: NodeConfig;
+
+        switch(type) {
+            case "data_generation":
+                nodeConfig = new DataGenerationConfig();
+                break;
+            case "request":
+                nodeConfig = new RequestConfig();
+                break;
+            case "delay":
+                nodeConfig = new DelayConfig();
+                break;
+            default:
+                console.error("Could not add note: undefined type ", type);
+                return;
+        }
+
         newNode = <Node
             handleConnMouseDown={this.startConnecting}
             handleMouseEnter={this.nodeMouseEnter}
@@ -149,7 +170,7 @@ class GraphView extends React.Component<Props, State> {
         if (this.state.activeNodeConfig) {
             inspector = <Inspector
                             activeConfig={this.state.activeNodeConfig}
-                            onValueChanged={this.handleInspectorUpdated}
+                            onValueChanged={this.handleInspectorValueChanged}
                         />;
         }
         let nodes: JSX.Element[] = [];

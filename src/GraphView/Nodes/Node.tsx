@@ -68,9 +68,26 @@ class Node extends React.Component<Props, State> {
     }
 
     renderContent() {
-        let title = this.props.nodeConfig.getName();
+        let title = this.props.nodeConfig.getAttributes().name;
+        let attributes: JSX.Element[] = [];
+
+        let conf = this.props.nodeConfig;
+        for (let i = 0; i < conf.getKeys().length; i++) {
+            let key = conf.getKeys()[i];
+            attributes.push(
+                <tr>
+                    <td>{key}:</td>
+                    <td>{conf.getAttribute(key)}</td>
+                </tr>
+            )
+        }
         return (
-            <h4>{title}</h4>
+            <div className="node-content">
+                <h4>{title}</h4>
+                <table className="node-attributes">
+                    {attributes} 
+                </table>           
+            </div>
         );
     }
 
@@ -93,9 +110,7 @@ class Node extends React.Component<Props, State> {
                     <div className="conn conn-in"></div>
                     <div onMouseDown={this.handleConnMouseDown} className="conn conn-out"></div>
 
-                    <div className="node-content">
-                        {content}
-                    </div>
+                    {content}
                 </div>
             </Draggable>
         );
