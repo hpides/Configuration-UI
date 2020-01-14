@@ -1,9 +1,7 @@
 import React from 'react'
 import './Inspector.css'
-import NodeConfig from './Nodes/NodeConfig';
 
 interface Props {
-    activeConfig: NodeConfig;
     onValueChanged: (key: string, value: string) => void;
 }
 
@@ -16,7 +14,7 @@ class Inspector extends React.Component<Props, State> {
     }
 
     render() {
-        let conf = this.props.activeConfig;
+        /*let conf = this.props.activeConfig;
         let inputs: JSX.Element[] = []
 
         for (let i = 0; i < conf.getKeys().length; i++) {
@@ -32,12 +30,11 @@ class Inspector extends React.Component<Props, State> {
             />
             inputs.push(label);
             inputs.push(input);
-        }
+        }*/
         return (
             <div className="inspector">
                 <h3>Inspector</h3>
                 <div className="inputs-container">
-                    {inputs}
                 </div>
             </div>
         );
