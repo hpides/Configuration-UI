@@ -1,7 +1,6 @@
 import React from 'react'
 import './GraphView.css'
 import NodeAdder from './NodeAdder';
-import Inspector from './Inspector';
 import createEngine, {
     DefaultLinkModel, 
     DefaultNodeModel,
@@ -46,10 +45,6 @@ class GraphView extends React.Component<Props, State> {
         this.model = new DiagramModel();
         this.model.addAll(node1, node2);
         this.engine.setModel(this.model);
-    }
-
-    handleInspectorValueChanged = (key: string, value: string) => {
-        
     }
 
     addNode = (type: String) => {
