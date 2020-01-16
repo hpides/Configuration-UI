@@ -19,15 +19,15 @@ class NodeAdder extends React.Component<Props, State> {
         return (
             <div className="nodeadder">
                 <button
-                    name="data_generation"
+                    name="DATA_GENERATION"
                     onClick={this.onAddNode}
                 >Data Generation</button>
                 <button
-                    name="request"
+                    name="REQUEST"
                     onClick={this.onAddNode}
                 >Request</button>
                 <button
-                    name="delay"
+                    name="DELAY"
                     onClick={this.onAddNode}
                 >Delay</button>
             </div>

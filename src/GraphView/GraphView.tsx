@@ -5,15 +5,28 @@ import createEngine, {
     DefaultLinkModel, 
     DefaultNodeModel,
     DiagramModel, 
-    DiagramEngine
+    DiagramEngine,
+    DefaultNodeModelOptions
 } from '@projectstorm/react-diagrams';
 
-import {CanvasWidget} from '@projectstorm/react-canvas-core';
+import {
+    CanvasWidget,
+    BaseEvent,
+} from '@projectstorm/react-canvas-core';
+import { Node } from './Nodes/Node';
+import { StartNode } from './Nodes/StartNode';
+import { DataGenerationNode } from './Nodes/DataGenerationNode';
+import { RequestNode } from './Nodes/RequestNode';
+import { DelayNode } from './Nodes/DelayNode';
+import Inspector from './Inspector';
 
 
 interface Props {}
 
 interface State {
+    nodes: Node[],
+    startNode?: Node,
+    selectedNode?: Node,
 }
 
 class GraphView extends React.Component<Props, State> {
@@ -24,11 +37,12 @@ class GraphView extends React.Component<Props, State> {
         super(props);
 
         this.state = {
+            nodes: [],
         }
 
         this.engine = createEngine();
 
-        const node1 = new DefaultNodeModel({
+        /*const node1 = new DefaultNodeModel({
             name: 'Node 1',
             color: 'rgb(0,192,255)',
         });
@@ -40,34 +54,96 @@ class GraphView extends React.Component<Props, State> {
             color: 'rgb(0,192,255)',
         });
         node2.setPosition(300,300);
-        let port2 = node2.addInPort('In');
+        let port2 = node2.addInPort('In');*/
 
         this.model = new DiagramModel();
-        this.model.addAll(node1, node2);
         this.engine.setModel(this.model);
+    }
+
+    componentDidMount() {
+        this.setState({startNode: this.addNode("START")});
+    }
+
+    handleSelectionChanged = (event: BaseEvent) => {
+        let nodes = this.state.nodes;
+
+        this.setState({selectedNode: undefined});
+
+        nodes.forEach((node: Node) => {
+            if (node.isSelected()) {
+                this.setState({selectedNode: node});
+                return;
+            }
+        })
     }
 
     addNode = (type: String) => {
 
-        let node = new DefaultNodeModel({
+        let node: Node;
+
+        let nodeOptions: DefaultNodeModelOptions = {
             name: type.toString(),
-            color: 'rgb(0,192,255)'
+            color: 'rgb(0,192,255)',
+        }
+
+        switch(type) {
+            case "START":
+                node = new StartNode(nodeOptions);
+                break;
+            case "DATA_GENERATION":
+                node = new DataGenerationNode(nodeOptions);
+                break;
+            case "REQUEST":
+                node = new RequestNode(nodeOptions);
+                break;
+            case "DELAY":
+                node = new DelayNode(nodeOptions);
+                break;
+            default:
+                console.error("Error adding node: unknown type ", type);
+                return;
+        }
+
+        node.registerListener({
+            selectionChanged: this.handleSelectionChanged
         });
-        let inPort = node.addInPort('In');
-        let outPort = node.addOutPort('Out');
+
         node.setPosition(10,10);
+
+        let nodes = this.state.nodes;
+        nodes.push(node);
+        this.setState({nodes: nodes});
+
         this.model.addNode(node);
 
         this.forceUpdate();
+
+        return node;
+    }
+
+    handleInspectorValueChanged = (key: string, value: string) => {
+        let node = this.state.selectedNode;
+
+        node?.setAttribute(key, value);
+
+        this.setState({selectedNode: node});
     }
 
     render() {
+        let inspector;
+        if (this.state.selectedNode) {
+            inspector = <Inspector
+                onValueChanged={this.handleInspectorValueChanged}
+                node={this.state.selectedNode}
+            />
+        }
         return (
             <div id="graphview">
                 <div className="container">
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
+                {inspector}
             </div>
         );
     }
