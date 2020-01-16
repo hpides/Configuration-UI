@@ -9,16 +9,10 @@ interface Props {
 
 interface State {}
 
-class Inspector extends React.Component<Props, State> {
+export class Inspector extends React.Component<Props, State> {
 
     inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
         this.props.onValueChanged(event.currentTarget.name, event.currentTarget.value);
-        /*let key = event.currentTarget.name;
-        let value = event.currentTarget.value;
-
-        this.props.node.setAttribute(key, value);
-
-        console.log(this.props.node.getAttributes());*/
     }
 
     render() {
@@ -49,5 +43,3 @@ class Inspector extends React.Component<Props, State> {
         );
     }
 }
-
-export default Inspector;

@@ -2,8 +2,6 @@ import React from 'react'
 import './GraphView.css'
 import NodeAdder from './NodeAdder';
 import createEngine, {
-    DefaultLinkModel, 
-    DefaultNodeModel,
     DiagramModel, 
     DiagramEngine,
     DefaultNodeModelOptions
@@ -18,7 +16,7 @@ import { StartNode } from './Nodes/StartNode';
 import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { RequestNode } from './Nodes/RequestNode';
 import { DelayNode } from './Nodes/DelayNode';
-import Inspector from './Inspector';
+import { Inspector } from './Inspector';
 
 
 interface Props {}
@@ -29,7 +27,7 @@ interface State {
     selectedNode?: Node,
 }
 
-class GraphView extends React.Component<Props, State> {
+export class GraphView extends React.Component<Props, State> {
     engine: DiagramEngine;
     model: DiagramModel;
 
@@ -41,20 +39,6 @@ class GraphView extends React.Component<Props, State> {
         }
 
         this.engine = createEngine();
-
-        /*const node1 = new DefaultNodeModel({
-            name: 'Node 1',
-            color: 'rgb(0,192,255)',
-        });
-        node1.setPosition(100,100);
-        let port1 = node1.addOutPort('Out');
-
-        const node2 = new DefaultNodeModel({
-            name: 'Node 2',
-            color: 'rgb(0,192,255)',
-        });
-        node2.setPosition(300,300);
-        let port2 = node2.addInPort('In');*/
 
         this.model = new DiagramModel();
         this.engine.setModel(this.model);
@@ -148,5 +132,3 @@ class GraphView extends React.Component<Props, State> {
         );
     }
 }
-
-export default GraphView;
