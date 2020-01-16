@@ -1,11 +1,11 @@
 import React from 'react';
 import logo from './logo.svg';
-import Sidebar from './Sidebar/Sidebar'
+import { Sidebar } from './Sidebar/Sidebar'
 import './App.css';
 import { Views } from './Views';
-import GraphView from './GraphView/GraphView';
-import ApisEditor from './ApisEditor/ApisEditor';
-import Testconfig from './Testconfig/Testconfig';
+import { GraphView } from './GraphView/GraphView';
+import { ApisEditor } from './ApisEditor/ApisEditor';
+import { Testconfig } from './Testconfig/Testconfig';
 
 interface Props {}
 

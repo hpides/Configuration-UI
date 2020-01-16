@@ -9,7 +9,7 @@ interface Props {
 
 interface State {}
 
-class Sidebar extends React.Component<Props, State> {
+export class Sidebar extends React.Component<Props, State> {
     changeView = (event: React.MouseEvent<HTMLButtonElement>) => {
         let nextView;
         switch(event.currentTarget.getAttribute("name")) {
@@ -51,5 +51,3 @@ class Sidebar extends React.Component<Props, State> {
         );
     }
 }
-
-export default Sidebar;
