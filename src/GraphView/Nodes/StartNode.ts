@@ -3,9 +3,7 @@ import { Node } from './Node';
 
 export class StartNode extends Node {
     protected attributes: { [key: string]: any};
-    protected keys = [
-        "name",
-    ]
+    
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
 

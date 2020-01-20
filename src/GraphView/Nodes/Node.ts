@@ -2,9 +2,7 @@ import { DefaultNodeModel, DefaultNodeModelOptions } from "@projectstorm/react-d
 
 export class Node extends DefaultNodeModel {
     protected attributes: { [key: string]: any};
-    protected keys = [
-        "name",
-    ]
+
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
 
@@ -29,12 +27,12 @@ export class Node extends DefaultNodeModel {
     }
 
     setAttribute(key: string, value: any) {
-        if (this.keys.includes(key)) {
+        if (this.getKeys().includes(key)) {
             this.attributes[key] = value;
         }
     }
 
     getKeys() {
-        return this.keys;
+        return Object.keys(this.attributes);
     }
 }
