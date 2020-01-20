@@ -10,6 +10,7 @@ import createEngine, {
 import {
     CanvasWidget,
     BaseEvent,
+    BaseModelListener,
 } from '@projectstorm/react-canvas-core';
 import { Node } from './Nodes/Node';
 import { StartNode } from './Nodes/StartNode';
