@@ -1,7 +1,8 @@
 import { DefaultNodeModel, DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
+import { AtomType } from "./../ConfigJson";
 
-export class Node extends DefaultNodeModel {
-    protected attributes: { [key: string]: any};
+export abstract class Node extends DefaultNodeModel {
+    protected attributes: { [key: string]: any };
 
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
@@ -35,4 +36,7 @@ export class Node extends DefaultNodeModel {
     getKeys() {
         return Object.keys(this.attributes);
     }
+
+    abstract getAtomType(): AtomType;
+
 }

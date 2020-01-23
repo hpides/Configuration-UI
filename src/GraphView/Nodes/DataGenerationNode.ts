@@ -1,5 +1,6 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
 import { Node } from './Node';
+import { AtomType } from "../ConfigJson";
 
 export class DataGenerationNode extends Node {
     protected attributes: { [key: string]: any};
@@ -11,5 +12,9 @@ export class DataGenerationNode extends Node {
             "name" : "Data Generation",
             "table" : "",
         };
+    }
+
+    getAtomType(): AtomType {
+        return "DATA_GENERATION";
     }
 }
