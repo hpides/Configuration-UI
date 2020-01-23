@@ -30,6 +30,10 @@ class NodeAdder extends React.Component<Props, State> {
                     name="DELAY"
                     onClick={this.onAddNode}
                 >Delay</button>
+                <button
+                    name="WARMUP_END"
+                    onClick={this.onAddNode}
+                >Warmup End</button>
             </div>
         );
     }

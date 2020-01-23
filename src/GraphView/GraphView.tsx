@@ -18,6 +18,7 @@ import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { RequestNode } from './Nodes/RequestNode';
 import { DelayNode } from './Nodes/DelayNode';
 import { Inspector } from './Inspector';
+import { WarmupEndNode } from './Nodes/WarmupEndNode';
 
 
 interface Props {}
@@ -83,6 +84,9 @@ export class GraphView extends React.Component<Props, State> {
                 break;
             case "DELAY":
                 node = new DelayNode(nodeOptions);
+                break;
+            case "WARMUP_END":
+                node = new WarmupEndNode(nodeOptions);
                 break;
             default:
                 console.error("Error adding node: unknown type ", type);
