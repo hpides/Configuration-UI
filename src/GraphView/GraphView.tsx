@@ -7,10 +7,12 @@ import createEngine, {
     DefaultNodeModelOptions
 } from '@projectstorm/react-diagrams';
 
+
 import {
     CanvasWidget,
     BaseEvent,
-    BaseModelListener,
+    DeleteItemsAction,
+    InputType
 } from '@projectstorm/react-canvas-core';
 import { Node } from './Nodes/Node';
 import { StartNode } from './Nodes/StartNode';
@@ -41,10 +43,12 @@ export class GraphView extends React.Component<Props, State> {
             nodes: [],
         }
 
-        this.engine = createEngine();
+        this.engine = createEngine({registerDefaultDeleteItemsAction: false});
 
         this.model = new DiagramModel();
         this.engine.setModel(this.model);
+
+        this.engine.getActionEventBus().registerAction(new DeleteItemsAction({ keyCodes: [46]}));
     }
 
     componentDidMount() {
