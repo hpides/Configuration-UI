@@ -1,6 +1,8 @@
 import React from 'react'
 import './GeneratorAdder.css'
 import { GeneratorConfig } from './GeneratorConfig';
+import { RandomStringGeneratorConfig } from './RandomStringGeneratorConfig';
+import { EMailGeneratorConfig } from './EMailGeneratorConfig';
 
 interface Props {
     onAdd: (name: string, genConfig: GeneratorConfig) => void,
@@ -18,15 +20,25 @@ export class GeneratorAdder extends React.Component<Props, State> {
 
         this.state = {
             name: "",
-            genConfig: new GeneratorConfig(),
+            genConfig: new RandomStringGeneratorConfig(),
         }
     }
 
-    inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
+    inputChanged = (event: any) => {
         
         switch (event.currentTarget.name) {
             case "name":
                 this.setState({name: event.currentTarget.value});
+                break;
+            case "generator":
+                switch (event.currentTarget.value) {
+                    case "RANDOM_STRING":
+                        this.setState({genConfig: new RandomStringGeneratorConfig()});
+                        break;
+                    case "E_MAIL":
+                        this.setState({genConfig: new EMailGeneratorConfig()});
+                        break;
+                }
                 break;
         }
 
@@ -52,6 +64,14 @@ export class GeneratorAdder extends React.Component<Props, State> {
                         name="name"
                         onChange={this.inputChanged}
                     />
+                    <select
+                        name="generator"
+                        value={this.state.genConfig.getTypeString()}
+                        onChange={this.inputChanged}
+                    >
+                        <option value="RANDOM_STRING">Random String</option>
+                        <option value="E_MAIL">E-Mail</option>
+                    </select>
                     {this.state.genConfig.render()}
                     <button
                         onClick={this.doneButtonClicked}

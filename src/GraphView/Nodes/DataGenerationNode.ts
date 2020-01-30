@@ -12,7 +12,6 @@ export class DataGenerationNode extends Node {
 
         this.attributes = {
             "name" : "Data Generation",
-            "table" : "",
         };
     }
 
