@@ -133,11 +133,11 @@ export class GraphView extends React.Component<Props, State> {
         }
         return (
             <div id="graphview">
-                <button className="exportButton" onClick={this.exportNodes}>Export</button>
                 <div className="container">
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
+                <button className="exportButton" onClick={this.exportNodes}>Export</button>
                 {inspector}
                 
             </div>
