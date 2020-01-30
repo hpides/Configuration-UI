@@ -1,5 +1,6 @@
 import { DefaultNodeModelOptions, PortModelAlignment } from "@projectstorm/react-diagrams";
 import { Node } from './Node';
+import { AtomType } from "../ConfigJson";
 import { AcyclicPort } from "./AcyclicPort";
 
 export class StartNode extends Node {
@@ -21,5 +22,9 @@ export class StartNode extends Node {
             alignment: PortModelAlignment.RIGHT
         })
         this.addPort(outPort);
+    }
+
+    getAtomType(): AtomType {
+        return "START";
     }
 }

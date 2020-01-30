@@ -1,5 +1,6 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
 import { Node } from './Node';
+import { AtomType } from "../ConfigJson";
 import { GeneratorConfig } from "../Inspector/GeneratorConfig";
 
 export class DataGenerationNode extends Node {
@@ -13,5 +14,9 @@ export class DataGenerationNode extends Node {
             "name" : "Data Generation",
             "table" : "",
         };
+    }
+
+    getAtomType(): AtomType {
+        return "DATA_GENERATION";
     }
 }

@@ -18,6 +18,7 @@ import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { RequestNode } from './Nodes/RequestNode';
 import { DelayNode } from './Nodes/DelayNode';
 import { Inspector } from './Inspector';
+import { ConvertGraphToStory } from './ConfigJson';
 import { WarmupEndNode } from './Nodes/WarmupEndNode';
 
 
@@ -25,7 +26,7 @@ interface Props {}
 
 interface State {
     nodes: Node[],
-    startNode?: Node,
+    startNode?: StartNode,
     selectedNode?: Node,
 }
 
@@ -47,7 +48,7 @@ export class GraphView extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        this.setState({startNode: this.addNode("START")});
+        this.setState({ startNode: this.addNode("START") as StartNode });
     }
 
     handleSelectionChanged = (event: BaseEvent) => {
@@ -113,9 +114,18 @@ export class GraphView extends React.Component<Props, State> {
     handleInspectorValueChanged = (key: string, value: string) => {
         let node = this.state.selectedNode;
 
-        node?.setAttribute(key, value);
+        node!.setAttribute(key, value);
 
         this.setState({selectedNode: node});
+    }
+
+    exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        console.log("Button clicked");
+        const startNode = this.state.startNode;
+        if (startNode) {
+            const story = ConvertGraphToStory("Rail", 1, startNode);
+            console.log(JSON.stringify(story));
+        }
     }
 
     render() {
@@ -132,7 +142,9 @@ export class GraphView extends React.Component<Props, State> {
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
+                <button className="exportButton" onClick={this.exportNodes}>Export</button>
                 {inspector}
+                
             </div>
         );
     }
