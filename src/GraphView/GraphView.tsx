@@ -10,6 +10,7 @@ import createEngine, {
 import {
     CanvasWidget,
     BaseEvent,
+    BaseModelListener,
 } from '@projectstorm/react-canvas-core';
 import { Node } from './Nodes/Node';
 import { StartNode } from './Nodes/StartNode';
@@ -18,6 +19,7 @@ import { RequestNode } from './Nodes/RequestNode';
 import { DelayNode } from './Nodes/DelayNode';
 import { Inspector } from './Inspector';
 import { ConvertGraphToStory } from './ConfigJson';
+import { WarmupEndNode } from './Nodes/WarmupEndNode';
 
 
 interface Props {}
@@ -83,6 +85,9 @@ export class GraphView extends React.Component<Props, State> {
                 break;
             case "DELAY":
                 node = new DelayNode(nodeOptions);
+                break;
+            case "WARMUP_END":
+                node = new WarmupEndNode(nodeOptions);
                 break;
             default:
                 console.error("Error adding node: unknown type ", type);

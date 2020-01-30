@@ -21,3 +21,15 @@
     margin-bottom: 15px;
     margin-top: 10px;
 }
+
+.inspector .data-generation-table table {
+    text-align: left;
+    width: 100%;
+    background-color: #cbcfd5;
+    color: black;
+}
+
+.inspector .data-generation-table table td {
+    padding: 3px 10px;
+    border-left: 1px solid black;
+}

@@ -1,5 +1,6 @@
-import { DefaultNodeModel, DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
 import { AtomType } from "./../ConfigJson";
+import { DefaultNodeModel, DefaultNodeModelOptions, PortModelAlignment } from "@projectstorm/react-diagrams";
+import { AcyclicPort } from "./AcyclicPort";
 
 export abstract class Node extends DefaultNodeModel {
     protected attributes: { [key: string]: any };
@@ -14,9 +15,49 @@ export abstract class Node extends DefaultNodeModel {
         this.addPorts();
     }
 
+    hasPathTo(node: Node) {
+        if (node === this) {
+            return true;
+        }
+
+        let ancestors = this.getAncestors();
+
+        for (let i = 0; i < ancestors.length; i++) {
+            let ancestor = ancestors[i];
+            if (ancestor instanceof Node) {
+                if (ancestor.hasPathTo(node)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    getAncestors() {
+        let outPort = this.getOutPorts()[0];
+        let links = Object.values(outPort.getLinks());
+
+        return links.map(link => link.getTargetPort().getNode());
+    }
+
     addPorts() {
-        this.addInPort('In');
-        this.addOutPort('Out');
+
+        let inPort = new AcyclicPort({
+            in: true,
+            name: 'In',
+            label: 'In',
+            alignment: PortModelAlignment.LEFT
+        })
+        this.addPort(inPort);
+
+        let outPort = new AcyclicPort({
+            in: false,
+            name: 'Out',
+            label: 'Out',
+            alignment: PortModelAlignment.RIGHT
+        })
+        this.addPort(outPort);
     }
 
     getAttributes() {

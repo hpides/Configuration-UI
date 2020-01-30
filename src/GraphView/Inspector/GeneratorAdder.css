@@ -1,0 +1,22 @@
+.generator-adder {
+    position: fixed;
+    margin: 20px;
+    width: 50vw;
+    height: 50vh;
+    left: 25vw;
+    top: 25vh;
+    background-color: #282c34;
+    color: white;
+    border: 3px solid #565d6a;
+    border-radius: 10px;
+}
+
+.generator-adder-background {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0.7;
+    background-color: white;
+}

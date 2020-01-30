@@ -1,6 +1,7 @@
-import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
+import { DefaultNodeModelOptions, PortModelAlignment } from "@projectstorm/react-diagrams";
 import { Node } from './Node';
 import { AtomType } from "../ConfigJson";
+import { AcyclicPort } from "./AcyclicPort";
 
 export class StartNode extends Node {
     protected attributes: { [key: string]: any};
@@ -14,7 +15,13 @@ export class StartNode extends Node {
     }
 
     addPorts() {
-        this.addOutPort('Out');
+        let outPort = new AcyclicPort({
+            in: false,
+            name: 'Out',
+            label: 'Out',
+            alignment: PortModelAlignment.RIGHT
+        })
+        this.addPort(outPort);
     }
 
     getAtomType(): AtomType {
