@@ -13,6 +13,7 @@ import {
     BaseEvent,
     DeleteItemsAction,
 } from '@projectstorm/react-canvas-core';
+import { Point } from '@projectstorm/geometry';
 import { Node } from './Nodes/Node';
 import { StartNode } from './Nodes/StartNode';
 import { DataGenerationNode } from './Nodes/DataGenerationNode';
@@ -68,7 +69,7 @@ export class GraphView extends React.Component<Props, State> {
         })
     }
 
-    addNode = (type: String) => {
+    addNode = (type: String, point?: Point) => {
 
         let node: Node;
 
@@ -105,7 +106,11 @@ export class GraphView extends React.Component<Props, State> {
             selectionChanged: this.handleSelectionChanged
         });
 
-        node.setPosition(10,10);
+        if (point) {
+            node.setPosition(point.x, point.y);
+        } else {
+            node.setPosition(10,10);
+        }
 
         let nodes = this.state.nodes;
         nodes.push(node);
@@ -124,6 +129,12 @@ export class GraphView extends React.Component<Props, State> {
         node!.setAttribute(key, value);
 
         this.setState({selectedNode: node});
+    }
+
+    handleDrop = (event: React.DragEvent) => {
+        var point = this.engine.getRelativeMousePoint(event);
+
+        this.addNode(event.dataTransfer.getData('tdgt-node-type'), point);
     }
 
     exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -145,7 +156,12 @@ export class GraphView extends React.Component<Props, State> {
         }
         return (
             <div id="graphview">
-                <div className="container">
+                <div className="container"
+                    onDrop={this.handleDrop}
+                    onDragOver={event => {
+                        event.preventDefault();
+                    }}
+                >
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
