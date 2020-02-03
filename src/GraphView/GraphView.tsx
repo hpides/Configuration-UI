@@ -21,6 +21,7 @@ import { DelayNode } from './Nodes/DelayNode';
 import { Inspector } from './Inspector';
 import { ConvertGraphToStory } from './ConfigJson';
 import { WarmupEndNode } from './Nodes/WarmupEndNode';
+import { DataLoadNode } from './Nodes/DataLoadNode';
 
 
 interface Props {}
@@ -82,6 +83,9 @@ export class GraphView extends React.Component<Props, State> {
                 break;
             case "DATA_GENERATION":
                 node = new DataGenerationNode(nodeOptions);
+                break;
+            case "DATA_LOAD":
+                node = new DataLoadNode(nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
