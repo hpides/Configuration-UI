@@ -40,10 +40,6 @@
     margin-bottom: 20px;
 }
 
-.generator-adder select option {
-    color: #666;
-}
-
 .generator-adder .select-wrapper {
     position: relative;
     width: 100%;
