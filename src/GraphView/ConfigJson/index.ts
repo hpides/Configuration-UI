@@ -14,7 +14,7 @@ interface IStory {
     atoms: IBaseAtom[];
 }
 
-export type AtomType = "DATA_GENERATION" | "REQUEST" | "WARMUP_END" | "START" | "DELAY";
+export type AtomType = "DATA_GENERATION" | "REQUEST" | "WARMUP_END" | "START" | "DELAY" | "WARMUP_END" | "DATA_LOAD";
 
 interface IBaseAtom {
     name: string;
@@ -28,7 +28,6 @@ interface IBaseAtom {
 
 interface IDataGenerationAtom extends IBaseAtom {
     data: string[];
-    table: string;
 }
 
 type HTTPVerb = "POST" | "GET";
@@ -47,6 +46,10 @@ interface IDelayAtom extends IBaseAtom {
     delay: number;
 }
 
+interface IDataLoadAtom extends IBaseAtom {
+    table: string;
+    key: string;
+}
 
 interface IAssertion {
     type: string;
@@ -122,8 +125,13 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom {
             return {
                 ...baseAtomObj,
                 data: node.getAttribute("data"),
-                table: node.getAttribute("table")
             } as IDataGenerationAtom;
+        case "DATA_LOAD":
+            return {
+                ...baseAtomObj,
+                table: node.getAttribute("table"),
+                key: node.getAttribute("key"),
+            } as IDataLoadAtom;
         case "DELAY":
             return {
                 ...baseAtomObj,
