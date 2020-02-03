@@ -12,7 +12,6 @@ import {
     CanvasWidget,
     BaseEvent,
     DeleteItemsAction,
-    InputType
 } from '@projectstorm/react-canvas-core';
 import { Node } from './Nodes/Node';
 import { StartNode } from './Nodes/StartNode';

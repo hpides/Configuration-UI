@@ -64,14 +64,16 @@ export class GeneratorAdder extends React.Component<Props, State> {
                         name="name"
                         onChange={this.inputChanged}
                     />
-                    <select
-                        name="generator"
-                        value={this.state.genConfig.getTypeString()}
-                        onChange={this.inputChanged}
-                    >
-                        <option value="RANDOM_STRING">Random String</option>
-                        <option value="E_MAIL">E-Mail</option>
-                    </select>
+                    <div className="select-wrapper">
+                        <select
+                            name="generator"
+                            value={this.state.genConfig.getTypeString()}
+                            onChange={this.inputChanged}
+                        >
+                            <option value="RANDOM_STRING">Random String</option>
+                            <option value="E_MAIL">E-Mail</option>
+                        </select>
+                    </div>
                     {this.state.genConfig.render()}
                     <button
                         onClick={this.doneButtonClicked}
