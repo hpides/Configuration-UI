@@ -21,7 +21,11 @@ class NodeAdder extends React.Component<Props, State> {
                 <button
                     name="DATA_GENERATION"
                     onClick={this.onAddNode}
-                >Data Generation</button>
+                >Generate Data</button>
+                <button
+                    name="DATA_LOAD"
+                    onClick={this.onAddNode}
+                >Load data</button>
                 <button
                     name="REQUEST"
                     onClick={this.onAddNode}

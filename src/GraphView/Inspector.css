@@ -1,7 +1,7 @@
 .inspector {
     position: absolute;
     margin: 20px;
-    width: 200px;
+    min-width: 200px;
     top: 20px;
     right: 20px;
     background-color: #282c34;
@@ -24,7 +24,9 @@
 
 .inspector .data-generation-table table {
     text-align: left;
-    width: 100%;
+    min-width: 190px;
+    margin-left: 10px;
+    margin-right: 10px;
     background-color: #cbcfd5;
     color: black;
 }
