@@ -7,16 +7,13 @@ export class AcyclicPort extends DefaultPortModel {
             return super.canLinkToPort(port);
         }
 
-        let endPort: AcyclicPort;
-        let startPort: AcyclicPort;
-
         if (this.options.in) {
-            startPort = port;
-            endPort = this;
-        } else {
-            startPort = this;
-            endPort = port;
+            // disallow backwards link
+            return false;
         }
+
+        let startPort = this;
+        let endPort = port;
 
         // if we can reach startPort from endPort we would add a cycle when connecting
 
