@@ -7,25 +7,29 @@ import createEngine, {
     DefaultNodeModelOptions
 } from '@projectstorm/react-diagrams';
 
+
 import {
     CanvasWidget,
     BaseEvent,
-    BaseModelListener,
+    DeleteItemsAction,
 } from '@projectstorm/react-canvas-core';
+import { Point } from '@projectstorm/geometry';
 import { Node } from './Nodes/Node';
 import { StartNode } from './Nodes/StartNode';
 import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { RequestNode } from './Nodes/RequestNode';
 import { DelayNode } from './Nodes/DelayNode';
 import { Inspector } from './Inspector';
+import { ConvertGraphToStory } from './ConfigJson';
 import { WarmupEndNode } from './Nodes/WarmupEndNode';
+import { DataLoadNode } from './Nodes/DataLoadNode';
 
 
 interface Props {}
 
 interface State {
     nodes: Node[],
-    startNode?: Node,
+    startNode?: StartNode,
     selectedNode?: Node,
 }
 
@@ -40,14 +44,16 @@ export class GraphView extends React.Component<Props, State> {
             nodes: [],
         }
 
-        this.engine = createEngine();
+        this.engine = createEngine({registerDefaultDeleteItemsAction: false});
 
         this.model = new DiagramModel();
         this.engine.setModel(this.model);
+
+        this.engine.getActionEventBus().registerAction(new DeleteItemsAction({ keyCodes: [46]}));
     }
 
     componentDidMount() {
-        this.setState({startNode: this.addNode("START")});
+        this.setState({ startNode: this.addNode("START") as StartNode });
     }
 
     handleSelectionChanged = (event: BaseEvent) => {
@@ -63,7 +69,7 @@ export class GraphView extends React.Component<Props, State> {
         })
     }
 
-    addNode = (type: String) => {
+    addNode = (type: String, point?: Point) => {
 
         let node: Node;
 
@@ -78,6 +84,9 @@ export class GraphView extends React.Component<Props, State> {
                 break;
             case "DATA_GENERATION":
                 node = new DataGenerationNode(nodeOptions);
+                break;
+            case "DATA_LOAD":
+                node = new DataLoadNode(nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
@@ -97,7 +106,11 @@ export class GraphView extends React.Component<Props, State> {
             selectionChanged: this.handleSelectionChanged
         });
 
-        node.setPosition(10,10);
+        if (point) {
+            node.setPosition(point.x, point.y);
+        } else {
+            node.setPosition(10,10);
+        }
 
         let nodes = this.state.nodes;
         nodes.push(node);
@@ -113,9 +126,24 @@ export class GraphView extends React.Component<Props, State> {
     handleInspectorValueChanged = (key: string, value: string) => {
         let node = this.state.selectedNode;
 
-        node?.setAttribute(key, value);
+        node!.setAttribute(key, value);
 
         this.setState({selectedNode: node});
+    }
+
+    handleDrop = (event: React.DragEvent) => {
+        var point = this.engine.getRelativeMousePoint(event);
+
+        this.addNode(event.dataTransfer.getData('tdgt-node-type'), point);
+    }
+
+    exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        console.log("Button clicked");
+        const startNode = this.state.startNode;
+        if (startNode) {
+            const story = ConvertGraphToStory("Rail", 1, startNode);
+            console.log(JSON.stringify(story));
+        }
     }
 
     render() {
@@ -128,11 +156,18 @@ export class GraphView extends React.Component<Props, State> {
         }
         return (
             <div id="graphview">
-                <div className="container">
+                <div className="container"
+                    onDrop={this.handleDrop}
+                    onDragOver={event => {
+                        event.preventDefault();
+                    }}
+                >
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
+                <button className="exportButton" onClick={this.exportNodes}>Export</button>
                 {inspector}
+                
             </div>
         );
     }

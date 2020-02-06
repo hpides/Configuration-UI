@@ -1,15 +1,21 @@
 import React from 'react'
+import { GeneratorConfig } from './GeneratorConfig';
 
-export abstract class GeneratorConfig {
+export class EMailGeneratorConfig extends GeneratorConfig {
     protected attributes: { [key: string]: any};
 
     constructor() {
+        super();
 
         this.attributes = {
+            "domain": "example.com",
+            "characters": "10",
         };
     }
 
-    abstract getTypeString(): string
+    getTypeString() {
+        return "E_MAIL";
+    }
 
     getAttributes() {
         return this.attributes;
@@ -29,13 +35,13 @@ export abstract class GeneratorConfig {
         return Object.keys(this.attributes);
     }
 
-    inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
-        this.setAttribute(event.currentTarget.name, event.currentTarget.value);
-    }
-
     render() {
         return(
             <div className="generator-config">
+                <label>Domain:</label>
+                <input type="text" name="domain" onChange={this.inputChanged} />
+                <label>Characters: </label>
+                <input type="text" name="characters" onChange={this.inputChanged} />
             </div>
         )
     }

@@ -1,15 +1,20 @@
 import React from 'react'
+import { GeneratorConfig } from './GeneratorConfig';
 
-export abstract class GeneratorConfig {
+export class RandomStringGeneratorConfig extends GeneratorConfig {
     protected attributes: { [key: string]: any};
 
     constructor() {
+        super();
 
         this.attributes = {
+            "maxChars": "10",
         };
     }
 
-    abstract getTypeString(): string
+    getTypeString() {
+        return "RANDOM_STRING"
+    }
 
     getAttributes() {
         return this.attributes;
@@ -29,13 +34,11 @@ export abstract class GeneratorConfig {
         return Object.keys(this.attributes);
     }
 
-    inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
-        this.setAttribute(event.currentTarget.name, event.currentTarget.value);
-    }
-
     render() {
         return(
             <div className="generator-config">
+                <label>Maximum Characters:</label>
+                <input type="text" name="maxChars" onChange={this.inputChanged} />
             </div>
         )
     }

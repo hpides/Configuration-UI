@@ -1,5 +1,6 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
 import { Node } from './Node';
+import { AtomType } from "../ConfigJson";
 
 export class RequestNode extends Node {
     protected attributes: { [key: string]: any};
@@ -11,5 +12,9 @@ export class RequestNode extends Node {
             "name" : "Request",
             "endpoint" : "",
         };
+    }
+
+    getAtomType(): AtomType {
+        return "REQUEST";
     }
 }

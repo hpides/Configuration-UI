@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.26",
+    "@fortawesome/free-solid-svg-icons": "^5.12.0",
+    "@fortawesome/react-fontawesome": "^0.1.8",
     "@projectstorm/react-diagrams": "^6.0.1-beta.7",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
@@ -14,6 +17,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-draggable": "^4.2.0",
+    "react-fontawesome": "^1.7.1",
     "react-scripts": "3.3.0",
     "resize-observer-polyfill": "^1.5.1",
     "typescript": "^3.7.3"
@@ -44,6 +48,7 @@
     "@emotion/styled": "^10.0.27",
     "closest": "0.0.1",
     "dagre": "^0.8.5",
+    "json-ts": "^1.6.4",
     "mathjs": "^6.5.0",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.10"
