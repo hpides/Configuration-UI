@@ -1,7 +1,34 @@
 import React from 'react'
 import './Testconfig.css'
+import { RightAngleLinkFactory } from '@projectstorm/react-diagrams';
 
-export class Testconfig extends React.Component {
+interface Props {}
+
+interface State {
+    repeat: string,
+    sfactor: string,
+    rpsec: string,
+}
+
+export class Testconfig extends React.Component<Props, State> {
+    constructor(props: any) {
+        super(props);
+
+        this.state = {
+            repeat : localStorage.getItem("repeat") || "",
+            sfactor : localStorage.getItem("sfactor") || "",
+            rpsec : localStorage.getItem("rpsec") || ""
+        };
+    }
+
+    inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
+        localStorage.setItem(event.currentTarget.name, event.currentTarget.value);
+        this.setState({
+            repeat : localStorage.getItem("repeat") || "",
+            sfactor : localStorage.getItem("sfactor") || "",
+            rpsec : localStorage.getItem("rpsec") || ""
+        });
+    }
     render() {
         return (
             <div className="testconfig">
@@ -11,7 +38,13 @@ export class Testconfig extends React.Component {
                         <label htmlFor="repeat">Repeat</label>
                     </div>
                     <div className="col-75">
-                        <input type="text" id="repeat" name="repeat" />
+                        <input
+                            onChange={this.inputChanged}
+                            type="text"
+                            id="repeat"
+                            name="repeat"
+                            value={this.state.repeat}
+                        />
                     </div>
                 </div>
 
@@ -20,7 +53,13 @@ export class Testconfig extends React.Component {
                         <label htmlFor="sfactor">Scale Factor</label>
                     </div>
                     <div className="col-75">
-                        <input type="text" id="sfactor" name="scale_factor" />
+                        <input
+                            onChange={this.inputChanged}
+                            type="text"
+                            id="sfactor"
+                            name="sfactor"
+                            value={this.state.sfactor}
+                        />
                     </div>
                 </div>
 
@@ -29,7 +68,13 @@ export class Testconfig extends React.Component {
                         <label htmlFor="rpsec">Requests per second</label>
                     </div>
                     <div className="col-75">
-                        <input type="text" id="rpsec" name="requests_per_second" />
+                        <input
+                            onChange={this.inputChanged}
+                            type="text"
+                            id="rpsec"
+                            name="rpsec"
+                            value={this.state.rpsec}
+                        />
                     </div>
                 </div>
             </div>
