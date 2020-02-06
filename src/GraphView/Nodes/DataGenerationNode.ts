@@ -11,7 +11,7 @@ export class DataGenerationNode extends Node {
         super(options);
 
         this.attributes = {
-            "name" : "Data Load",
+            "name" : "Data Generation",
         };
     }
 

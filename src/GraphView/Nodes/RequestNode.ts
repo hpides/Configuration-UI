@@ -10,6 +10,7 @@ export class RequestNode extends Node {
 
         this.attributes = {
             "name" : "Request",
+            "repeat" : "1",
             "verb" : "GET",
             "addr" : "",
             "requestJSONObject" : "",

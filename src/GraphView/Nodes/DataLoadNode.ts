@@ -10,7 +10,7 @@ export class DataLoadNode extends Node {
         super(options);
 
         this.attributes = {
-            "name" : "Data Generation",
+            "name" : "Data Load",
             "table" : "",
             "key" : ""
         };
