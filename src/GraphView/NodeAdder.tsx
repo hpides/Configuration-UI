@@ -31,12 +31,6 @@ class NodeAdder extends React.Component<Props, State> {
                     onClick={this.onAddNode}
                 >Generate Data</button>
                 <button
-                    draggable={true}
-                    name="DATA_LOAD"
-                    onDragStart={this.handleDragStart}
-                    onClick={this.onAddNode}
-                >Load data</button>
-                <button
                     name="REQUEST"
                     draggable={true}
                     onDragStart={this.handleDragStart}

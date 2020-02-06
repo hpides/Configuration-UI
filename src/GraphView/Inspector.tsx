@@ -39,7 +39,8 @@ export class Inspector extends React.Component<Props, State> {
 
         let node: DataGenerationNode = this.props.node;
 
-        node.data_to_generate[name] = genConfig;
+        //node.data_to_generate[name] = genConfig;
+        node.addData(name, genConfig);
 
         this.setState({addingGenerator: false});
     }
