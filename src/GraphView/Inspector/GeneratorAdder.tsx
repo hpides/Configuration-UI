@@ -3,6 +3,7 @@ import './GeneratorAdder.css'
 import { GeneratorConfig } from './GeneratorConfig';
 import { RandomStringGeneratorConfig } from './RandomStringGeneratorConfig';
 import { EMailGeneratorConfig } from './EMailGeneratorConfig';
+import { ExistingDataConfig } from './ExistingDataConfig';
 
 interface Props {
     onAdd: (name: string, genConfig: GeneratorConfig) => void,
@@ -38,6 +39,9 @@ export class GeneratorAdder extends React.Component<Props, State> {
                     case "E_MAIL":
                         this.setState({genConfig: new EMailGeneratorConfig()});
                         break;
+                    case "EXISTING":
+                        this.setState({genConfig: new ExistingDataConfig()});
+                        break;
                 }
                 break;
         }
@@ -72,6 +76,7 @@ export class GeneratorAdder extends React.Component<Props, State> {
                         >
                             <option value="RANDOM_STRING">Random String</option>
                             <option value="E_MAIL">E-Mail</option>
+                            <option value="EXISTING">Existing Data</option>
                         </select>
                     </div>
                     {this.state.genConfig.render()}
