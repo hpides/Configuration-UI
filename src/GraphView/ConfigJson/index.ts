@@ -94,7 +94,6 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
 
 function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom {
     const type = node.getAtomType();
-    
 
     const successors: number[] = [];
     for (const port of node.getOutPorts()) {

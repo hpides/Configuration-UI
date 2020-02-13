@@ -134,7 +134,6 @@ export class GraphView extends React.Component<Props, State> {
     }
 
     exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        console.log("Button clicked");
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
