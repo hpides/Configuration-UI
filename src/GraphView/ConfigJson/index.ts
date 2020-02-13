@@ -180,12 +180,6 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
     switch (type) {
         case "DATA_GENERATION":
             return ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
-            /*return [{
-                ...baseAtomObj,
-                name: node.getAttribute("name"),
-                table: node.getAttribute("table"),
-                data: node.getAttribute("data"),
-            } as IDataGenerationAtom];*/
         case "DELAY":
             return [{
                 ...baseAtomObj,
@@ -204,12 +198,12 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
                 request.requestJSONObject = attr;
             }
             attr = node.getAttribute("responseJSONObject");
-            if (attr) {
-                request.responseJSONObject = attr;
+            if (typeof attr === 'string' || attr instanceof String) {
+                request.responseJSONObject = attr.split(",");
             }
             attr = node.getAttribute("requestParams");
-            if (attr) {
-                request.requestParams = attr;
+            if (typeof attr === 'string' || attr instanceof String) {
+                request.requestParams = attr.split(",");
             }
             attr = node.getAttribute("basicAuth");
             if (attr) {
