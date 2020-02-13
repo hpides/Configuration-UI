@@ -16,24 +16,6 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
         return "RANDOM_STRING"
     }
 
-    getAttributes() {
-        return this.attributes;
-    }
-
-    getAttribute(key: string) {
-        return this.attributes[key];
-    }
-
-    setAttribute(key: string, value: any) {
-        if (this.getKeys().includes(key)) {
-            this.attributes[key] = value;
-        }
-    }
-
-    getKeys() {
-        return Object.keys(this.attributes);
-    }
-
     render() {
         return(
             <div className="generator-config">

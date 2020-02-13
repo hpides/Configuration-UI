@@ -14,7 +14,7 @@ interface IStory {
     atoms: IBaseAtom[];
 }
 
-export type AtomType = "DATA_GENERATION" | "REQUEST" | "WARMUP_END" | "START" | "DELAY" | "WARMUP_END";
+export type AtomType = "DATA_GENERATION" | "REQUEST" | "WARMUP_END" | "START" | "DELAY";
 
 interface IBaseAtom {
     name: string;
