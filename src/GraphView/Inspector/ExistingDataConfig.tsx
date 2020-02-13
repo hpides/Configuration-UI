@@ -9,7 +9,6 @@ export class ExistingDataConfig extends GeneratorConfig {
 
         this.attributes = {
             "table": "",
-            "key": "",
         };
     }
 
@@ -20,10 +19,8 @@ export class ExistingDataConfig extends GeneratorConfig {
     render() {
         return(
             <div className="generator-config">
-                <label>Table:</label>
+                <label>Read from Table:</label>
                 <input type="text" name="table" onChange={this.inputChanged} />
-                <label>Key: </label>
-                <input type="text" name="key" onChange={this.inputChanged} />
             </div>
         )
     }

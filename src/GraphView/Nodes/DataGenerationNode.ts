@@ -7,7 +7,7 @@ export type DataGenDict = { [key: string] : GeneratorConfig }
 
 export class DataGenerationNode extends Node {
     protected attributes: { [key: string]: any};
-    data_to_generate: DataGenDict = {};
+    dataToGenerate: DataGenDict = {};
     
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
@@ -22,6 +22,6 @@ export class DataGenerationNode extends Node {
     }
 
     addData(name: string, genConfig: GeneratorConfig) {
-        this.data_to_generate[name] = genConfig;
+        this.dataToGenerate[name] = genConfig;
     }
 }

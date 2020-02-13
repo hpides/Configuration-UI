@@ -39,7 +39,7 @@ export class Inspector extends React.Component<Props, State> {
 
         let node: DataGenerationNode = this.props.node;
 
-        //node.data_to_generate[name] = genConfig;
+        //node.dataToGenerate[name] = genConfig;
         node.addData(name, genConfig);
 
         this.setState({addingGenerator: false});
@@ -57,13 +57,13 @@ export class Inspector extends React.Component<Props, State> {
 
         let rows: JSX.Element[] = [];
 
-        let keys = Object.keys(node.data_to_generate);
+        let keys = Object.keys(node.dataToGenerate);
 
         for (let i = 0; i < keys.length; i++) {
             rows.push(
                 <tr>
                     <td>{keys[i]}</td>
-                    <td>{node.data_to_generate[keys[i]].getTypeString()}</td>
+                    <td>{node.dataToGenerate[keys[i]].getTypeString()}</td>
                 </tr>
             )
         }
