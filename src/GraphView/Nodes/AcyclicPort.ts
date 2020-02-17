@@ -7,6 +7,10 @@ export class AcyclicPort extends DefaultPortModel {
             return super.canLinkToPort(port);
         }
 
+        if (this.options.in === port.options.in) {
+            return false;
+        }
+
         let endPort: AcyclicPort;
         let startPort: AcyclicPort;
 
