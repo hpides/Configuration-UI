@@ -31,10 +31,9 @@
 
 #start-test-button {
     position: absolute;
-    bottom: 10px;
+    bottom: 30px;
     width: 100%;
     align-content: center;
-    
 }
 
 #start-test-button button {
