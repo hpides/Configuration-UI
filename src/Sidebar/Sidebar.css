@@ -6,11 +6,10 @@
     left: 0;
     background-color: #505460;
     overflow-x: hidden;
-    padding-top: 20px;
     border-right: 5px solid #282c34;
 }
 
-.sidebar button:after {
+.sidebar .view-select button:after {
     content: "";
     position: relative;
     bottom: -5px;
@@ -19,10 +18,39 @@
     width: 0%;
     transition: all 0.3s ease 0s;
 }
-.sidebar button:hover:after {
+.sidebar .view-select button:hover:after {
     width: 20px;
     border-bottom-color: #7986ae
 }
-.sidebar button.active:after {
+.sidebar .view-select button.active:after {
     width: 100%;
+}
+.sidebar .view-select button:first-child {
+    padding-top: 20px;
+}
+
+#start-test-button {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    align-content: center;
+    
+}
+
+#start-test-button button {
+    margin: 0 auto;
+    padding: 8px;
+    color: #1aaa55;
+    border: 2px solid #1aaa55;
+    border-radius: 10px;
+}
+
+#start-test-button button:hover {
+    opacity: 0.7;
+    background-color: rgba(26, 170, 85, 0.1)
+}
+
+#start-test-button button:active {
+    transform: scale(.9);
+    box-shadow: 0 3px 15px -2px;
 }

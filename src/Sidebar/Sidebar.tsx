@@ -28,25 +28,38 @@ export class Sidebar extends React.Component<Props, State> {
         }
         this.props.changeView(nextView);
     }
+
+    startTest = () => {
+
+    }
+
     render() {
         let cv = this.props.currentView;
         return (
             <div className="sidebar">
-                <button
-                    name="apis"
-                    className={cv === Views.Apis ? "active" : ""}
-                    onClick={this.changeView}
-                >Apis</button>
-                <button
-                    name="testconfig"
-                    className={cv === Views.Testconfig ? "active" : ""}
-                    onClick={this.changeView}
-                >Testconfig</button>
-                <button
-                    name="userstories"
-                    className={cv === Views.UserStories ? "active" : ""}
-                    onClick={this.changeView}
-                >UserStories</button>
+                <div className="view-select">
+                    <button
+                        name="apis"
+                        className={cv === Views.Apis ? "active" : ""}
+                        onClick={this.changeView}
+                    >Apis</button>
+                    <button
+                        name="testconfig"
+                        className={cv === Views.Testconfig ? "active" : ""}
+                        onClick={this.changeView}
+                    >Testconfig</button>
+                    <button
+                        name="userstories"
+                        className={cv === Views.UserStories ? "active" : ""}
+                        onClick={this.changeView}
+                    >UserStories</button>
+                </div>
+
+                <div id="start-test-button">
+                    <button
+                        onClick={this.startTest}
+                    >Start Test</button>
+                </div>
             </div>
         );
     }
