@@ -102,6 +102,15 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
 
     const dataToGenerate = node.dataToGenerate;
 
+    if (Object.keys(dataToGenerate).length === 0) {
+        return [{
+            ...baseAtomObj,
+            name: node.getAttribute("name"),
+            table: "",
+            data: [],
+        } as IDataGenerationAtom];
+    }
+
     /*
      * Create Atom for new data
      */
@@ -114,15 +123,17 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
 
         keys.push(key);
     }
-    // generate unique table name
+    // To-Do : generate unique table name
     let tableName: string = "abcdef";
     
-    atoms.push({
-        ...baseAtomObj,
-        name: node.getAttribute("name"),
-        table: tableName,
-        data: keys,
-    } as IDataGenerationAtom);
+    if (keys.length > 0) {
+        atoms.push({
+            ...baseAtomObj,
+            name: node.getAttribute("name"),
+            table: tableName,
+            data: keys,
+        } as IDataGenerationAtom);
+    }
 
     /*
      * Create Atoms for data
@@ -134,17 +145,21 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
             continue;
         }
 
-        let id = idMap.mapId(node.getID() + key);
-
-        atoms[atoms.length-1].successors = [id];
-
-        atoms.push({
+        let newAtom = {
             ...baseAtomObj,
             name: node.getAttribute("name"),
-            id: id,
             table: genConfig.getAttribute("table"),
-            data: [key],
-        } as IDataGenerationAtom);
+            data: [key]
+        } as IDataGenerationAtom;
+
+        if (atoms.length > 0) {
+            let id = idMap.mapId(node.getID() + key);
+            atoms[atoms.length-1].successors = [id];
+
+            newAtom.id = id;
+        }
+
+        atoms.push(newAtom);
     }
 
     atoms[atoms.length-1].successors = baseAtomObj.successors;
@@ -198,11 +213,11 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
                 request.requestJSONObject = attr;
             }
             attr = node.getAttribute("responseJSONObject");
-            if (typeof attr === 'string' || attr instanceof String) {
+            if ((typeof attr === 'string' || attr instanceof String) && attr.trim() !== "") {
                 request.responseJSONObject = attr.split(",");
             }
             attr = node.getAttribute("requestParams");
-            if (typeof attr === 'string' || attr instanceof String) {
+            if ((typeof attr === 'string' || attr instanceof String) && attr.trim() !== "") {
                 request.requestParams = attr.split(",");
             }
             attr = node.getAttribute("basicAuth");

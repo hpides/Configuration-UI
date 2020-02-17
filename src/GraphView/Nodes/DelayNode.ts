@@ -9,7 +9,7 @@ export class DelayNode extends Node {
         super(options);
 
         this.attributes = {
-            "name" : "Data Generation",
+            "name" : "Delay",
             "delay" : "1",
         };
     }
