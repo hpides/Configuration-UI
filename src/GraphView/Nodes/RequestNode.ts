@@ -2,6 +2,11 @@ import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
 import { Node } from './Node';
 import { AtomType } from "../ConfigJson";
 
+interface IBasicAuth {
+    user: string;
+    password: string;
+}
+
 export class RequestNode extends Node {
     protected attributes: { [key: string]: any};
     
@@ -16,8 +21,7 @@ export class RequestNode extends Node {
             "requestJSONObject" : "",
             "responseJSONObject" : "",
             "requestParams" : "",
-            "username" : "",
-            "password" : ""
+            "basicAuth" : null,
         };
     }
 

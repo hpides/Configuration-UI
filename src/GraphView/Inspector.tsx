@@ -5,6 +5,8 @@ import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { GeneratorAdder } from './Inspector/GeneratorAdder';
 import { timingSafeEqual } from 'crypto';
 import { GeneratorConfig } from './Inspector/GeneratorConfig';
+import { RequestNode } from './Nodes/RequestNode';
+import { AuthAdder } from './Inspector/AuthAdder';
 
 interface Props {
     onValueChanged: (key: string, value: string) => void;
@@ -12,7 +14,13 @@ interface Props {
 }
 
 interface State {
-    addingGenerator: boolean
+    addingGenerator: boolean,
+    addingAuth: boolean
+}
+
+interface IBasicAuth {
+    user: string;
+    password: string;
 }
 
 export class Inspector extends React.Component<Props, State> {
@@ -21,6 +29,7 @@ export class Inspector extends React.Component<Props, State> {
 
         this.state = {
             addingGenerator: false,
+            addingAuth: false,
         }
     }
 
@@ -47,6 +56,29 @@ export class Inspector extends React.Component<Props, State> {
 
     handleCancelGeneratorDialog = () => {
         this.setState({addingGenerator: false});
+    }
+
+    addAuth = () => {
+        this.setState({addingAuth: true});
+    }
+
+    handleAddAuthDialog = (user: string, password: string) => {
+        if (!(this.props.node instanceof RequestNode)) {
+            return;
+        }
+
+        let node: RequestNode = this.props.node;
+
+        node.setAttribute("basicAuth", {
+            user: user,
+            password: password,
+        } as IBasicAuth);
+
+        this.setState({addingAuth: false});
+    }
+
+    handleCancelAuthDialog = () => {
+        this.setState({addingAuth: false});
     }
 
     renderTable() {
@@ -93,14 +125,32 @@ export class Inspector extends React.Component<Props, State> {
             let label = <label>
                 {key}
             </label>
-            let input = <input
-                type="text"
-                name={key}
-                value={node.getAttribute(key)}
-                onChange={this.inputChanged}
-            />
-            inputs.push(label);
-            inputs.push(input);
+
+            if (key === "basicAuth") {
+
+                let buttonString = "Add Auth";
+                let authObject = node.getAttribute(key);
+                if (authObject) {
+                    buttonString = authObject["user"] + ":" + authObject["password"];
+                }
+                let authButton = <button
+                    onClick={this.addAuth}
+                >{buttonString}</button>;
+                inputs.push(label);
+                inputs.push(authButton);
+
+            } else {
+
+                let input = <input
+                    type="text"
+                    name={key}
+                    value={node.getAttribute(key)}
+                    onChange={this.inputChanged}
+                />
+                inputs.push(label);
+                inputs.push(input);
+            
+            }
         }
 
         let table = this.renderTable();
@@ -112,6 +162,15 @@ export class Inspector extends React.Component<Props, State> {
                 onCancel={this.handleCancelGeneratorDialog}
             />
         }
+
+        let authAdder;
+        if (this.state.addingAuth) {
+            authAdder = <AuthAdder
+                onAdd={this.handleAddAuthDialog}
+                onCancel={this.handleCancelAuthDialog}
+                auth={this.props.node.getAttribute("basicAuth")}
+            />
+        }
         
         return (
             <div className="inspector">
@@ -121,6 +180,7 @@ export class Inspector extends React.Component<Props, State> {
                 </div>
                 {table}
                 {generatorAdder}
+                {authAdder}
             </div>
         );
     }
