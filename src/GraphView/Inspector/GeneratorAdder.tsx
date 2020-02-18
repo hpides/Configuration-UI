@@ -1,9 +1,9 @@
 import React from 'react'
 import './GeneratorAdder.css'
 import { GeneratorConfig } from './GeneratorConfig';
-import { RandomStringGeneratorConfig } from './RandomStringGeneratorConfig';
-import { EMailGeneratorConfig } from './EMailGeneratorConfig';
-import { ExistingDataConfig } from './ExistingDataConfig';
+import { RandomStringGeneratorConfig } from './GeneratorConfig';
+import { EMailGeneratorConfig } from './GeneratorConfig';
+import { ExistingDataConfig } from './GeneratorConfig';
 
 interface Props {
     onAdd: (name: string, genConfig: GeneratorConfig) => void,

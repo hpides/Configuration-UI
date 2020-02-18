@@ -6,7 +6,6 @@ export class AcyclicPort extends DefaultPortModel {
         if (!(port instanceof AcyclicPort)) {
             return super.canLinkToPort(port);
         }
-
         if (this.options.in === port.options.in) {
             return false;
         }
@@ -34,7 +33,6 @@ export class AcyclicPort extends DefaultPortModel {
         if (endNode.hasPathTo(startNode)) {
             return false;
         }
-        
         return true;
     }
 }

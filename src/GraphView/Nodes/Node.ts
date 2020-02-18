@@ -1,18 +1,18 @@
 import { AtomType } from "./../ConfigJson";
 import { DefaultNodeModel, DefaultNodeModelOptions, PortModelAlignment } from "@projectstorm/react-diagrams";
 import { AcyclicPort } from "./AcyclicPort";
-
 export abstract class Node extends DefaultNodeModel {
     protected attributes: { [key: string]: any };
-
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
 
         this.attributes = {
             "name" : "Node",
+            "id": "",
+            "repeat": "1"
         };
-
         this.addPorts();
+
     }
 
     hasPathTo(node: Node) {
