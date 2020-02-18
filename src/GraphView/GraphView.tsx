@@ -22,7 +22,7 @@ import { DelayNode } from './Nodes/DelayNode';
 import { Inspector } from './Inspector';
 import { ConvertGraphToStory, ConvertStoryToGraph } from './ConfigJson';
 import { WarmupEndNode } from './Nodes/WarmupEndNode';
-import { DefaultPortModel } from '@projectstorm/react-diagrams-defaults';
+import { LinkModel} from '@projectstorm/react-diagrams-core';
 
 interface Props {}
 
@@ -146,41 +146,29 @@ export class GraphView extends React.Component<Props, State> {
     importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>):void => {
         const json = prompt("JSON please: ","{}");
         const deserializedStory = JSON.parse(json ||  "{}");
-        const nodes : Node[] = ConvertStoryToGraph(deserializedStory);
+        const nodes : {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(deserializedStory);
         this.setState({nodes: []})
 
 
-        //need to deserialize all nodes, else a successor might not have been deserialized yet
-        //also, the links need to be added to the model asap
-        for(let i = 0; i < nodes.length; i++){
-            const serializedAtom = deserializedStory.atoms[i];
-            const constructedNode = nodes[i];
-            for(let successorID of serializedAtom.successors){
-                let targetNode:Node|null = null;
-                for(let currentAtom of nodes){
-                    console.log(currentAtom.getAttribute("id"));
-                    if(currentAtom.getAttribute("id") === successorID){
-                        targetNode = currentAtom;
-                    }
-                }
-                if(!targetNode){
-                    console.error("Target node not found: "+successorID);
-                    return
-                }
-                const link = (constructedNode!.getPort("Out")! as DefaultPortModel).link((targetNode.getPort("In")! as DefaultPortModel));
-                this.model.addLink(link);
-            }
-        }
 
-        for(let node of nodes){
+        for(let node of nodes.nodes){
             node.registerListener({
                 selectionChanged: this.handleSelectionChanged
             });
-
-            this.model.addNode(node)
+            this.model.addNode(node);
             this.state.nodes.push(node);
         }
-        this.setState({nodes: this.state.nodes});
+
+        for(let link of nodes.links){
+            this.model.addLink(link)
+        }
+
+        if(this.state.startNode){
+            this.model.removeNode(this.state.startNode)
+        }
+        if(nodes.startNode) {
+            this.setState({startNode: nodes.startNode});
+        }
         this.forceUpdate()
     }
 

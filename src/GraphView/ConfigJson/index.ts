@@ -3,7 +3,9 @@ import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import Dictionary from "./Dictionary";
 import { DataGenerationNode } from "../Nodes/DataGenerationNode";
-import { Point, Rectangle } from '@projectstorm/geometry';
+import { Point } from '@projectstorm/geometry';
+import { DefaultPortModel } from '@projectstorm/react-diagrams-defaults';
+import { LinkModel} from '@projectstorm/react-diagrams-core';
 import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
 import {RequestNode} from "../Nodes/RequestNode";
 import {WarmupEndNode} from "../Nodes/WarmupEndNode";
@@ -102,8 +104,10 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
     } as IStory;
 }
 
-export function ConvertStoryToGraph(deserializedStory:any) : Node[]{
-    const ret:Node[] = []
+export function ConvertStoryToGraph(deserializedStory:any) : {nodes: Node[], startNode: StartNode | null, links: LinkModel[]}{
+    const ret:Node[] = [];
+    const links : LinkModel[] = [];
+    let startNode: StartNode|null = null;
     for(let currentAtom of deserializedStory.atoms){
 
         const type = currentAtom.type;
@@ -115,6 +119,8 @@ export function ConvertStoryToGraph(deserializedStory:any) : Node[]{
         switch(type) {
             case "START":
                 node = new StartNode(nodeOptions);
+                //one can assume there is maximum one
+                startNode = node;
                 break;
             case "DATA_GENERATION":
                 node = new DataGenerationNode(nodeOptions);
@@ -130,16 +136,35 @@ export function ConvertStoryToGraph(deserializedStory:any) : Node[]{
                 break;
             default:
                 console.error("Error adding node: unknown type ", type);
-                return [];
+                return {nodes: [], links: [], startNode: null};
         }
         node.setPosition({x: currentAtom.x, y: currentAtom.y} as Point)
         applyAttributes(node, currentAtom);
         ret.push(node);
-        console.log(node.getAttributes())
+    }
+
+    //need to deserialize all nodes, else a successor might not have been deserialized yet
+    for(let i = 0; i < ret.length; i++){
+        const serializedAtom = deserializedStory.atoms[i];
+        const constructedNode = ret[i];
+        for(let successorID of serializedAtom.successors){
+            let targetNode:Node|null = null;
+            for(let currentAtom of ret){
+                if(currentAtom.getAttribute("id") === successorID){
+                    targetNode = currentAtom;
+                }
+            }
+            if(!targetNode){
+                console.error("Target node not found: "+successorID);
+                return {nodes: [], links: [], startNode: null};
+            }
+            const link = (constructedNode!.getPort("Out")! as DefaultPortModel).link((targetNode.getPort("In")! as DefaultPortModel));
+            links.push(link!);
+        }
     }
 
 
-    return ret
+    return {nodes: ret, links: links, startNode: startNode};
 }
 
 function applyAttributes(target: Node, source: any){
