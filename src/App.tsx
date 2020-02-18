@@ -6,7 +6,7 @@ import { Views } from './Views';
 import { GraphView } from './GraphView/GraphView';
 import { ApisEditor } from './ApisEditor/ApisEditor';
 import { Testconfig } from './Testconfig/Testconfig';
-
+import "reflect-metadata";
 interface Props {}
 
 interface State {

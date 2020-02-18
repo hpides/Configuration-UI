@@ -2,7 +2,7 @@ import { StartNode } from "./../Nodes/StartNode";
 import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import Dictionary from "./Dictionary";
-import { DataGenerationNode } from "../Nodes/DataGenerationNode";
+import {DataGenerationNode, dataToGenerateClass} from "../Nodes/DataGenerationNode";
 import { Point } from '@projectstorm/geometry';
 import { DefaultPortModel } from '@projectstorm/react-diagrams-defaults';
 import { LinkModel} from '@projectstorm/react-diagrams-core';
@@ -39,6 +39,7 @@ interface IDataGenerationAtom extends IBaseAtom {
     name: string;
     table: string;
     data: string[];
+    dataToGenerate: string;
 }
 
 type HTTPVerb = "POST" | "GET";
@@ -174,26 +175,28 @@ function applyAttributes(target: Node, source: any){
 }
 
 
-function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): IBaseAtom[] {
-    let atoms: IBaseAtom[] = [];
+function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): IDataGenerationAtom[] {
+    let atoms: IDataGenerationAtom[] = [];
 
     const dataToGenerate = node.dataToGenerate;
-
-    if (Object.keys(dataToGenerate).length === 0) {
+    console.log("Node attributes: "+JSON.stringify(node.getAttributes()));
+    if (Array.from(node.dataToGenerate.value.keys()).length === 0) {
         return [{
             ...baseAtomObj,
             name: node.getAttribute("name"),
             table: "",
             data: [],
-        } as IDataGenerationAtom];
+            dataToGenerate: node.getAttribute("dataToGenerate")
+        }];
     }
 
     /*
      * Create Atom for new data
      */
     let keys: string[] = [];
-    for (const key of Object.keys(dataToGenerate)) {
-        let genConfig = dataToGenerate[key];
+    for (const key of Array.from(node.dataToGenerate.value.keys())) {
+        let genConfig = dataToGenerate.value.get(key)!;
+
         if (genConfig.getTypeString() === "EXISTING") {
             continue;
         }
@@ -202,22 +205,23 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     }
     // To-Do : generate unique table name
     let tableName: string = "abcdef";
-    
+    console.log("Keys: "+JSON.stringify(keys));
     if (keys.length > 0) {
         atoms.push({
             ...baseAtomObj,
             name: node.getAttribute("name"),
             table: tableName,
             data: keys,
-        } as IDataGenerationAtom);
+            dataToGenerate: node.getAttribute("dataToGenerate")
+        });
     }
 
     /*
      * Create Atoms for data
      * to be read from existing XML
      */
-    for (const key of Object.keys(dataToGenerate)) {
-        let genConfig = dataToGenerate[key];
+    for (const key of Array.from(node.dataToGenerate.value.keys())) {
+        let genConfig = dataToGenerate.value.get(key)!;
         if (genConfig.getTypeString() !== "EXISTING") {
             continue;
         }
@@ -226,8 +230,9 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
             ...baseAtomObj,
             name: node.getAttribute("name"),
             table: genConfig.getAttribute("table"),
-            data: [key]
-        } as IDataGenerationAtom;
+            data: [key],
+            dataToGenerate: node.getAttribute("dataToGenerate")
+        };
 
         if (atoms.length > 0) {
             let id = idMap.mapId(node.getID() + key);
@@ -235,12 +240,14 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
 
             newAtom.id = id;
         }
-
+        console.log("To generate: "+newAtom.dataToGenerate);
         atoms.push(newAtom);
     }
-
-    atoms[atoms.length-1].successors = baseAtomObj.successors;
-    
+    console.log("Atoms: "+JSON.stringify(atoms));
+    // in case there are no data yet, this will throw exception
+    if(atoms.length > 1) {
+        atoms[atoms.length - 1].successors = baseAtomObj.successors;
+    }
     return atoms;
 }
 
@@ -273,7 +280,9 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
     // insert additional data
     switch (type) {
         case "DATA_GENERATION":
-            return ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
+            const ret = ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
+            console.log("JSON: "+JSON.stringify(ret));
+            return ret;
         case "DELAY":
             return [{
                 ...baseAtomObj,
