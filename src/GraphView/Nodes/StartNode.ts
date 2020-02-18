@@ -4,14 +4,11 @@ import { AtomType } from "../ConfigJson";
 import { AcyclicPort } from "./AcyclicPort";
 
 export class StartNode extends Node {
-    protected attributes: { [key: string]: any};
     
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
+        this.attributes.name= "Start";
 
-        this.attributes = {
-            "name" : "Start",
-        };
     }
 
     addPorts() {

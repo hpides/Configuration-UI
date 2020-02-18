@@ -1,9 +1,13 @@
 import { StartNode } from "./../Nodes/StartNode";
+import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import Dictionary from "./Dictionary";
 import { DataGenerationNode } from "../Nodes/DataGenerationNode";
-import { notEqual } from "assert";
-
+import { Point, Rectangle } from '@projectstorm/geometry';
+import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
+import {RequestNode} from "../Nodes/RequestNode";
+import {WarmupEndNode} from "../Nodes/WarmupEndNode";
+import {DelayNode} from "../Nodes/DelayNode";
 export interface ITest {
     repeat: number;
     scaleFactor: number;
@@ -24,7 +28,8 @@ interface IBaseAtom {
     repeat: number;
     successors: number[];
     type: AtomType;
-
+    x: number,
+    y: number
 
 }
 
@@ -96,6 +101,53 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
         atoms: atoms
     } as IStory;
 }
+
+export function ConvertStoryToGraph(deserializedStory:any) : Node[]{
+    const ret:Node[] = []
+    for(let currentAtom of deserializedStory.atoms){
+
+        const type = currentAtom.type;
+        let node:Node;
+        const nodeOptions: DefaultNodeModelOptions = {
+            name: type.toString(),
+            color: 'rgb(0,192,255)',
+        };
+        switch(type) {
+            case "START":
+                node = new StartNode(nodeOptions);
+                break;
+            case "DATA_GENERATION":
+                node = new DataGenerationNode(nodeOptions);
+                break;
+            case "REQUEST":
+                node = new RequestNode(nodeOptions);
+                break;
+            case "DELAY":
+                node = new DelayNode(nodeOptions);
+                break;
+            case "WARMUP_END":
+                node = new WarmupEndNode(nodeOptions);
+                break;
+            default:
+                console.error("Error adding node: unknown type ", type);
+                return [];
+        }
+        node.setPosition({x: currentAtom.x, y: currentAtom.y} as Point)
+        applyAttributes(node, currentAtom);
+        ret.push(node);
+        console.log(node.getAttributes())
+    }
+
+
+    return ret
+}
+
+function applyAttributes(target: Node, source: any){
+    for(let property in source){
+        target.setAttribute(property, source[property])
+    }
+}
+
 
 function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): IBaseAtom[] {
     let atoms: IBaseAtom[] = [];
@@ -188,7 +240,9 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
         id: idMap.mapId(node.getID()),
         repeat: 1,
         successors: successors,
-        type: type
+        type: type,
+        x: node.getX(),
+        y: node.getY()
     } as IBaseAtom
 
     // insert additional data

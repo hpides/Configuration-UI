@@ -20,9 +20,9 @@ import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { RequestNode } from './Nodes/RequestNode';
 import { DelayNode } from './Nodes/DelayNode';
 import { Inspector } from './Inspector';
-import { ConvertGraphToStory } from './ConfigJson';
+import { ConvertGraphToStory, ConvertStoryToGraph } from './ConfigJson';
 import { WarmupEndNode } from './Nodes/WarmupEndNode';
-
+import { DefaultPortModel } from '@projectstorm/react-diagrams-defaults';
 
 interface Props {}
 
@@ -52,7 +52,9 @@ export class GraphView extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        this.setState({ startNode: this.addNode("START") as StartNode });
+        const start = this.addNode("START");
+        this.setState({ startNode: start as StartNode });
+
     }
 
     handleSelectionChanged = (event: BaseEvent) => {
@@ -137,8 +139,49 @@ export class GraphView extends React.Component<Props, State> {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
-            console.log(JSON.stringify(story));
+           console.log(JSON.stringify(story));
         }
+    }
+
+    importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>):void => {
+        const json = prompt("JSON please: ","{}");
+        const deserializedStory = JSON.parse(json ||  "{}");
+        const nodes : Node[] = ConvertStoryToGraph(deserializedStory);
+        this.setState({nodes: []})
+
+
+        //need to deserialize all nodes, else a successor might not have been deserialized yet
+        //also, the links need to be added to the model asap
+        for(let i = 0; i < nodes.length; i++){
+            const serializedAtom = deserializedStory.atoms[i];
+            const constructedNode = nodes[i];
+            for(let successorID of serializedAtom.successors){
+                let targetNode:Node|null = null;
+                for(let currentAtom of nodes){
+                    console.log(currentAtom.getAttribute("id"));
+                    if(currentAtom.getAttribute("id") === successorID){
+                        targetNode = currentAtom;
+                    }
+                }
+                if(!targetNode){
+                    console.error("Target node not found: "+successorID);
+                    return
+                }
+                const link = (constructedNode!.getPort("Out")! as DefaultPortModel).link((targetNode.getPort("In")! as DefaultPortModel));
+                this.model.addLink(link);
+            }
+        }
+
+        for(let node of nodes){
+            node.registerListener({
+                selectionChanged: this.handleSelectionChanged
+            });
+
+            this.model.addNode(node)
+            this.state.nodes.push(node);
+        }
+        this.setState({nodes: this.state.nodes});
+        this.forceUpdate()
     }
 
     render() {
@@ -161,6 +204,7 @@ export class GraphView extends React.Component<Props, State> {
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
                 <button className="exportButton" onClick={this.exportNodes}>Export</button>
+                <button className="importButton" onClick={this.importNodes}>Import</button>
                 {inspector}
                 
             </div>
