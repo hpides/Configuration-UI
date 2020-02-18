@@ -23,5 +23,7 @@ module.exports = {
   testRegex: "(/__tests__/.*|(\\.|/)(__tests__|spec))\\.tsx?$",
 
   // Module file extensions for importing
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"]
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+    preset: 'ts-jest',
+    testEnvironment: 'node',
 };

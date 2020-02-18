@@ -138,8 +138,8 @@ export class Inspector extends React.Component<Props, State> {
                 >{buttonString}</button>;
                 inputs.push(label);
                 inputs.push(authButton);
-
-            } else {
+            //users should not enter IDs or dataToGenerate, this is handled in the background
+            } else if(!(key === "id" || key === "dataToGenerate")){
 
                 let input = <input
                     type="text"
