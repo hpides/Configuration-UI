@@ -28,3 +28,15 @@
     border: 3px solid #565d6a;
     border-radius: 10px;
 }
+
+.importButton {
+    position: absolute;
+    right: 140px;
+    bottom: 20px;
+    padding: 10px;
+    margin: 20px;
+    background-color: #282c34;
+    color: white;
+    border: 3px solid #565d6a;
+    border-radius: 10px;
+}
