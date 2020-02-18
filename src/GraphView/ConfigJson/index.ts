@@ -179,7 +179,6 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     let atoms: IDataGenerationAtom[] = [];
 
     const dataToGenerate = node.dataToGenerate;
-    console.log("Node attributes: "+JSON.stringify(node.getAttributes()));
     if (Array.from(node.dataToGenerate.value.keys()).length === 0) {
         return [{
             ...baseAtomObj,
@@ -205,7 +204,6 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     }
     // To-Do : generate unique table name
     let tableName: string = "abcdef";
-    console.log("Keys: "+JSON.stringify(keys));
     if (keys.length > 0) {
         atoms.push({
             ...baseAtomObj,
@@ -240,10 +238,8 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
 
             newAtom.id = id;
         }
-        console.log("To generate: "+newAtom.dataToGenerate);
         atoms.push(newAtom);
     }
-    console.log("Atoms: "+JSON.stringify(atoms));
     // in case there are no data yet, this will throw exception
     if(atoms.length > 1) {
         atoms[atoms.length - 1].successors = baseAtomObj.successors;
@@ -281,7 +277,6 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
     switch (type) {
         case "DATA_GENERATION":
             const ret = ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
-            console.log("JSON: "+JSON.stringify(ret));
             return ret;
         case "DELAY":
             return [{

@@ -42,7 +42,6 @@ export class DataGenerationNode extends Node {
         super.setAttribute(attr, value);
         if (attr === "dataToGenerate" && typeof value === "string") {
             const parsed = JSON.parse(value);
-            console.log(value);
             this._dataToGenerate = new dataToGenerateClass(new Map<string, GeneratorConfig>());
             for (let key of Object.keys(parsed.value)) {
                 let conf: GeneratorConfig;
@@ -58,14 +57,12 @@ export class DataGenerationNode extends Node {
                         conf = new RandomStringGeneratorConfig();
                         break;
                     default:
-                        alert("Can not deserialize a "+current.__type)
+                        alert("Can not deserialize a "+current.__type);
                         return
                 }
-                conf.setAttributes(current.attributes)
-                console.log("Current: "+JSON.stringify(conf) + "for: "+key)
+                conf.setAttributes(current.attributes);
                 this._dataToGenerate.value.set(key, conf);
             }
-            console.log("Deserialized to: " + JSON.stringify(this._dataToGenerate));
         }
         else if (attr === "dataToGenerate") {
             this._dataToGenerate = value
@@ -73,9 +70,7 @@ export class DataGenerationNode extends Node {
     }
 
     addData(name: string, genConfig: GeneratorConfig) {
-        console.log("Called!");
         this._dataToGenerate.value.set(name, genConfig);
-        console.log("Data to generate: " + JSON.stringify(classToPlain(this._dataToGenerate)))
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 }

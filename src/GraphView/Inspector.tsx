@@ -97,7 +97,6 @@ export class Inspector extends React.Component<Props, State> {
         let keys = Array.from(node.dataToGenerate.value.keys());
 
         for (let i = 0; i < keys.length; i++) {
-            console.log("Use key "+keys[i]+ "for "+JSON.stringify(node.dataToGenerate.value.get(keys[i])!))
             rows.push(
                 <tr>
                     <td>{keys[i]}</td>
