@@ -169,6 +169,7 @@ export class GraphView extends React.Component<Props, State> {
         if(nodes.startNode) {
             this.setState({startNode: nodes.startNode});
         }
+        this.setState({nodes: this.state.nodes});
         this.forceUpdate()
     }
 
