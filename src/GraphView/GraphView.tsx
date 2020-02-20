@@ -23,21 +23,31 @@ import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
 
-interface IState {
+interface IStory {
     nodes: Node[];
     startNode?: StartNode;
     selectedNode?: Node;
 }
+
+interface IState extends IStory {
+    currentStory: string;
+}
+
+interface IProps {
+    story: string;
+}
+
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
-export class GraphView extends React.Component<{}, IState> {
+export class GraphView extends React.Component<IProps, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
 
-    constructor(props: any) {
+    constructor(props: IProps) {
         super(props);
 
         this.state = {
+            currentStory: "default",
             nodes: [],
         };
 
@@ -133,18 +143,19 @@ export class GraphView extends React.Component<{}, IState> {
         this.addNode(event.dataTransfer.getData("tdgt-node-type"), point);
     }
 
-    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null): any => {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
-            console.log(JSON.stringify(story));
+            story.name = this.props.story;
+            return story;
         }
+        return {};
+
     }
 
-    public importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-        const json = prompt("JSON please: ", "{}");
-        const deserializedStory = JSON.parse(json ||  "{}");
-        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(deserializedStory);
+    public importNodes = (story: any): void => {
+        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(story);
         this.setState({nodes: []});
 
         for (const node of nodes.nodes) {
@@ -188,8 +199,6 @@ export class GraphView extends React.Component<{}, IState> {
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
-                <button className="exportButton" onClick={this.exportNodes}>Export</button>
-                <button className="importButton" onClick={this.importNodes}>Import</button>
                 {inspector}
 
             </div>
