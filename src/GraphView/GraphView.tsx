@@ -1,47 +1,45 @@
-import React from 'react'
-import './GraphView.css'
-import NodeAdder from './NodeAdder';
 import createEngine, {
-    DiagramModel, 
+    DefaultNodeModelOptions,
     DiagramEngine,
-    DefaultNodeModelOptions
-} from '@projectstorm/react-diagrams';
+    DiagramModel,
+} from "@projectstorm/react-diagrams";
+import React from "react";
+import "./GraphView.css";
+import NodeAdder from "./NodeAdder";
 
-
+import { Point } from "@projectstorm/geometry";
 import {
-    CanvasWidget,
     BaseEvent,
+    CanvasWidget,
     DeleteItemsAction,
-} from '@projectstorm/react-canvas-core';
-import { Point } from '@projectstorm/geometry';
-import { Node } from './Nodes/Node';
-import { StartNode } from './Nodes/StartNode';
-import { DataGenerationNode } from './Nodes/DataGenerationNode';
-import { RequestNode } from './Nodes/RequestNode';
-import { DelayNode } from './Nodes/DelayNode';
-import { Inspector } from './Inspector';
-import { ConvertGraphToStory, ConvertStoryToGraph } from './ConfigJson';
-import { WarmupEndNode } from './Nodes/WarmupEndNode';
-import { LinkModel} from '@projectstorm/react-diagrams-core';
+} from "@projectstorm/react-canvas-core";
+import { LinkModel} from "@projectstorm/react-diagrams-core";
+import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
+import { Inspector } from "./Inspector";
+import { DataGenerationNode } from "./Nodes/DataGenerationNode";
+import { DelayNode } from "./Nodes/DelayNode";
+import { Node } from "./Nodes/Node";
+import { RequestNode } from "./Nodes/RequestNode";
+import { StartNode } from "./Nodes/StartNode";
+import { WarmupEndNode } from "./Nodes/WarmupEndNode";
 
-interface Props {}
-
-interface State {
-    nodes: Node[],
-    startNode?: StartNode,
-    selectedNode?: Node,
+interface IState {
+    nodes: Node[];
+    startNode?: StartNode;
+    selectedNode?: Node;
 }
-
-export class GraphView extends React.Component<Props, State> {
-    engine: DiagramEngine;
-    model: DiagramModel;
+/* tslint:disable:no-console ... */
+/* tslint:disable:max-line-length ... */
+export class GraphView extends React.Component<{}, IState> {
+    public engine: DiagramEngine;
+    public model: DiagramModel;
 
     constructor(props: any) {
         super(props);
 
         this.state = {
             nodes: [],
-        }
+        };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});
 
@@ -51,14 +49,14 @@ export class GraphView extends React.Component<Props, State> {
         this.engine.getActionEventBus().registerAction(new DeleteItemsAction({ keyCodes: [46]}));
     }
 
-    componentDidMount() {
+    public componentDidMount() {
         const start = this.addNode("START");
         this.setState({ startNode: start as StartNode });
 
     }
 
-    handleSelectionChanged = (event: BaseEvent) => {
-        let nodes = this.state.nodes;
+    public handleSelectionChanged = (event: BaseEvent) => {
+        const nodes = this.state.nodes;
 
         this.setState({selectedNode: undefined});
 
@@ -67,19 +65,19 @@ export class GraphView extends React.Component<Props, State> {
                 this.setState({selectedNode: node});
                 return;
             }
-        })
+        });
     }
 
-    addNode = (type: String, point?: Point) => {
+    public addNode = (type: string, point?: Point) => {
 
         let node: Node;
 
-        let nodeOptions: DefaultNodeModelOptions = {
+        const nodeOptions: DefaultNodeModelOptions = {
+            color: "rgb(0,192,255)",
             name: type.toString(),
-            color: 'rgb(0,192,255)',
-        }
+        };
 
-        switch(type) {
+        switch (type) {
             case "START":
                 node = new StartNode(nodeOptions);
                 break;
@@ -101,18 +99,18 @@ export class GraphView extends React.Component<Props, State> {
         }
 
         node.registerListener({
-            selectionChanged: this.handleSelectionChanged
+            selectionChanged: this.handleSelectionChanged,
         });
 
         if (point) {
             node.setPosition(point.x, point.y);
         } else {
-            node.setPosition(10,10);
+            node.setPosition(10, 10);
         }
 
-        let nodes = this.state.nodes;
+        const nodes = this.state.nodes;
         nodes.push(node);
-        this.setState({nodes: nodes});
+        this.setState({nodes});
 
         this.model.addNode(node);
 
@@ -121,71 +119,69 @@ export class GraphView extends React.Component<Props, State> {
         return node;
     }
 
-    handleInspectorValueChanged = (key: string, value: string) => {
-        let node = this.state.selectedNode;
+    public handleInspectorValueChanged = (key: string, value: string) => {
+        const node = this.state.selectedNode;
 
         node!.setAttribute(key, value);
 
         this.setState({selectedNode: node});
     }
 
-    handleDrop = (event: React.DragEvent) => {
-        var point = this.engine.getRelativeMousePoint(event);
+    public handleDrop = (event: React.DragEvent) => {
+        const point = this.engine.getRelativeMousePoint(event);
 
-        this.addNode(event.dataTransfer.getData('tdgt-node-type'), point);
+        this.addNode(event.dataTransfer.getData("tdgt-node-type"), point);
     }
 
-    exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
-           console.log(JSON.stringify(story));
+            console.log(JSON.stringify(story));
         }
     }
 
-    importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>):void => {
-        const json = prompt("JSON please: ","{}");
+    public importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+        const json = prompt("JSON please: ", "{}");
         const deserializedStory = JSON.parse(json ||  "{}");
-        const nodes : {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(deserializedStory);
-        this.setState({nodes: []})
+        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(deserializedStory);
+        this.setState({nodes: []});
 
-
-
-        for(let node of nodes.nodes){
+        for (const node of nodes.nodes) {
             node.registerListener({
-                selectionChanged: this.handleSelectionChanged
+                selectionChanged: this.handleSelectionChanged,
             });
             this.model.addNode(node);
             this.state.nodes.push(node);
         }
 
-        for(let link of nodes.links){
-            this.model.addLink(link)
+        for (const link of nodes.links) {
+            this.model.addLink(link);
         }
 
-        if(this.state.startNode){
-            this.model.removeNode(this.state.startNode)
+        if (this.state.startNode) {
+            this.model.removeNode(this.state.startNode);
         }
-        if(nodes.startNode) {
+        if (nodes.startNode) {
             this.setState({startNode: nodes.startNode});
         }
         this.setState({nodes: this.state.nodes});
-        this.forceUpdate()
+        this.forceUpdate();
     }
 
-    render() {
+    public render() {
         let inspector;
         if (this.state.selectedNode) {
             inspector = <Inspector
                 onValueChanged={this.handleInspectorValueChanged}
                 node={this.state.selectedNode}
-            />
+            />;
         }
         return (
             <div id="graphview">
                 <div className="container"
                     onDrop={this.handleDrop}
-                    onDragOver={event => {
+                    onDragOver={(event) => {
                         event.preventDefault();
                     }}
                 >
@@ -195,7 +191,7 @@ export class GraphView extends React.Component<Props, State> {
                 <button className="exportButton" onClick={this.exportNodes}>Export</button>
                 <button className="importButton" onClick={this.importNodes}>Import</button>
                 {inspector}
-                
+
             </div>
         );
     }

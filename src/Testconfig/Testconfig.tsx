@@ -1,34 +1,32 @@
-import React from 'react'
-import './Testconfig.css'
+import React from "react";
+import "./Testconfig.css";
 
-interface Props {}
-
-interface State {
-    repeat: string,
-    sfactor: string,
-    rpsec: string,
+interface IState {
+    repeat: string;
+    sfactor: string;
+    rpsec: string;
 }
-
-export class Testconfig extends React.Component<Props, State> {
+/*tslint:disable:no-console*/
+export class Testconfig extends React.Component<{}, IState> {
     constructor(props: any) {
         super(props);
 
         this.state = {
             repeat : localStorage.getItem("repeat") || "",
+            rpsec : localStorage.getItem("rpsec") || "",
             sfactor : localStorage.getItem("sfactor") || "",
-            rpsec : localStorage.getItem("rpsec") || ""
         };
     }
 
-    inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
+    public inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
         localStorage.setItem(event.currentTarget.name, event.currentTarget.value);
         this.setState({
             repeat : localStorage.getItem("repeat") || "",
+            rpsec : localStorage.getItem("rpsec") || "",
             sfactor : localStorage.getItem("sfactor") || "",
-            rpsec : localStorage.getItem("rpsec") || ""
         });
     }
-    render() {
+    public render() {
         return (
             <div className="testconfig">
                 <h1>Testconfig</h1>

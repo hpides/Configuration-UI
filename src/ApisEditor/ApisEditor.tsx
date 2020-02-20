@@ -1,8 +1,8 @@
-import React from 'react'
-import './ApisEditor.css'
+import React from "react";
+import "./ApisEditor.css";
 
 export class ApisEditor extends React.Component {
-    render() {
+    public render() {
         return (
            <h1>APIs-Editor</h1>
         );

@@ -1,17 +1,17 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
-import { Node } from './Node';
 import { AtomType } from "../ConfigJson";
+import { Node } from "./Node";
 
 export class DelayNode extends Node {
-    
+
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
 
         this.attributes.name = "Delay";
-        this.attributes.delay="1";
+        this.attributes.delay = "1";
     }
 
-    getAtomType(): AtomType {
+    public getAtomType(): AtomType {
         return "DELAY";
     }
 }

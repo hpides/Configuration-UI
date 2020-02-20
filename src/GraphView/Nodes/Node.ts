@@ -1,5 +1,5 @@
-import { AtomType } from "./../ConfigJson";
 import { DefaultNodeModel, DefaultNodeModelOptions, PortModelAlignment } from "@projectstorm/react-diagrams";
+import { AtomType } from "./../ConfigJson";
 import { AcyclicPort } from "./AcyclicPort";
 export abstract class Node extends DefaultNodeModel {
     protected attributes: { [key: string]: any };
@@ -7,23 +7,22 @@ export abstract class Node extends DefaultNodeModel {
         super(options);
 
         this.attributes = {
-            "name" : "Node",
-            "id": "",
-            "repeat": "1"
+            id: "",
+            name : "Node",
+            repeat: "1",
         };
         this.addPorts();
 
     }
 
-    hasPathTo(node: Node) {
+    public hasPathTo(node: Node) {
         if (node === this) {
             return true;
         }
 
-        let ancestors = this.getAncestors();
+        const ancestors = this.getAncestors();
 
-        for (let i = 0; i < ancestors.length; i++) {
-            let ancestor = ancestors[i];
+        for (const ancestor of ancestors) {
             if (ancestor instanceof Node) {
                 if (ancestor.hasPathTo(node)) {
                     return true;
@@ -34,50 +33,50 @@ export abstract class Node extends DefaultNodeModel {
         return false;
     }
 
-    getAncestors() {
-        let outPort = this.getOutPorts()[0];
-        let links = Object.values(outPort.getLinks());
+    public getAncestors() {
+        const outPort = this.getOutPorts()[0];
+        const links = Object.values(outPort.getLinks());
 
-        return links.map(link => link.getTargetPort().getNode());
+        return links.map((link) => link.getTargetPort().getNode());
     }
 
-    addPorts() {
+    public addPorts() {
 
-        let inPort = new AcyclicPort({
+        const inPort = new AcyclicPort({
+            alignment: PortModelAlignment.LEFT,
             in: true,
-            name: 'In',
-            label: 'In',
-            alignment: PortModelAlignment.LEFT
-        })
+            label: "In",
+            name: "In",
+        });
         this.addPort(inPort);
 
-        let outPort = new AcyclicPort({
+        const outPort = new AcyclicPort({
+            alignment: PortModelAlignment.RIGHT,
             in: false,
-            name: 'Out',
-            label: 'Out',
-            alignment: PortModelAlignment.RIGHT
-        })
+            label: "Out",
+            name: "Out",
+        });
         this.addPort(outPort);
     }
 
-    getAttributes() {
+    public getAttributes() {
         return this.attributes;
     }
 
-    getAttribute(key: string) {
+    public getAttribute(key: string) {
         return this.attributes[key];
     }
 
-    setAttribute(key: string, value: any) {
+    public setAttribute(key: string, value: any) {
         if (this.getKeys().includes(key)) {
             this.attributes[key] = value;
         }
     }
 
-    getKeys() {
+    public getKeys() {
         return Object.keys(this.attributes);
     }
 
-    abstract getAtomType(): AtomType;
+    public abstract getAtomType(): AtomType;
 
 }
