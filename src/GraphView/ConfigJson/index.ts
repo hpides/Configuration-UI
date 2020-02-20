@@ -2,7 +2,7 @@ import { StartNode } from "./../Nodes/StartNode";
 import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import Dictionary from "./Dictionary";
-import {DataGenerationNode, dataToGenerateClass} from "../Nodes/DataGenerationNode";
+import {DataGenerationNode} from "../Nodes/DataGenerationNode";
 import { Point } from '@projectstorm/geometry';
 import { DefaultPortModel } from '@projectstorm/react-diagrams-defaults';
 import { LinkModel} from '@projectstorm/react-diagrams-core';
@@ -72,7 +72,7 @@ interface IBasicAuth {
 }
 
 export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode): IStory {
-    const atoms: IBaseAtom[] = new Array();
+    const atoms: IBaseAtom[] = [];
     const closedNodeIds: Set<string> = new Set();
     const nodesToProcess: BaseNode[] = [];
     const idMap = new IdMap();

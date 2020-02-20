@@ -7,7 +7,7 @@ import {
     GeneratorConfig,
     RandomStringGeneratorConfig
 } from "../Inspector/GeneratorConfig";
-import {plainToClassFromExist, plainToClass, classToPlain, Type} from "class-transformer";
+import {classToPlain, Type} from "class-transformer";
 import "reflect-metadata";
 
 export class dataToGenerateClass {
