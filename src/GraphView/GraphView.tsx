@@ -145,12 +145,13 @@ export class GraphView extends React.Component<IProps, IState> {
         this.addNode(event.dataTransfer.getData("tdgt-node-type"), point);
     }
 
-    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null):any => {
         const startNode = this.state.startNode;
         if (startNode) {
-            const story = ConvertGraphToStory("Rail", 1, startNode);
-            console.log(JSON.stringify(story));
+            return ConvertGraphToStory("Rail", 1, startNode)
         }
+        return {}
+
     }
 
     public importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {

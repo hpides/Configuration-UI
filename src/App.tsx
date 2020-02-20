@@ -34,11 +34,13 @@ class App extends React.Component<{}, IState> {
 
     };
     public export = ():string => {
-        React.Children.forEach(this.props.children,(child, index) => {
-            console.log(child)
-        });
+        const stories:any[] = [];
+        this.graphViews.forEach(graphView => stories.push(graphView.exportNodes(null)));
+        console.log(JSON.stringify(stories));
         return "";
-    }
+    };
+
+    private readonly graphViews: Set<GraphView> = new Set<GraphView>();
 
     public render() {
         console.log("Render");
@@ -53,7 +55,7 @@ class App extends React.Component<{}, IState> {
             case Views.UserStories:
                 console.log("Created new graphView");
                 view = <div>
-                    {Array.from(this.state.stories).map(story => <div style={this.state.currentStory === story? {visibility: "visible"}:{visibility: "hidden"}}><GraphView story={story}/></div>)}
+                    {Array.from(this.state.stories).map(story => <div style={this.state.currentStory === story? {visibility: "visible"}:{visibility: "hidden"}}><GraphView story={story} ref={ref => {if(ref){this.graphViews.add(ref)}}}/></div>)}
                 </div>;
                 break;
             default:
@@ -65,7 +67,7 @@ class App extends React.Component<{}, IState> {
         return (
             <div className="App">
                 <header className="App-header">
-                    <h1>TDGT Configuration</h1>
+                    <h1>TDGT Configuration</h1><button onClick={this.export}>Export</button>
                     <img src={logo} className="App-logo" alt="logo"/>
                 </header>
                 <div className="content">
@@ -74,7 +76,7 @@ class App extends React.Component<{}, IState> {
                         {view}
                     </div>
                 </div>
-                
+
             </div>
         );
     }
