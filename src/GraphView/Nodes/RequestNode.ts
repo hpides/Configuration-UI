@@ -8,21 +8,18 @@ interface IBasicAuth {
 }
 
 export class RequestNode extends Node {
-    protected attributes: { [key: string]: any};
     
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
 
-        this.attributes = {
-            "name" : "Request",
-            "repeat" : "1",
-            "verb" : "GET",
-            "addr" : "",
-            "requestJSONObject" : "",
-            "responseJSONObject" : "",
-            "requestParams" : "",
-            "basicAuth" : null,
-        };
+        this.attributes.name = "Request";
+        this.attributes.repeat="1";
+        this.attributes.verb="GET";
+        this.attributes.addr="";
+        this.attributes.requestJSONObject="";
+        this.attributes.responseJSONObject="";
+        this.attributes.requestParams="";
+        this.attributes.basicAuth=null;
     }
 
     getAtomType(): AtomType {

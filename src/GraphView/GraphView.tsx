@@ -20,9 +20,9 @@ import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { RequestNode } from './Nodes/RequestNode';
 import { DelayNode } from './Nodes/DelayNode';
 import { Inspector } from './Inspector';
-import { ConvertGraphToStory } from './ConfigJson';
+import { ConvertGraphToStory, ConvertStoryToGraph } from './ConfigJson';
 import { WarmupEndNode } from './Nodes/WarmupEndNode';
-
+import { LinkModel} from '@projectstorm/react-diagrams-core';
 
 interface Props {}
 
@@ -52,7 +52,9 @@ export class GraphView extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        this.setState({ startNode: this.addNode("START") as StartNode });
+        const start = this.addNode("START");
+        this.setState({ startNode: start as StartNode });
+
     }
 
     handleSelectionChanged = (event: BaseEvent) => {
@@ -137,8 +139,38 @@ export class GraphView extends React.Component<Props, State> {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
-            console.log(JSON.stringify(story));
+           console.log(JSON.stringify(story));
         }
+    }
+
+    importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>):void => {
+        const json = prompt("JSON please: ","{}");
+        const deserializedStory = JSON.parse(json ||  "{}");
+        const nodes : {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(deserializedStory);
+        this.setState({nodes: []})
+
+
+
+        for(let node of nodes.nodes){
+            node.registerListener({
+                selectionChanged: this.handleSelectionChanged
+            });
+            this.model.addNode(node);
+            this.state.nodes.push(node);
+        }
+
+        for(let link of nodes.links){
+            this.model.addLink(link)
+        }
+
+        if(this.state.startNode){
+            this.model.removeNode(this.state.startNode)
+        }
+        if(nodes.startNode) {
+            this.setState({startNode: nodes.startNode});
+        }
+        this.setState({nodes: this.state.nodes});
+        this.forceUpdate()
     }
 
     render() {
@@ -161,6 +193,7 @@ export class GraphView extends React.Component<Props, State> {
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
                 <button className="exportButton" onClick={this.exportNodes}>Export</button>
+                <button className="importButton" onClick={this.importNodes}>Import</button>
                 {inspector}
                 
             </div>

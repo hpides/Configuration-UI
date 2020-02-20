@@ -1,9 +1,15 @@
 import { StartNode } from "./../Nodes/StartNode";
+import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import Dictionary from "./Dictionary";
-import { DataGenerationNode } from "../Nodes/DataGenerationNode";
-import { notEqual } from "assert";
-
+import {DataGenerationNode, dataToGenerateClass} from "../Nodes/DataGenerationNode";
+import { Point } from '@projectstorm/geometry';
+import { DefaultPortModel } from '@projectstorm/react-diagrams-defaults';
+import { LinkModel} from '@projectstorm/react-diagrams-core';
+import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
+import {RequestNode} from "../Nodes/RequestNode";
+import {WarmupEndNode} from "../Nodes/WarmupEndNode";
+import {DelayNode} from "../Nodes/DelayNode";
 export interface ITest {
     repeat: number;
     scaleFactor: number;
@@ -24,7 +30,8 @@ interface IBaseAtom {
     repeat: number;
     successors: number[];
     type: AtomType;
-
+    x: number,
+    y: number
 
 }
 
@@ -32,6 +39,7 @@ interface IDataGenerationAtom extends IBaseAtom {
     name: string;
     table: string;
     data: string[];
+    dataToGenerate: string;
 }
 
 type HTTPVerb = "POST" | "GET";
@@ -97,26 +105,97 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
     } as IStory;
 }
 
-function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): IBaseAtom[] {
-    let atoms: IBaseAtom[] = [];
+export function ConvertStoryToGraph(deserializedStory:any) : {nodes: Node[], startNode: StartNode | null, links: LinkModel[]}{
+    const ret:Node[] = [];
+    const links : LinkModel[] = [];
+    let startNode: StartNode|null = null;
+    for(let currentAtom of deserializedStory.atoms){
+
+        const type = currentAtom.type;
+        let node:Node;
+        const nodeOptions: DefaultNodeModelOptions = {
+            name: type.toString(),
+            color: 'rgb(0,192,255)',
+        };
+        switch(type) {
+            case "START":
+                node = new StartNode(nodeOptions);
+                //one can assume there is maximum one
+                startNode = node;
+                break;
+            case "DATA_GENERATION":
+                node = new DataGenerationNode(nodeOptions);
+                break;
+            case "REQUEST":
+                node = new RequestNode(nodeOptions);
+                break;
+            case "DELAY":
+                node = new DelayNode(nodeOptions);
+                break;
+            case "WARMUP_END":
+                node = new WarmupEndNode(nodeOptions);
+                break;
+            default:
+                console.error("Error adding node: unknown type ", type);
+                return {nodes: [], links: [], startNode: null};
+        }
+        node.setPosition({x: currentAtom.x, y: currentAtom.y} as Point)
+        applyAttributes(node, currentAtom);
+        ret.push(node);
+    }
+
+    //need to deserialize all nodes, else a successor might not have been deserialized yet
+    for(let i = 0; i < ret.length; i++){
+        const serializedAtom = deserializedStory.atoms[i];
+        const constructedNode = ret[i];
+        for(let successorID of serializedAtom.successors){
+            let targetNode:Node|null = null;
+            for(let currentAtom of ret){
+                if(currentAtom.getAttribute("id") === successorID){
+                    targetNode = currentAtom;
+                }
+            }
+            if(!targetNode){
+                console.error("Target node not found: "+successorID);
+                return {nodes: [], links: [], startNode: null};
+            }
+            const link = (constructedNode!.getPort("Out")! as DefaultPortModel).link((targetNode.getPort("In")! as DefaultPortModel));
+            links.push(link!);
+        }
+    }
+
+
+    return {nodes: ret, links: links, startNode: startNode};
+}
+
+function applyAttributes(target: Node, source: any){
+    for(let property in source){
+        target.setAttribute(property, source[property])
+    }
+}
+
+
+function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): IDataGenerationAtom[] {
+    let atoms: IDataGenerationAtom[] = [];
 
     const dataToGenerate = node.dataToGenerate;
-
-    if (Object.keys(dataToGenerate).length === 0) {
+    if (Array.from(node.dataToGenerate.value.keys()).length === 0) {
         return [{
             ...baseAtomObj,
             name: node.getAttribute("name"),
             table: "",
             data: [],
-        } as IDataGenerationAtom];
+            dataToGenerate: node.getAttribute("dataToGenerate")
+        }];
     }
 
     /*
      * Create Atom for new data
      */
     let keys: string[] = [];
-    for (const key of Object.keys(dataToGenerate)) {
-        let genConfig = dataToGenerate[key];
+    for (const key of Array.from(node.dataToGenerate.value.keys())) {
+        let genConfig = dataToGenerate.value.get(key)!;
+
         if (genConfig.getTypeString() === "EXISTING") {
             continue;
         }
@@ -125,22 +204,22 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     }
     // To-Do : generate unique table name
     let tableName: string = "abcdef";
-    
     if (keys.length > 0) {
         atoms.push({
             ...baseAtomObj,
             name: node.getAttribute("name"),
             table: tableName,
             data: keys,
-        } as IDataGenerationAtom);
+            dataToGenerate: node.getAttribute("dataToGenerate")
+        });
     }
 
     /*
      * Create Atoms for data
      * to be read from existing XML
      */
-    for (const key of Object.keys(dataToGenerate)) {
-        let genConfig = dataToGenerate[key];
+    for (const key of Array.from(node.dataToGenerate.value.keys())) {
+        let genConfig = dataToGenerate.value.get(key)!;
         if (genConfig.getTypeString() !== "EXISTING") {
             continue;
         }
@@ -149,8 +228,9 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
             ...baseAtomObj,
             name: node.getAttribute("name"),
             table: genConfig.getAttribute("table"),
-            data: [key]
-        } as IDataGenerationAtom;
+            data: [key],
+            dataToGenerate: node.getAttribute("dataToGenerate")
+        };
 
         if (atoms.length > 0) {
             let id = idMap.mapId(node.getID() + key);
@@ -158,12 +238,12 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
 
             newAtom.id = id;
         }
-
         atoms.push(newAtom);
     }
-
-    atoms[atoms.length-1].successors = baseAtomObj.successors;
-    
+    // in case there are no data yet, this will throw exception
+    if(atoms.length > 1) {
+        atoms[atoms.length - 1].successors = baseAtomObj.successors;
+    }
     return atoms;
 }
 
@@ -188,13 +268,16 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
         id: idMap.mapId(node.getID()),
         repeat: 1,
         successors: successors,
-        type: type
+        type: type,
+        x: node.getX(),
+        y: node.getY()
     } as IBaseAtom
 
     // insert additional data
     switch (type) {
         case "DATA_GENERATION":
-            return ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
+            const ret = ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
+            return ret;
         case "DELAY":
             return [{
                 ...baseAtomObj,

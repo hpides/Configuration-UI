@@ -4,7 +4,12 @@ import { Node } from './Nodes/Node';
 import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { GeneratorAdder } from './Inspector/GeneratorAdder';
 import { timingSafeEqual } from 'crypto';
-import { GeneratorConfig } from './Inspector/GeneratorConfig';
+import {
+    EMailGeneratorConfig,
+    ExistingDataConfig,
+    GeneratorConfig,
+    RandomStringGeneratorConfig
+} from './Inspector/GeneratorConfig';
 import { RequestNode } from './Nodes/RequestNode';
 import { AuthAdder } from './Inspector/AuthAdder';
 
@@ -89,13 +94,13 @@ export class Inspector extends React.Component<Props, State> {
 
         let rows: JSX.Element[] = [];
 
-        let keys = Object.keys(node.dataToGenerate);
+        let keys = Array.from(node.dataToGenerate.value.keys());
 
         for (let i = 0; i < keys.length; i++) {
             rows.push(
                 <tr>
                     <td>{keys[i]}</td>
-                    <td>{node.dataToGenerate[keys[i]].getTypeString()}</td>
+                    <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
                 </tr>
             )
         }
@@ -138,8 +143,8 @@ export class Inspector extends React.Component<Props, State> {
                 >{buttonString}</button>;
                 inputs.push(label);
                 inputs.push(authButton);
-
-            } else {
+            //users should not enter IDs or dataToGenerate, this is handled in the background
+            } else if(!(key === "id" || key === "dataToGenerate")){
 
                 let input = <input
                     type="text"
