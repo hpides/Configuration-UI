@@ -1,6 +1,5 @@
 import React from 'react'
 import './Testconfig.css'
-import { RightAngleLinkFactory } from '@projectstorm/react-diagrams';
 
 interface Props {}
 

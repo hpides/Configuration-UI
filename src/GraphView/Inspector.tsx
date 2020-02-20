@@ -3,13 +3,7 @@ import './Inspector.css'
 import { Node } from './Nodes/Node';
 import { DataGenerationNode } from './Nodes/DataGenerationNode';
 import { GeneratorAdder } from './Inspector/GeneratorAdder';
-import { timingSafeEqual } from 'crypto';
-import {
-    EMailGeneratorConfig,
-    ExistingDataConfig,
-    GeneratorConfig,
-    RandomStringGeneratorConfig
-} from './Inspector/GeneratorConfig';
+import {GeneratorConfig} from './Inspector/GeneratorConfig';
 import { RequestNode } from './Nodes/RequestNode';
 import { AuthAdder } from './Inspector/AuthAdder';
 
@@ -97,10 +91,11 @@ export class Inspector extends React.Component<Props, State> {
         let keys = Array.from(node.dataToGenerate.value.keys());
 
         for (let i = 0; i < keys.length; i++) {
+            //react needs a key element for every tr
             rows.push(
-                <tr>
+                <tr  key={i}>
                     <td>{keys[i]}</td>
-                    <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
+                    <td >{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
                 </tr>
             )
         }
@@ -108,11 +103,13 @@ export class Inspector extends React.Component<Props, State> {
         return (
             <div className="data-generation-table">
                 <table>
+                    <tbody>
                     <tr>
                         <th>Key</th>
                         <th>Generator</th>
                     </tr>
                     {rows}
+                    </tbody>
                 </table>
                 <button
                     onClick={this.addGenerator}
@@ -127,7 +124,7 @@ export class Inspector extends React.Component<Props, State> {
 
         for (let i = 0; i < node.getKeys().length; i++) {
             let key = node.getKeys()[i];
-            let label = <label>
+            let label = <label key={key}>
                 {key}
             </label>
 
@@ -138,7 +135,7 @@ export class Inspector extends React.Component<Props, State> {
                 if (authObject) {
                     buttonString = authObject["user"] + ":" + authObject["password"];
                 }
-                let authButton = <button
+                let authButton = <button key={i}
                     onClick={this.addAuth}
                 >{buttonString}</button>;
                 inputs.push(label);
@@ -146,7 +143,7 @@ export class Inspector extends React.Component<Props, State> {
             //users should not enter IDs or dataToGenerate, this is handled in the background
             } else if(!(key === "id" || key === "dataToGenerate")){
 
-                let input = <input
+                let input = <input key={i}
                     type="text"
                     name={key}
                     value={node.getAttribute(key)}

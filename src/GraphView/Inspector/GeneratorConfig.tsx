@@ -1,5 +1,4 @@
 import React from 'react'
-import {Type} from "class-transformer";
 import "reflect-metadata";
 
 export abstract class GeneratorConfig {
