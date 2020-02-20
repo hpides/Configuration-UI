@@ -57,7 +57,6 @@ export class GraphView extends React.Component<IProps, IState> {
         this.engine.setModel(this.model);
 
         this.engine.getActionEventBus().registerAction(this.deleteAction);
-        this.engine.getActionEventBus().deregisterAction(this.deleteAction);
     }
 
     public componentDidMount() {
@@ -75,7 +74,6 @@ export class GraphView extends React.Component<IProps, IState> {
 
         nodes.forEach((node: Node) => {
             if (node.isSelected()) {
-                this.engine.getActionEventBus().deregisterAction(this.deleteAction);
                 this.setState({selectedNode: node});
                 return;
             }

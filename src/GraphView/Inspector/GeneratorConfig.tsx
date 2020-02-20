@@ -3,11 +3,23 @@ import "reflect-metadata";
 /*tslint:disable:max-classes-per-file*/
 /* tslint:disable:variable-name ... */
 export abstract class GeneratorConfig {
+    get keyhandler(): { enableDeleteKey: () => void; disableDeleteKey: () => void } {
+        return this._keyhandler;
+    }
 
     public abstract __type: string;
     protected attributes: { [key: string]: any};
-    constructor() {
 
+
+    private _keyhandler: {
+        enableDeleteKey: ()=>void
+        disableDeleteKey: () => void,
+    };
+    constructor(disableDeleteKey: () => void, enableDeleteKey: ()=>void) {
+        this._keyhandler = {
+            enableDeleteKey,
+            disableDeleteKey
+        };
         this.attributes = {
         };
     }
@@ -52,8 +64,8 @@ export abstract class GeneratorConfig {
 
 export class EMailGeneratorConfig extends GeneratorConfig {
     public __type = "EMAIL";
-    constructor() {
-        super();
+    constructor(disableDeleteKey: () => void, enableDeleteKey: ()=>void) {
+        super(disableDeleteKey, enableDeleteKey);
 
         this.attributes = {
             characters: "10",
@@ -69,9 +81,9 @@ export class EMailGeneratorConfig extends GeneratorConfig {
         return(
             <div className="generator-config">
                 <label>Domain:</label>
-                <input type="text" name="domain" onChange={this.inputChanged} />
+                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey} type="text" name="domain" onChange={this.inputChanged} />
                 <label>Characters: </label>
-                <input type="text" name="characters" onChange={this.inputChanged} />
+                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey} type="text" name="characters" onChange={this.inputChanged} />
             </div>
         );
     }
@@ -79,8 +91,8 @@ export class EMailGeneratorConfig extends GeneratorConfig {
 
 export class ExistingDataConfig extends GeneratorConfig {
     public __type = "EXISTING";
-    constructor() {
-        super();
+    constructor(disableDeleteKey: () => void, enableDeleteKey: ()=>void) {
+        super(disableDeleteKey, enableDeleteKey);
 
         this.attributes = {
             table: "",
@@ -95,7 +107,7 @@ export class ExistingDataConfig extends GeneratorConfig {
         return(
             <div className="generator-config">
                 <label>Read from Table:</label>
-                <input type="text" name="table" onChange={this.inputChanged} />
+                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey} type="text" name="table" onChange={this.inputChanged} />
             </div>
         );
     }
@@ -103,8 +115,8 @@ export class ExistingDataConfig extends GeneratorConfig {
 
 export class RandomStringGeneratorConfig extends GeneratorConfig {
     public __type = "RANDOM_STRING";
-    constructor() {
-        super();
+    constructor(disableDeleteKey: () => void, enableDeleteKey: ()=>void) {
+        super(disableDeleteKey, enableDeleteKey);
 
         this.attributes = {
             maxChars: "10",
@@ -119,7 +131,7 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
         return(
             <div className="generator-config">
                 <label>Maximum Characters:</label>
-                <input type="text" name="maxChars" onChange={this.inputChanged} />
+                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey} type="text" name="maxChars" onChange={this.inputChanged} />
             </div>
         );
     }

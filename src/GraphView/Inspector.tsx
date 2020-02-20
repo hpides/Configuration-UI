@@ -165,6 +165,8 @@ export class Inspector extends React.Component<IProps, IState> {
         let generatorAdder;
         if (this.state.addingGenerator) {
             generatorAdder = <GeneratorAdder
+                enableDeleteKey={this.props.enableDeleteKey}
+                disableDeleteKey={this.props.disableDeleteKey}
                 onAdd={this.handleAddGeneratorDialog}
                 onCancel={this.handleCancelGeneratorDialog}
             />;
@@ -173,6 +175,8 @@ export class Inspector extends React.Component<IProps, IState> {
         let authAdder;
         if (this.state.addingAuth) {
             authAdder = <AuthAdder
+                enableDeleteKey={this.props.enableDeleteKey}
+                disableDeleteKey={this.props.disableDeleteKey}
                 onAdd={this.handleAddAuthDialog}
                 onCancel={this.handleCancelAuthDialog}
                 auth={this.props.node.getAttribute("basicAuth")}
