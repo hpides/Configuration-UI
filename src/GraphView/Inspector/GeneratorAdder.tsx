@@ -1,32 +1,32 @@
-import React from 'react'
-import './GeneratorAdder.css'
-import { GeneratorConfig } from './GeneratorConfig';
-import { RandomStringGeneratorConfig } from './GeneratorConfig';
-import { EMailGeneratorConfig } from './GeneratorConfig';
-import { ExistingDataConfig } from './GeneratorConfig';
+import React from "react";
+import "./GeneratorAdder.css";
+import { GeneratorConfig } from "./GeneratorConfig";
+import { RandomStringGeneratorConfig } from "./GeneratorConfig";
+import { EMailGeneratorConfig } from "./GeneratorConfig";
+import { ExistingDataConfig } from "./GeneratorConfig";
 
-interface Props {
-    onAdd: (name: string, genConfig: GeneratorConfig) => void,
-    onCancel: () => void,
+interface IProps {
+    onAdd: (name: string, genConfig: GeneratorConfig) => void;
+    onCancel: () => void;
 }
 
-interface State {
-    name: string,
-    genConfig: GeneratorConfig
+interface IState {
+    name: string;
+    genConfig: GeneratorConfig;
 }
 
-export class GeneratorAdder extends React.Component<Props, State> {
+export class GeneratorAdder extends React.Component<IProps, IState> {
     constructor(props: any) {
         super(props);
 
         this.state = {
-            name: "",
             genConfig: new RandomStringGeneratorConfig(),
-        }
+            name: "",
+        };
     }
 
-    inputChanged = (event: any) => {
-        
+    public inputChanged = (event: any) => {
+
         switch (event.currentTarget.name) {
             case "name":
                 this.setState({name: event.currentTarget.value});
@@ -48,16 +48,16 @@ export class GeneratorAdder extends React.Component<Props, State> {
 
     }
 
-    doneButtonClicked = () => {
+    public doneButtonClicked = () => {
         this.props.onAdd(this.state.name, this.state.genConfig);
     }
 
-    cancelButtonClicked = () => {
+    public cancelButtonClicked = () => {
         this.props.onCancel();
     }
 
-    render() {
-        
+    public render() {
+
         return (
             <div className="generator-adder-container">
                 <div className="generator-adder-background"></div>

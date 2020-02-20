@@ -1,41 +1,41 @@
-import React from 'react'
-import './AuthAdder.css'
+import React from "react";
+import "./AuthAdder.css";
 
 interface IBasicAuth {
     user: string;
     password: string;
 }
 
-interface Props {
-    onAdd: (user: string, password: string) => void,
-    onCancel: () => void,
-    auth: IBasicAuth,
+interface IProps {
+    onAdd: (user: string, password: string) => void;
+    onCancel: () => void;
+    auth: IBasicAuth;
 }
 
-interface State {
-    user: string,
-    password: string,
+interface IState {
+    user: string;
+    password: string;
 }
 
-export class AuthAdder extends React.Component<Props, State> {
+export class AuthAdder extends React.Component<IProps, IState> {
     constructor(props: any) {
         super(props);
 
         if (this.props.auth) {
             this.state = {
+                password: this.props.auth.password,
                 user: this.props.auth.user,
-                password: this.props.auth.password
-            }
+            };
         } else {
             this.state = {
+                password: "",
                 user: "",
-                password: ""
-            }
+            };
         }
     }
 
-    inputChanged = (event: any) => {
-        
+    public inputChanged = (event: any) => {
+
         switch (event.currentTarget.name) {
             case "user":
                 this.setState({user: event.currentTarget.value});
@@ -47,16 +47,16 @@ export class AuthAdder extends React.Component<Props, State> {
 
     }
 
-    doneButtonClicked = () => {
+    public doneButtonClicked = () => {
         this.props.onAdd(this.state.user, this.state.password);
     }
 
-    cancelButtonClicked = () => {
+    public cancelButtonClicked = () => {
         this.props.onCancel();
     }
 
-    render() {
-        
+    public render() {
+
         return (
             <div className="auth-adder-container">
                 <div className="auth-adder-background"></div>
