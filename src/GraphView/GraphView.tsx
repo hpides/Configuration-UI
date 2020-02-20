@@ -22,6 +22,7 @@ import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
+import { create } from "xmlbuilder2";
 
 interface IState {
     nodes: Node[];
@@ -137,7 +138,12 @@ export class GraphView extends React.Component<{}, IState> {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
-            console.log(JSON.stringify(story));
+            console.log(JSON.stringify(story.story));
+            const root = create().ele('schema');
+            for (const table of story.pdgfTables) {
+                root.import(table);
+            }
+            console.log(root.end({prettyPrint:true}));
         }
     }
 
