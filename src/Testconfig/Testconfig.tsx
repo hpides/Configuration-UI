@@ -1,6 +1,6 @@
+import {plainToClassFromExist} from "class-transformer";
 import React from "react";
 import "./Testconfig.css";
-import {plainToClassFromExist} from "class-transformer";
 
 interface IState {
     activeInstancesPerSecond: string;
@@ -29,15 +29,15 @@ export class Testconfig extends React.Component<{}, IState> {
             repeat : localStorage.getItem("repeat") || "",
             scaleFactor : localStorage.getItem("scaleFactor") || "",
         });
-    };
-
-    public import(state: any){
-        this.setState(plainToClassFromExist(this.state, state))
     }
 
-    public export= ():IState =>{
-        return this.state
-    };
+    public import(state: any) {
+        this.setState(plainToClassFromExist(this.state, state));
+    }
+
+    public export = (): IState => {
+        return this.state;
+    }
 
     public render() {
         return (

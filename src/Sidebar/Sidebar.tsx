@@ -80,7 +80,7 @@ export class Sidebar extends React.Component<IProps, IState> {
                             <br/>
                             <br/>
                             <br/>
-                        </div>
+                        </div>,
                     )
                 }
                 <input type="text" value={this.state.currentlyAddStory} onChange={this.handleInput} className="newStoryTextField"/> <button onClick={(event) => this.addStory(this.state.currentlyAddStory)}>Add story</button>

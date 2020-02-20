@@ -48,7 +48,7 @@ export class GraphView extends React.Component<IProps, IState> {
 
         this.state = {
             nodes: [],
-            visible: [true]
+            visible: [true],
         };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});
@@ -152,9 +152,9 @@ export class GraphView extends React.Component<IProps, IState> {
         }
         return {};
 
-    };
+    }
 
-    public getStory = ():string => {
+    public getStory = (): string => {
         return this.props.story;
     }
 
@@ -182,11 +182,11 @@ export class GraphView extends React.Component<IProps, IState> {
         }
         this.setState({nodes: this.state.nodes});
         this.forceUpdate();
-    };
+    }
 
-    public setVisibility(visible:boolean):void{
+    public setVisibility(visible: boolean): void {
         // can not use setState here since this method is called during render. So use the array as wrapper and mutate it
-        this.state.visible[0] = visible
+        this.state.visible[0] = visible;
     }
 
     public render() {
@@ -198,7 +198,7 @@ export class GraphView extends React.Component<IProps, IState> {
             />;
         }
         return (
-            <div id="graphview" style={this.state.visible[0]? {visibility: "visible"}:{visibility: "hidden"}}>
+            <div id="graphview" style={this.state.visible[0] ? {visibility: "visible"} : {visibility: "hidden"}}>
                 <div className="container"
                     onDrop={this.handleDrop}
                     onDragOver={(event) => {

@@ -25,7 +25,6 @@ class App extends React.Component<{}, IState> {
 
     private testConfig: Testconfig | null = null;
 
-
     constructor(props: any) {
         super(props);
         this.state = {
@@ -45,21 +44,21 @@ class App extends React.Component<{}, IState> {
     public export = (): string => {
         const stories: any[] = [];
         this.graphViews.forEach((graphView) => stories.push(graphView.exportNodes(null)));
-        const testConfigJSON:any = {};
+        const testConfigJSON: any = {};
         if (this.testConfig) {
             const testConfigState = this.testConfig.export();
-            testConfigJSON["repeat"] = testConfigState.repeat;
-            testConfigJSON["scaleFactor"] = testConfigState.scaleFactor;
-            testConfigJSON["activeInstancesPerSecond"] = testConfigState.activeInstancesPerSecond;
-            testConfigJSON["maximumConcurrentRequests"] = testConfigState.maximumConcurrentRequests;
+            testConfigJSON.repeat = testConfigState.repeat;
+            testConfigJSON.scaleFactor = testConfigState.scaleFactor;
+            testConfigJSON.activeInstancesPerSecond = testConfigState.activeInstancesPerSecond;
+            testConfigJSON.maximumConcurrentRequests = testConfigState.maximumConcurrentRequests;
         }
-        testConfigJSON["stories"]  = stories;
+        testConfigJSON.stories  = stories;
         console.log(JSON.stringify(testConfigJSON));
         return "";
     }
 
     public import = (testConfig: any): void => {
-        const stories : any[] = testConfig.stories;
+        const stories: any[] = testConfig.stories;
         for (const story of stories) {
             // this creates the respective graph view
             this.state.stories.add(story.name);
@@ -80,9 +79,9 @@ class App extends React.Component<{}, IState> {
     }
 
     public render() {
-        this.graphViews.forEach(view => {
+        this.graphViews.forEach((view) => {
             view.setVisibility(this.state.currentView === Views.UserStories && view.getStory() === this.state.currentStory);
-            console.log(this.state.currentView +"  "+ view.getStory());
+            console.log(this.state.currentView + "  " + view.getStory());
         });
         return (
             <div className="App">
@@ -105,7 +104,7 @@ class App extends React.Component<{}, IState> {
                             <ApisEditor/></div>
                         <div
                             style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden"}}>
-                            <Testconfig ref={ref => this.testConfig = ref}/>
+                            <Testconfig ref={(ref) => this.testConfig = ref}/>
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden"}}>
