@@ -8,6 +8,8 @@ import { ExistingDataConfig } from "./GeneratorConfig";
 interface IProps {
     onAdd: (name: string, genConfig: GeneratorConfig) => void;
     onCancel: () => void;
+    disableDeleteKey: () => void;
+    enableDeleteKey: () => void;
 }
 
 interface IState {
@@ -20,7 +22,7 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            genConfig: new RandomStringGeneratorConfig(),
+            genConfig: new RandomStringGeneratorConfig(this.props.disableDeleteKey, this.props.enableDeleteKey),
             name: "",
         };
     }
@@ -34,13 +36,16 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
             case "generator":
                 switch (event.currentTarget.value) {
                     case "RANDOM_STRING":
-                        this.setState({genConfig: new RandomStringGeneratorConfig()});
+                        this.setState({genConfig: new RandomStringGeneratorConfig(this.props.disableDeleteKey,
+                                this.props.enableDeleteKey)});
                         break;
                     case "E_MAIL":
-                        this.setState({genConfig: new EMailGeneratorConfig()});
+                        this.setState({genConfig: new EMailGeneratorConfig(this.props.disableDeleteKey,
+                                this.props.enableDeleteKey)});
                         break;
                     case "EXISTING":
-                        this.setState({genConfig: new ExistingDataConfig()});
+                        this.setState({genConfig: new ExistingDataConfig(this.props.disableDeleteKey,
+                                this.props.enableDeleteKey)});
                         break;
                 }
                 break;
@@ -50,9 +55,13 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
 
     public doneButtonClicked = () => {
         this.props.onAdd(this.state.name, this.state.genConfig);
+        // left menu --> should be allowed to delete again
+        this.props.enableDeleteKey();
     }
 
     public cancelButtonClicked = () => {
+        // left menu --> should be allowed to delete again
+        this.props.enableDeleteKey();
         this.props.onCancel();
     }
 
@@ -67,6 +76,7 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                         type="text"
                         name="name"
                         onChange={this.inputChanged}
+                        onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
                     />
                     <div className="select-wrapper">
                         <select

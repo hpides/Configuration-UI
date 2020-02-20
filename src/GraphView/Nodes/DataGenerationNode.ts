@@ -28,6 +28,16 @@ export class DataGenerationNode extends Node {
 
     private _dataToGenerate: DataToGenerate = new DataToGenerate(new Map<string, GeneratorConfig>());
 
+    private keyhandler: {
+        disableDeleteKey: () => void,
+        enableDeleteKey: () => void,
+    } = {disableDeleteKey: () => {
+            // do nothing because there is not view which can disable the delete key
+        },
+        enableDeleteKey: () => {
+            // do nothing because there is not view which can enable the delete key
+        } };
+
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
 
@@ -49,13 +59,16 @@ export class DataGenerationNode extends Node {
                 const current = parsed.value[key];
                 switch (current.__type) {
                     case "EMAIL":
-                        conf = new EMailGeneratorConfig();
+                        conf = new EMailGeneratorConfig(this.keyhandler.disableDeleteKey,
+                            this.keyhandler.enableDeleteKey);
                         break;
                     case "EXISTING":
-                        conf = new ExistingDataConfig();
+                        conf = new ExistingDataConfig(this.keyhandler.disableDeleteKey,
+                            this.keyhandler.enableDeleteKey);
                         break;
                     case "RANDOM_STRING":
-                        conf = new RandomStringGeneratorConfig();
+                        conf = new RandomStringGeneratorConfig(this.keyhandler.disableDeleteKey,
+                            this.keyhandler.enableDeleteKey);
                         break;
                     default:
                         alert("Can not deserialize a " + current.__type);
@@ -70,6 +83,8 @@ export class DataGenerationNode extends Node {
     }
 
     public addData(name: string, genConfig: GeneratorConfig) {
+        // generator config has to have valid handlers
+        this.keyhandler = genConfig.keyhandler;
         this._dataToGenerate.value.set(name, genConfig);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
