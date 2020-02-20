@@ -10,8 +10,8 @@ interface IProps {
     onAdd: (user: string, password: string) => void;
     onCancel: () => void;
     auth: IBasicAuth;
-    disableDeleteKey: ()=>void
-    enableDeleteKey: ()=>void
+    disableDeleteKey: () => void;
+    enableDeleteKey: () => void;
 }
 
 interface IState {

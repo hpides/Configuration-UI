@@ -74,8 +74,8 @@ class App extends React.Component<{}, IState> {
             const views = Array.from(this.graphViews);
             for (let i = 0; i < views.length; i++) {
                 views[i].importNodes(stories[i]);
-                //else all nodes are visible for a moment
-                views[i].setVisibility(false)
+                // else all nodes are visible for a moment
+                views[i].setVisibility(false);
             }
         });
     }

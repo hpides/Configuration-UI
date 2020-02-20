@@ -66,7 +66,7 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public handleSelectionChanged = (event: BaseEvent) => {
-        //user might have clicked away from the inspector --> re-enable backspace
+        // user might have clicked away from the inspector --> re-enable backspace
         this.enableDeleteKey();
         const nodes = this.state.nodes;
 
@@ -191,15 +191,15 @@ export class GraphView extends React.Component<IProps, IState> {
         this.state.visible[0] = visible;
     }
 
-    //used by inspector to disable and re-enable backspace key when typing
+    // used by inspector to disable and re-enable backspace key when typing
 
-    public disableDeleteKey = ():void =>{
-        this.engine.getActionEventBus().deregisterAction(this.deleteAction)
-    };
+    public disableDeleteKey = (): void => {
+        this.engine.getActionEventBus().deregisterAction(this.deleteAction);
+    }
 
-    public enableDeleteKey = ():void =>{
-        this.engine.getActionEventBus().registerAction(this.deleteAction)
-    };
+    public enableDeleteKey = (): void => {
+        this.engine.getActionEventBus().registerAction(this.deleteAction);
+    }
 
     public render() {
         let inspector;
