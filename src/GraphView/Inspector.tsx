@@ -1,3 +1,4 @@
+import {DiagramModel} from "@projectstorm/react-diagrams";
 import React from "react";
 import "./Inspector.css";
 import { AuthAdder } from "./Inspector/AuthAdder";
@@ -6,10 +7,12 @@ import {GeneratorConfig} from "./Inspector/GeneratorConfig";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
 import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
-
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
     node: Node;
+    model: DiagramModel;
+    disableDeleteKey: () => void;
+    enableDeleteKey: () => void;
 }
 
 interface IState {
@@ -143,7 +146,7 @@ export class Inspector extends React.Component<IProps, IState> {
             // users should not enter IDs or dataToGenerate, this is handled in the background
             } else if (!(key === "id" || key === "dataToGenerate")) {
 
-                const input = <input key={i}
+                const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                     type="text"
                     name={key}
                     value={node.getAttribute(key)}
@@ -160,6 +163,8 @@ export class Inspector extends React.Component<IProps, IState> {
         let generatorAdder;
         if (this.state.addingGenerator) {
             generatorAdder = <GeneratorAdder
+                enableDeleteKey={this.props.enableDeleteKey}
+                disableDeleteKey={this.props.disableDeleteKey}
                 onAdd={this.handleAddGeneratorDialog}
                 onCancel={this.handleCancelGeneratorDialog}
             />;
@@ -168,6 +173,8 @@ export class Inspector extends React.Component<IProps, IState> {
         let authAdder;
         if (this.state.addingAuth) {
             authAdder = <AuthAdder
+                enableDeleteKey={this.props.enableDeleteKey}
+                disableDeleteKey={this.props.disableDeleteKey}
                 onAdd={this.handleAddAuthDialog}
                 onCancel={this.handleCancelAuthDialog}
                 auth={this.props.node.getAttribute("basicAuth")}

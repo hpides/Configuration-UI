@@ -24,22 +24,32 @@ import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
 import { create } from "xmlbuilder2";
 
-interface IState {
+interface IStory {
     nodes: Node[];
     startNode?: StartNode;
     selectedNode?: Node;
 }
+
+interface IState extends IStory {
+    visible: boolean[];
+}
+
+interface IProps {
+    story: string;
+}
+
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
-export class GraphView extends React.Component<{}, IState> {
+export class GraphView extends React.Component<IProps, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
-
-    constructor(props: any) {
+    private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
+    constructor(props: IProps) {
         super(props);
 
         this.state = {
             nodes: [],
+            visible: [true],
         };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});
@@ -47,7 +57,7 @@ export class GraphView extends React.Component<{}, IState> {
         this.model = new DiagramModel();
         this.engine.setModel(this.model);
 
-        this.engine.getActionEventBus().registerAction(new DeleteItemsAction({ keyCodes: [46]}));
+        this.engine.getActionEventBus().registerAction(this.deleteAction);
     }
 
     public componentDidMount() {
@@ -57,6 +67,8 @@ export class GraphView extends React.Component<{}, IState> {
     }
 
     public handleSelectionChanged = (event: BaseEvent) => {
+        // user might have clicked away from the inspector --> re-enable backspace
+        this.enableDeleteKey();
         const nodes = this.state.nodes;
 
         this.setState({selectedNode: undefined});
@@ -134,23 +146,31 @@ export class GraphView extends React.Component<{}, IState> {
         this.addNode(event.dataTransfer.getData("tdgt-node-type"), point);
     }
 
-    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null): any => {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
             console.log(JSON.stringify(story.story));
+
             const root = create().ele('schema');
             for (const table of story.pdgfTables) {
                 root.import(table);
             }
             console.log(root.end({prettyPrint:true}));
+
+            story.story.name = this.props.story;
+            return story.story;
         }
+        return {};
+
     }
 
-    public importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-        const json = prompt("JSON please: ", "{}");
-        const deserializedStory = JSON.parse(json ||  "{}");
-        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(deserializedStory);
+    public getStory = (): string => {
+        return this.props.story;
+    }
+
+    public importNodes = (story: any): void => {
+        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(story);
         this.setState({nodes: []});
 
         for (const node of nodes.nodes) {
@@ -175,16 +195,34 @@ export class GraphView extends React.Component<{}, IState> {
         this.forceUpdate();
     }
 
+    public setVisibility(visible: boolean): void {
+        // can not use setState here since this method is called during render. So use the array as wrapper and mutate it
+        this.state.visible[0] = visible;
+    }
+
+    // used by inspector to disable and re-enable backspace key when typing
+
+    public disableDeleteKey = (): void => {
+        this.engine.getActionEventBus().deregisterAction(this.deleteAction);
+    }
+
+    public enableDeleteKey = (): void => {
+        this.engine.getActionEventBus().registerAction(this.deleteAction);
+    }
+
     public render() {
         let inspector;
         if (this.state.selectedNode) {
             inspector = <Inspector
+                disableDeleteKey={this.disableDeleteKey}
+                enableDeleteKey={this.enableDeleteKey}
+                model={this.model}
                 onValueChanged={this.handleInspectorValueChanged}
                 node={this.state.selectedNode}
             />;
         }
         return (
-            <div id="graphview">
+            <div id="graphview" style={this.state.visible[0] ? {visibility: "visible"} : {visibility: "hidden"}}>
                 <div className="container"
                     onDrop={this.handleDrop}
                     onDragOver={(event) => {
@@ -194,10 +232,7 @@ export class GraphView extends React.Component<{}, IState> {
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
-                <button className="exportButton" onClick={this.exportNodes}>Export</button>
-                <button className="importButton" onClick={this.importNodes}>Import</button>
                 {inspector}
-
             </div>
         );
     }
