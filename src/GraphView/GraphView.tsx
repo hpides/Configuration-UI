@@ -30,7 +30,6 @@ interface IStory {
 }
 
 interface IState extends IStory{
-    readonly stories: Map<string, IStory>,
     currentStory: string
 }
 
@@ -49,7 +48,6 @@ export class GraphView extends React.Component<IProps, IState> {
 
         this.state = {
             nodes: [],
-            stories: new Map<string, IStory>(),
             currentStory: "default"
         };
 
@@ -148,16 +146,16 @@ export class GraphView extends React.Component<IProps, IState> {
     public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null):any => {
         const startNode = this.state.startNode;
         if (startNode) {
-            return ConvertGraphToStory("Rail", 1, startNode)
+            const story = ConvertGraphToStory("Rail", 1, startNode);
+            story["name"]=this.props.story;
+            return story;
         }
         return {}
 
     }
 
-    public importNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-        const json = prompt("JSON please: ", "{}");
-        const deserializedStory = JSON.parse(json ||  "{}");
-        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(deserializedStory);
+    public importNodes = (story:any): void => {
+        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(story);
         this.setState({nodes: []});
 
         for (const node of nodes.nodes) {
@@ -201,8 +199,9 @@ export class GraphView extends React.Component<IProps, IState> {
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
-                <button className="exportButton" onClick={this.exportNodes}>Export</button>
-                <button className="importButton" onClick={this.importNodes}>Import</button>
+                <button className="exportButton" onClick={event => console.log(this.exportNodes(null))}>Export</button>
+                <button className="importButton" onClick={event => this.importNodes(
+                    JSON.parse(prompt("JSON for this  story please: ", "{}")||"{}"))}>Import</button>
                 {inspector}
 
             </div>
