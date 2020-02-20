@@ -25,9 +25,6 @@ class App extends React.Component<{}, IState> {
             currentView: Views.UserStories,
             stories: new Set<string>(),
         };
-        this.state.stories.add("default");
-        this.state.stories.add("story 1");
-        this.state.stories.add("story 2");
     }
 
     public changeView = (view: Views, story: string | null) => {
@@ -47,16 +44,21 @@ class App extends React.Component<{}, IState> {
     public import = (stories: any[]): void => {
         for (const story of stories) {
             this.state.stories.add(story.name);
+            if(this.sidebar) {
+                this.sidebar.addStory(story.name);
+            }
 
         }
-        this.setState({});
-        this.render();
-        const views = Array.from(this.graphViews);
-        for (let i = 0; i < views.length; i++) {
-            views[i].importNodes(stories[i]);
-        }
+        this.forceUpdate(()=>{
+            console.log("In Callback!");
+            const views = Array.from(this.graphViews);
+            for (let i = 0; i < views.length; i++) {
+                views[i].importNodes(stories[i]);
+            }
+        });
+    };
 
-    }
+    private sidebar : Sidebar | null = null;
 
     public render() {
         let view;
@@ -84,7 +86,7 @@ class App extends React.Component<{}, IState> {
                     <img src={logo} className="App-logo" alt="logo"/>
                 </header>
                 <div className="content">
-                    <Sidebar currentView={this.state.currentView} changeView={this.changeView}/>
+                    <Sidebar currentView={this.state.currentView} changeView={this.changeView} ref={ ref => this.sidebar = ref}/>
                     <div className="main">
                         {view}
                     </div>

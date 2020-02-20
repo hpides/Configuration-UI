@@ -1,10 +1,11 @@
-import React from "react";
+import React, {FormEvent} from "react";
 import { Views } from "../Views";
 import "./Sidebar.css";
 
 interface IState {
     stories: string[];
-    activeStory: string;
+    activeStory: string | null;
+    currentlyAddStory: string
 }
 
 interface IProps {
@@ -17,9 +18,9 @@ export class Sidebar extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
         this.state = {
-            activeStory: "default",
-            stories: ["default", "story 1", "story 2"],
-
+            activeStory: null,
+            currentlyAddStory: "enter story name here",
+            stories: []
         };
     }
 
@@ -40,7 +41,16 @@ export class Sidebar extends React.Component<IProps, IState> {
                 break;
         }
         this.props.changeView(nextView, this.state.activeStory);
-    }
+    };
+
+    public addStory= (story:string)=> {
+        this.state.stories.push(story);
+        this.setState({stories: this.state.stories})
+    };
+
+    public handleInput= (event:React.FormEvent<HTMLInputElement>):void=>{
+        this.setState({currentlyAddStory: event.currentTarget.value})
+    };
 
     public render() {
         const cv = this.props.currentView;
@@ -64,9 +74,10 @@ export class Sidebar extends React.Component<IProps, IState> {
                 >UserStories</button>
                 {
                     this.state.stories.map((story) =>
-                        <button key={story} onClick={(event) => this.changeActiveStory(story)}>{story}</button>,
+                        <button key={story} className={story === this.state.activeStory? "active story-button": "story-button"} onClick={(event) => this.changeActiveStory(story)}>{story}</button>,
                     )
                 }
+                <input type="text" value={this.state.currentlyAddStory} onChange={this.handleInput} className="newStoryTextField"/> <button onClick={event => this.addStory(this.state.currentlyAddStory)}>Add story</button>
             </div>
         );
     }
