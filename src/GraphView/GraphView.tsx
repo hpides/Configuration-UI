@@ -29,12 +29,12 @@ interface IStory {
     selectedNode?: Node;
 }
 
-interface IState extends IStory{
-    currentStory: string
+interface IState extends IStory {
+    currentStory: string;
 }
 
 interface IProps {
-    story:string
+    story: string;
 }
 
 /* tslint:disable:no-console ... */
@@ -47,8 +47,8 @@ export class GraphView extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            currentStory: "default",
             nodes: [],
-            currentStory: "default"
         };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});
@@ -143,18 +143,18 @@ export class GraphView extends React.Component<IProps, IState> {
         this.addNode(event.dataTransfer.getData("tdgt-node-type"), point);
     }
 
-    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null):any => {
+    public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null): any => {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
-            story["name"]=this.props.story;
+            story.name = this.props.story;
             return story;
         }
-        return {}
+        return {};
 
     }
 
-    public importNodes = (story:any): void => {
+    public importNodes = (story: any): void => {
         const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(story);
         this.setState({nodes: []});
 
@@ -199,9 +199,9 @@ export class GraphView extends React.Component<IProps, IState> {
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
-                <button className="exportButton" onClick={event => console.log(this.exportNodes(null))}>Export</button>
-                <button className="importButton" onClick={event => this.importNodes(
-                    JSON.parse(prompt("JSON for this  story please: ", "{}")||"{}"))}>Import</button>
+                <button className="exportButton" onClick={(event) => console.log(this.exportNodes(null))}>Export</button>
+                <button className="importButton" onClick={(event) => this.importNodes(
+                    JSON.parse(prompt("JSON for this  story please: ", "{}") || "{}"))}>Import</button>
                 {inspector}
 
             </div>
