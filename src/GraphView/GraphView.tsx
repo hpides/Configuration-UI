@@ -30,7 +30,7 @@ interface IStory {
 }
 
 interface IState extends IStory {
-    currentStory: string;
+    visible: boolean[];
 }
 
 interface IProps {
@@ -47,8 +47,8 @@ export class GraphView extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            currentStory: "default",
             nodes: [],
+            visible: [true],
         };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});
@@ -154,6 +154,10 @@ export class GraphView extends React.Component<IProps, IState> {
 
     }
 
+    public getStory = (): string => {
+        return this.props.story;
+    }
+
     public importNodes = (story: any): void => {
         const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(story);
         this.setState({nodes: []});
@@ -180,6 +184,11 @@ export class GraphView extends React.Component<IProps, IState> {
         this.forceUpdate();
     }
 
+    public setVisibility(visible: boolean): void {
+        // can not use setState here since this method is called during render. So use the array as wrapper and mutate it
+        this.state.visible[0] = visible;
+    }
+
     public render() {
         let inspector;
         if (this.state.selectedNode) {
@@ -189,7 +198,7 @@ export class GraphView extends React.Component<IProps, IState> {
             />;
         }
         return (
-            <div id="graphview">
+            <div id="graphview" style={this.state.visible[0] ? {visibility: "visible"} : {visibility: "hidden"}}>
                 <div className="container"
                     onDrop={this.handleDrop}
                     onDragOver={(event) => {
