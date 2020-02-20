@@ -18,6 +18,8 @@ interface IState {
 class App extends React.Component<{}, IState> {
 
     private readonly graphViews: Set<GraphView> = new Set<GraphView>();
+
+    private sidebar: Sidebar | null = null;
     constructor(props: any) {
         super(props);
         this.state = {
@@ -44,21 +46,19 @@ class App extends React.Component<{}, IState> {
     public import = (stories: any[]): void => {
         for (const story of stories) {
             this.state.stories.add(story.name);
-            if(this.sidebar) {
+            if (this.sidebar) {
                 this.sidebar.addStory(story.name);
             }
 
         }
-        this.forceUpdate(()=>{
+        this.forceUpdate(() => {
             console.log("In Callback!");
             const views = Array.from(this.graphViews);
             for (let i = 0; i < views.length; i++) {
                 views[i].importNodes(stories[i]);
             }
         });
-    };
-
-    private sidebar : Sidebar | null = null;
+    }
 
     public render() {
         let view;
@@ -86,7 +86,7 @@ class App extends React.Component<{}, IState> {
                     <img src={logo} className="App-logo" alt="logo"/>
                 </header>
                 <div className="content">
-                    <Sidebar currentView={this.state.currentView} changeView={this.changeView} ref={ ref => this.sidebar = ref}/>
+                    <Sidebar currentView={this.state.currentView} changeView={this.changeView} ref={ (ref) => this.sidebar = ref}/>
                     <div className="main">
                         {view}
                     </div>
