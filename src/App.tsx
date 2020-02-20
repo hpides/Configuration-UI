@@ -26,7 +26,6 @@ class App extends React.Component<{}, IState> {
     }
 
     public changeView = (view: Views, story: string | null) => {
-        console.log("Changing state!");
         if(story) {
             this.state.stories.add(story);
         }
@@ -43,7 +42,6 @@ class App extends React.Component<{}, IState> {
     private readonly graphViews: Set<GraphView> = new Set<GraphView>();
 
     public render() {
-        console.log("Render");
         let view;
         switch (this.state.currentView) {
             case Views.Apis:
@@ -53,9 +51,8 @@ class App extends React.Component<{}, IState> {
                 view = <Testconfig/>;
                 break;
             case Views.UserStories:
-                console.log("Created new graphView");
                 view = <div>
-                    {Array.from(this.state.stories).map(story => <div style={this.state.currentStory === story? {visibility: "visible"}:{visibility: "hidden"}}><GraphView story={story} ref={ref => {if(ref){this.graphViews.add(ref)}}}/></div>)}
+                    {Array.from(this.state.stories).map(story => <div style={this.state.currentStory === story? {visibility: "visible"}:{visibility: "hidden"}}><GraphView key={story} story={story} ref={ref => {if(ref){this.graphViews.add(ref)}}}/></div>)}
                 </div>;
                 break;
             default:
