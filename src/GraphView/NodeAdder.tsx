@@ -1,27 +1,25 @@
-import React from 'react'
-import './NodeAdder.css'
+import React from "react";
+import "./NodeAdder.css";
 
-interface Props {
-    onAddNode: (type: String) => void
+interface IProps {
+    onAddNode: (type: string) => void;
 }
 
-interface State {}
+class NodeAdder extends React.Component<IProps, {}> {
 
-class NodeAdder extends React.Component<Props, State> {
-
-    onAddNode = (event: React.MouseEvent<HTMLButtonElement>) => {
-        let name = event.currentTarget.getAttribute("name");
+    public onAddNode = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const name = event.currentTarget.getAttribute("name");
         if (name) {
             this.props.onAddNode(name);
         }
     }
-    handleDragStart = (event: React.DragEvent<HTMLButtonElement>) => {
-        let name = event.currentTarget.getAttribute("name");
+    public handleDragStart = (event: React.DragEvent<HTMLButtonElement>) => {
+        const name = event.currentTarget.getAttribute("name");
         if (name) {
-            event.dataTransfer.setData('tdgt-node-type', name);
+            event.dataTransfer.setData("tdgt-node-type", name);
         }
     }
-    render() {
+    public render() {
         return (
             <div className="nodeadder">
                 <button

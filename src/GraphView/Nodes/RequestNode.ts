@@ -1,6 +1,6 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
-import { Node } from './Node';
 import { AtomType } from "../ConfigJson";
+import { Node } from "./Node";
 
 interface IBasicAuth {
     user: string;
@@ -8,21 +8,21 @@ interface IBasicAuth {
 }
 
 export class RequestNode extends Node {
-    
+
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
 
         this.attributes.name = "Request";
-        this.attributes.repeat="1";
-        this.attributes.verb="GET";
-        this.attributes.addr="";
-        this.attributes.requestJSONObject="";
-        this.attributes.responseJSONObject="";
-        this.attributes.requestParams="";
-        this.attributes.basicAuth=null;
+        this.attributes.repeat = "1";
+        this.attributes.verb = "GET";
+        this.attributes.addr = "";
+        this.attributes.requestJSONObject = "";
+        this.attributes.responseJSONObject = "";
+        this.attributes.requestParams = "";
+        this.attributes.basicAuth = null;
     }
 
-    getAtomType(): AtomType {
+    public getAtomType(): AtomType {
         return "REQUEST";
     }
 }

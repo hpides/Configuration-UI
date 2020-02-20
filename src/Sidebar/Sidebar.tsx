@@ -1,18 +1,16 @@
-import React from 'react';
-import './Sidebar.css';
-import { Views } from '../Views';
+import React from "react";
+import { Views } from "../Views";
+import "./Sidebar.css";
 
-interface Props {
-    currentView: Views,
-    changeView: (view: Views) => void
+interface IProps {
+    currentView: Views;
+    changeView: (view: Views) => void;
 }
 
-interface State {}
-
-export class Sidebar extends React.Component<Props, State> {
-    changeView = (event: React.MouseEvent<HTMLButtonElement>) => {
+export class Sidebar extends React.Component<IProps, {}> {
+    public changeView = (event: React.MouseEvent<HTMLButtonElement>) => {
         let nextView;
-        switch(event.currentTarget.getAttribute("name")) {
+        switch (event.currentTarget.getAttribute("name")) {
             case "apis":
                 nextView = Views.Apis;
                 break;
@@ -28,8 +26,8 @@ export class Sidebar extends React.Component<Props, State> {
         }
         this.props.changeView(nextView);
     }
-    render() {
-        let cv = this.props.currentView;
+    public render() {
+        const cv = this.props.currentView;
         return (
             <div className="sidebar">
                 <button

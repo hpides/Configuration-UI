@@ -1,44 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Sidebar } from './Sidebar/Sidebar'
-import './App.css';
-import { Views } from './Views';
-import { GraphView } from './GraphView/GraphView';
-import { ApisEditor } from './ApisEditor/ApisEditor';
-import { Testconfig } from './Testconfig/Testconfig';
+import React from "react";
 import "reflect-metadata";
-interface Props {}
+import { ApisEditor } from "./ApisEditor/ApisEditor";
+import "./App.css";
+import { GraphView } from "./GraphView/GraphView";
+import logo from "./logo.svg";
+import { Sidebar } from "./Sidebar/Sidebar";
+import { Testconfig } from "./Testconfig/Testconfig";
+import { Views } from "./Views";
 
-interface State {
-  currentView: Views
+interface IState {
+  currentView: Views;
 }
 
-class App extends React.Component<Props, State> {
+class App extends React.Component<{}, IState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      currentView: Views.UserStories
-    }
+      currentView: Views.UserStories,
+    };
   }
-  changeView = (view: Views) => {
+  public changeView = (view: Views) => {
     this.setState({currentView: view});
   }
-  render() {
+  public render() {
     let view;
     switch (this.state.currentView) {
       case Views.Apis:
-        view = <ApisEditor />
+        view = <ApisEditor />;
         break;
       case Views.Testconfig:
-        view = <Testconfig />
+        view = <Testconfig />;
         break;
       case Views.UserStories:
-        view = <GraphView />
+        view = <GraphView />;
         break;
       default:
-        view = <ApisEditor />
+        view = <ApisEditor />;
     }
-    
+
     return (
       <div className="App">
         <header className="App-header">
