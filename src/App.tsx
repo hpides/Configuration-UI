@@ -45,20 +45,21 @@ class App extends React.Component<{}, IState> {
     public export = (): string => {
         const stories: any[] = [];
         this.graphViews.forEach((graphView) => stories.push(graphView.exportNodes(null)));
-        const testConfigJSON = new Map<string, any>();
+        const testConfigJSON:any = {};
         if (this.testConfig) {
             const testConfigState = this.testConfig.export();
-            testConfigJSON.set("repeat", testConfigState.repeat);
-            testConfigJSON.set("scaleFactor", testConfigState.scaleFactor);
-            testConfigJSON.set("activeInstancesPerSecond", testConfigState.activeInstancesPerSecond);
-            testConfigJSON.set("maximumConcurrentRequests", testConfigState.maximumConcurrentRequests);
+            testConfigJSON["repeat"] = testConfigState.repeat;
+            testConfigJSON["scaleFactor"] = testConfigState.scaleFactor;
+            testConfigJSON["activeInstancesPerSecond"] = testConfigState.activeInstancesPerSecond;
+            testConfigJSON["maximumConcurrentRequests"] = testConfigState.maximumConcurrentRequests;
         }
-        testConfigJSON.set("stories", stories)
+        testConfigJSON["stories"]  = stories;
         console.log(JSON.stringify(testConfigJSON));
         return "";
     }
 
-    public import = (stories: any[]): void => {
+    public import = (testConfig: any): void => {
+        const stories : any[] = testConfig.stories;
         for (const story of stories) {
             // this creates the respective graph view
             this.state.stories.add(story.name);

@@ -1,6 +1,6 @@
 import React from "react";
 import "./Testconfig.css";
-import {plainToClass, plainToClassFromExist} from "class-transformer";
+import {plainToClassFromExist} from "class-transformer";
 
 interface IState {
     activeInstancesPerSecond: string;

@@ -185,6 +185,7 @@ export class GraphView extends React.Component<IProps, IState> {
     };
 
     public setVisibility(visible:boolean):void{
+        // can not use setState here since this method is called during render. So use the array as wrapper and mutate it
         this.state.visible[0] = visible
     }
 
