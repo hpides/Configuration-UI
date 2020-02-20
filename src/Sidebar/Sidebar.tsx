@@ -2,12 +2,27 @@ import React from "react";
 import { Views } from "../Views";
 import "./Sidebar.css";
 
-interface IProps {
-    currentView: Views;
-    changeView: (view: Views) => void;
+interface IState {
+    stories: string[],
+    activeStory: string
 }
 
-export class Sidebar extends React.Component<IProps, {}> {
+interface IProps {
+    currentView: Views;
+    changeView: (view: Views, story: string | null) => void;
+}
+
+export class Sidebar extends React.Component<IProps, IState> {
+
+    public constructor(props:IProps) {
+        super(props);
+        this.state = {
+            stories: ["default", "story 1", "story 2"],
+            activeStory: "default"
+
+        }
+    }
+
     public changeView = (event: React.MouseEvent<HTMLButtonElement>) => {
         let nextView;
         switch (event.currentTarget.getAttribute("name")) {
@@ -24,10 +39,17 @@ export class Sidebar extends React.Component<IProps, {}> {
                 nextView = Views.Apis;
                 break;
         }
-        this.props.changeView(nextView);
+        this.props.changeView(nextView,this.state.activeStory);
+    };
+
+    private changeActiveStory(newStory:string){
+        this.setState({activeStory: newStory});
+        this.props.changeView(Views.UserStories,newStory);
     }
+
     public render() {
         const cv = this.props.currentView;
+
         return (
             <div className="sidebar">
                 <button
@@ -45,6 +67,11 @@ export class Sidebar extends React.Component<IProps, {}> {
                     className={cv === Views.UserStories ? "active" : ""}
                     onClick={this.changeView}
                 >UserStories</button>
+                {
+                    this.state.stories.map(story =>
+                        <button key={story} onClick={(event) => this.changeActiveStory(story)}>{story}</button>
+                    )
+                }
             </div>
         );
     }

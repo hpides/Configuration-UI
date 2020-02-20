@@ -23,22 +23,34 @@ import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
 
-interface IState {
+interface IStory {
     nodes: Node[];
     startNode?: StartNode;
     selectedNode?: Node;
 }
+
+interface IState extends IStory{
+    readonly stories: Map<string, IStory>,
+    currentStory: string
+}
+
+interface IProps {
+    story:string
+}
+
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
-export class GraphView extends React.Component<{}, IState> {
+export class GraphView extends React.Component<IProps, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
 
-    constructor(props: any) {
+    constructor(props: IProps) {
         super(props);
 
         this.state = {
             nodes: [],
+            stories: new Map<string, IStory>(),
+            currentStory: "default"
         };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});
