@@ -23,14 +23,17 @@
     "react-serialize": "^0.2.0",
     "reflect-metadata": "^0.1.13",
     "resize-observer-polyfill": "^1.5.1",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.3",
+    "tslint": "^5.20.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --watchAll=false",
     "test:watch": "jest --watch",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "tslint -c tslint.json 'src/**/*.ts*'",
+    "fixlint": "tslint -c tslint.json 'src/**/*.ts*' --fix"
   },
   "eslintConfig": {
     "extends": "react-app"

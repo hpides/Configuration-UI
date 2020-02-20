@@ -1,70 +1,71 @@
-import React from 'react'
+import React from "react";
 import "reflect-metadata";
-
+/*tslint:disable:max-classes-per-file*/
+/* tslint:disable:variable-name ... */
 export abstract class GeneratorConfig {
-    protected attributes: { [key: string]: any};
 
     public abstract __type: string;
+    protected attributes: { [key: string]: any};
     constructor() {
 
         this.attributes = {
         };
     }
 
-    abstract getTypeString(): string
+    public abstract getTypeString(): string;
 
-    getAttributes() {
+    public getAttributes() {
         return this.attributes;
     }
-    setAttributes(attributes: { [key: string]: any}):void {
-        this.attributes = attributes
+    public setAttributes(attributes: { [key: string]: any}): void {
+        this.attributes = attributes;
     }
 
-    getAttribute(key: string) {
+    public getAttribute(key: string) {
         return this.attributes[key];
     }
 
-    setAttribute(key: string, value: any) {
+    public setAttribute(key: string, value: any) {
         if (this.getKeys().includes(key)) {
             this.attributes[key] = value;
         }
     }
 
-    getKeys() {
+    public getKeys() {
         return Object.keys(this.attributes);
     }
 
-    inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
-        //called during deserialization for some reason with undefined event. Do not perform operation in this case
-        if(event) {
+    public inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
+        // called during deserialization for some reason with undefined event. Do not perform operation in this case
+        if (event) {
             this.setAttribute(event.currentTarget.name, event.currentTarget.value);
         }
     }
 
-    render() {
+    public render() {
         return(
             <div className="generator-config">
             </div>
-        )
+        );
     }
 }
 
 export class EMailGeneratorConfig extends GeneratorConfig {
-    __type="EMAIL";
+    public __type = "EMAIL";
     constructor() {
         super();
 
         this.attributes = {
-            "domain": "example.com",
-            "characters": "10",
+            characters: "10",
+            domain: "example.com",
         };
     }
 
-    getTypeString() {
+    public getTypeString() {
         return "E_MAIL";
     }
 
-    render() {
+    public render() {
         return(
             <div className="generator-config">
                 <label>Domain:</label>
@@ -72,54 +73,54 @@ export class EMailGeneratorConfig extends GeneratorConfig {
                 <label>Characters: </label>
                 <input type="text" name="characters" onChange={this.inputChanged} />
             </div>
-        )
+        );
     }
 }
 
 export class ExistingDataConfig extends GeneratorConfig {
-    __type="EXISTING";
+    public __type = "EXISTING";
     constructor() {
         super();
 
         this.attributes = {
-            "table": "",
+            table: "",
         };
     }
 
-    getTypeString() {
+    public getTypeString() {
         return "EXISTING";
     }
 
-    render() {
+    public render() {
         return(
             <div className="generator-config">
                 <label>Read from Table:</label>
                 <input type="text" name="table" onChange={this.inputChanged} />
             </div>
-        )
+        );
     }
 }
 
 export class RandomStringGeneratorConfig extends GeneratorConfig {
-    __type="RANDOM_STRING";
+    public __type = "RANDOM_STRING";
     constructor() {
         super();
 
         this.attributes = {
-            "maxChars": "10",
+            maxChars: "10",
         };
     }
 
-    getTypeString() {
-        return "RANDOM_STRING"
+    public getTypeString() {
+        return "RANDOM_STRING";
     }
 
-    render() {
+    public render() {
         return(
             <div className="generator-config">
                 <label>Maximum Characters:</label>
                 <input type="text" name="maxChars" onChange={this.inputChanged} />
             </div>
-        )
+        );
     }
 }

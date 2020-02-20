@@ -1,15 +1,15 @@
-import { StartNode } from "./../Nodes/StartNode";
-import { Node } from "./../Nodes/Node";
-import { Node as BaseNode } from "./../Nodes/Node";
-import Dictionary from "./Dictionary";
-import {DataGenerationNode} from "../Nodes/DataGenerationNode";
-import { Point } from '@projectstorm/geometry';
-import { DefaultPortModel } from '@projectstorm/react-diagrams-defaults';
-import { LinkModel} from '@projectstorm/react-diagrams-core';
+import { Point } from "@projectstorm/geometry";
 import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
+import { LinkModel} from "@projectstorm/react-diagrams-core";
+import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
+import {DataGenerationNode} from "../Nodes/DataGenerationNode";
+import {DelayNode} from "../Nodes/DelayNode";
 import {RequestNode} from "../Nodes/RequestNode";
 import {WarmupEndNode} from "../Nodes/WarmupEndNode";
-import {DelayNode} from "../Nodes/DelayNode";
+import { Node } from "./../Nodes/Node";
+import { Node as BaseNode } from "./../Nodes/Node";
+import { StartNode } from "./../Nodes/StartNode";
+import IDictionary from "./IDictionary";
 export interface ITest {
     repeat: number;
     scaleFactor: number;
@@ -30,8 +30,8 @@ interface IBaseAtom {
     repeat: number;
     successors: number[];
     type: AtomType;
-    x: number,
-    y: number
+    x: number;
+    y: number;
 
 }
 
@@ -70,7 +70,8 @@ interface IBasicAuth {
     user: string;
     password: string;
 }
-
+/* tslint:disable:no-console ... */
+/* tslint:disable:max-line-length ... */
 export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode): IStory {
     const atoms: IBaseAtom[] = [];
     const closedNodeIds: Set<string> = new Set();
@@ -80,18 +81,22 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
     let node: BaseNode | undefined = startNode;
     closedNodeIds.add(startNode.getID());
     while (node) {
-        let baseAtoms = ConvertNode(idMap, node);
+        const baseAtoms = ConvertNode(idMap, node);
         for (const atom of baseAtoms) {
             atoms.push(atom);
         }
         for (const port of node.getOutPorts()) {
-            for (const linkID in port.getLinks()) {
-                const link = port.getLinks()[linkID];
-                const targetPort = link.getTargetPort();
-                const otherNode = targetPort.getNode() as BaseNode;
-                if (otherNode && !closedNodeIds.has(otherNode.getID())) {
-                    nodesToProcess.push(otherNode);
-                    closedNodeIds.add(otherNode.getID());
+            if (port) {
+                for (const linkID in port.getLinks()) {
+                    if (linkID) {
+                        const link = port.getLinks()[linkID];
+                        const targetPort = link.getTargetPort();
+                        const otherNode = targetPort.getNode() as BaseNode;
+                        if (otherNode && !closedNodeIds.has(otherNode.getID())) {
+                            nodesToProcess.push(otherNode);
+                            closedNodeIds.add(otherNode.getID());
+                        }
+                    }
                 }
             }
         }
@@ -99,28 +104,28 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
     }
 
     return {
-        name: name,
-        scalePercentage: scalePercentage,
-        atoms: atoms
+        atoms,
+        name,
+        scalePercentage,
     } as IStory;
 }
 
-export function ConvertStoryToGraph(deserializedStory:any) : {nodes: Node[], startNode: StartNode | null, links: LinkModel[]}{
-    const ret:Node[] = [];
-    const links : LinkModel[] = [];
+export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
+    const ret: Node[] = [];
+    const links: LinkModel[] = [];
     let startNode: StartNode|null = null;
-    for(let currentAtom of deserializedStory.atoms){
+    for (const currentAtom of deserializedStory.atoms) {
 
         const type = currentAtom.type;
-        let node:Node;
+        let node: Node;
         const nodeOptions: DefaultNodeModelOptions = {
+            color: "rgb(0,192,255)",
             name: type.toString(),
-            color: 'rgb(0,192,255)',
         };
-        switch(type) {
+        switch (type) {
             case "START":
                 node = new StartNode(nodeOptions);
-                //one can assume there is maximum one
+                // one can assume there is maximum one
                 startNode = node;
                 break;
             case "DATA_GENERATION":
@@ -139,62 +144,63 @@ export function ConvertStoryToGraph(deserializedStory:any) : {nodes: Node[], sta
                 console.error("Error adding node: unknown type ", type);
                 return {nodes: [], links: [], startNode: null};
         }
-        node.setPosition({x: currentAtom.x, y: currentAtom.y} as Point)
+        node.setPosition({x: currentAtom.x, y: currentAtom.y} as Point);
         applyAttributes(node, currentAtom);
         ret.push(node);
     }
 
-    //need to deserialize all nodes, else a successor might not have been deserialized yet
-    for(let i = 0; i < ret.length; i++){
+    // need to deserialize all nodes, else a successor might not have been deserialized yet
+    for (let i = 0; i < ret.length; i++) {
         const serializedAtom = deserializedStory.atoms[i];
         const constructedNode = ret[i];
-        for(let successorID of serializedAtom.successors){
-            let targetNode:Node|null = null;
-            for(let currentAtom of ret){
-                if(currentAtom.getAttribute("id") === successorID){
+        for (const successorID of serializedAtom.successors) {
+            let targetNode: Node|null = null;
+            for (const currentAtom of ret) {
+                if (currentAtom.getAttribute("id") === successorID) {
                     targetNode = currentAtom;
                 }
             }
-            if(!targetNode){
-                console.error("Target node not found: "+successorID);
+            if (!targetNode) {
+                console.error("Target node not found: " + successorID);
                 return {nodes: [], links: [], startNode: null};
             }
-            const link = (constructedNode!.getPort("Out")! as DefaultPortModel).link((targetNode.getPort("In")! as DefaultPortModel));
+            const link = (constructedNode!.getPort("Out")! as DefaultPortModel).link
+                ((targetNode.getPort("In")! as DefaultPortModel));
             links.push(link!);
         }
     }
 
-
-    return {nodes: ret, links: links, startNode: startNode};
+    return {nodes: ret, links, startNode};
 }
 
-function applyAttributes(target: Node, source: any){
-    for(let property in source){
-        target.setAttribute(property, source[property])
+function applyAttributes(target: Node, source: any) {
+    for (const property in source) {
+        if (property) {
+            target.setAttribute(property, source[property]);
+        }
     }
 }
 
-
 function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): IDataGenerationAtom[] {
-    let atoms: IDataGenerationAtom[] = [];
+    const atoms: IDataGenerationAtom[] = [];
 
     const dataToGenerate = node.dataToGenerate;
     if (Array.from(node.dataToGenerate.value.keys()).length === 0) {
         return [{
             ...baseAtomObj,
+            data: [],
+            dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: "",
-            data: [],
-            dataToGenerate: node.getAttribute("dataToGenerate")
         }];
     }
 
     /*
      * Create Atom for new data
      */
-    let keys: string[] = [];
+    const keys: string[] = [];
     for (const key of Array.from(node.dataToGenerate.value.keys())) {
-        let genConfig = dataToGenerate.value.get(key)!;
+        const genConfig = dataToGenerate.value.get(key)!;
 
         if (genConfig.getTypeString() === "EXISTING") {
             continue;
@@ -203,14 +209,14 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         keys.push(key);
     }
     // To-Do : generate unique table name
-    let tableName: string = "abcdef";
+    const tableName: string = "abcdef";
     if (keys.length > 0) {
         atoms.push({
             ...baseAtomObj,
+            data: keys,
+            dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: tableName,
-            data: keys,
-            dataToGenerate: node.getAttribute("dataToGenerate")
         });
     }
 
@@ -219,29 +225,29 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
      * to be read from existing XML
      */
     for (const key of Array.from(node.dataToGenerate.value.keys())) {
-        let genConfig = dataToGenerate.value.get(key)!;
+        const genConfig = dataToGenerate.value.get(key)!;
         if (genConfig.getTypeString() !== "EXISTING") {
             continue;
         }
 
-        let newAtom = {
+        const newAtom = {
             ...baseAtomObj,
+            data: [key],
+            dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: genConfig.getAttribute("table"),
-            data: [key],
-            dataToGenerate: node.getAttribute("dataToGenerate")
         };
 
         if (atoms.length > 0) {
-            let id = idMap.mapId(node.getID() + key);
-            atoms[atoms.length-1].successors = [id];
+            const id = idMap.mapId(node.getID() + key);
+            atoms[atoms.length - 1].successors = [id];
 
             newAtom.id = id;
         }
         atoms.push(newAtom);
     }
     // in case there are no data yet, this will throw exception
-    if(atoms.length > 1) {
+    if (atoms.length > 1) {
         atoms[atoms.length - 1].successors = baseAtomObj.successors;
     }
     return atoms;
@@ -254,24 +260,26 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
     for (const port of node.getOutPorts()) {
         if (port) {
             for (const linkID in port.getLinks()) {
-                const link = port.getLinks()[linkID];
-                const targetPort = link.getTargetPort();
-                const otherNode = targetPort.getNode();
+                if (linkID) {
+                    const link = port.getLinks()[linkID];
+                    const targetPort = link.getTargetPort();
+                    const otherNode = targetPort.getNode();
 
-                successors.push(idMap.mapId(otherNode.getID()));
+                    successors.push(idMap.mapId(otherNode.getID()));
+                }
             }
         }
     }
 
     const baseAtomObj = {
-        name: node.getAttribute("name"),
         id: idMap.mapId(node.getID()),
+        name: node.getAttribute("name"),
         repeat: 1,
-        successors: successors,
-        type: type,
+        successors,
+        type,
         x: node.getX(),
-        y: node.getY()
-    } as IBaseAtom
+        y: node.getY(),
+    } as IBaseAtom;
 
     // insert additional data
     switch (type) {
@@ -281,14 +289,14 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
         case "DELAY":
             return [{
                 ...baseAtomObj,
-                name: node.getAttribute("name"),
                 delay: node.getAttribute("delay"),
+                name: node.getAttribute("name"),
             } as IDelayAtom];
         case "REQUEST":
             const request = {
                 ...baseAtomObj,
-                verb: node.getAttribute("verb"),
                 addr: node.getAttribute("addr"),
+                verb: node.getAttribute("verb"),
 
             } as IRequestAtom;
             let attr = node.getAttribute("requestJSONObject");
@@ -296,11 +304,11 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
                 request.requestJSONObject = attr;
             }
             attr = node.getAttribute("responseJSONObject");
-            if ((typeof attr === 'string' || attr instanceof String) && attr.trim() !== "") {
+            if ((typeof attr === "string" || attr instanceof String) && attr.trim() !== "") {
                 request.responseJSONObject = attr.split(",");
             }
             attr = node.getAttribute("requestParams");
-            if ((typeof attr === 'string' || attr instanceof String) && attr.trim() !== "") {
+            if ((typeof attr === "string" || attr instanceof String) && attr.trim() !== "") {
                 request.requestParams = attr.split(",");
             }
             attr = node.getAttribute("basicAuth");
@@ -321,7 +329,7 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
 }
 
 class IdMap {
-    private idMapping: Dictionary<number> = {};
+    private idMapping: IDictionary<number> = {};
     private nextId: number = 0;
 
     public mapId(strId: string): number {
@@ -333,4 +341,3 @@ class IdMap {
         return mappedId;
     }
 }
-
