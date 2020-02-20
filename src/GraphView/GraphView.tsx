@@ -30,7 +30,7 @@ interface IStory {
 }
 
 interface IState extends IStory {
-    currentStory: string;
+    visible: boolean[];
 }
 
 interface IProps {
@@ -47,8 +47,8 @@ export class GraphView extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            currentStory: "default",
             nodes: [],
+            visible: [true]
         };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});
@@ -152,6 +152,10 @@ export class GraphView extends React.Component<IProps, IState> {
         }
         return {};
 
+    };
+
+    public getStory = ():string => {
+        return this.props.story;
     }
 
     public importNodes = (story: any): void => {
@@ -178,6 +182,10 @@ export class GraphView extends React.Component<IProps, IState> {
         }
         this.setState({nodes: this.state.nodes});
         this.forceUpdate();
+    };
+
+    public setVisibility(visible:boolean):void{
+        this.state.visible[0] = visible
     }
 
     public render() {
@@ -189,7 +197,7 @@ export class GraphView extends React.Component<IProps, IState> {
             />;
         }
         return (
-            <div id="graphview">
+            <div id="graphview" style={this.state.visible[0]? {visibility: "visible"}:{visibility: "hidden"}}>
                 <div className="container"
                     onDrop={this.handleDrop}
                     onDragOver={(event) => {

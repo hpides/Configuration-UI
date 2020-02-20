@@ -13,13 +13,19 @@ interface IState {
     currentStory: string | null;
     readonly stories: Set<string>;
 }
+
 /*tslint:disable:no-console*/
+
 /*tslint:disable:max-line-length*/
 class App extends React.Component<{}, IState> {
 
     private readonly graphViews: Set<GraphView> = new Set<GraphView>();
 
     private sidebar: Sidebar | null = null;
+
+    private testConfig: Testconfig | null = null;
+
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -39,7 +45,16 @@ class App extends React.Component<{}, IState> {
     public export = (): string => {
         const stories: any[] = [];
         this.graphViews.forEach((graphView) => stories.push(graphView.exportNodes(null)));
-        console.log(JSON.stringify(stories));
+        const testConfigJSON = new Map<string, any>();
+        if (this.testConfig) {
+            const testConfigState = this.testConfig.export();
+            testConfigJSON.set("repeat", testConfigState.repeat);
+            testConfigJSON.set("scaleFactor", testConfigState.scaleFactor);
+            testConfigJSON.set("activeInstancesPerSecond", testConfigState.activeInstancesPerSecond);
+            testConfigJSON.set("maximumConcurrentRequests", testConfigState.maximumConcurrentRequests);
+        }
+        testConfigJSON.set("stories", stories)
+        console.log(JSON.stringify(testConfigJSON));
         return "";
     }
 
@@ -64,34 +79,43 @@ class App extends React.Component<{}, IState> {
     }
 
     public render() {
-        let view;
-        switch (this.state.currentView) {
-            case Views.Apis:
-                view = <ApisEditor/>;
-                break;
-            case Views.Testconfig:
-                view = <Testconfig/>;
-                break;
-            case Views.UserStories:
-                view = <div>
-                    {Array.from(this.state.stories).map((story) => <div key={story} style={this.state.currentStory === story ? {visibility: "visible"} : {visibility: "hidden"}}><GraphView story={story} ref={(ref) => {if (ref) {this.graphViews.add(ref); }}}/></div>)}
-                </div>;
-                break;
-            default:
-                view = <ApisEditor/>;
-        }
-
+        this.graphViews.forEach(view => {
+            view.setVisibility(this.state.currentView === Views.UserStories && view.getStory() === this.state.currentStory);
+            console.log(this.state.currentView +"  "+ view.getStory());
+        });
         return (
             <div className="App">
                 <header className="App-header">
-                    <h1>TDGT Configuration</h1><button onClick={this.export}>Export</button>
-                    <button onClick={(event) => this.import(JSON.parse(prompt("Array of stories JSON please:") || "[]"))}>Import</button>
+                    <h1>TDGT Configuration</h1>
+                    <button onClick={this.export}>Export</button>
+                    <button
+                        onClick={(event) => this.import(JSON.parse(prompt("Array of stories JSON please:") || "[]"))}>Import
+                    </button>
                     <img src={logo} className="App-logo" alt="logo"/>
                 </header>
                 <div className="content">
-                    <Sidebar currentView={this.state.currentView} changeView={this.changeView} ref={ (ref) => this.sidebar = ref}/>
+                    <Sidebar currentView={this.state.currentView} changeView={this.changeView}
+                             ref={(ref) => this.sidebar = ref}/>
+                    {// We need to render all elements at all time so their state does not get recycled
+                    }
                     <div className="main">
-                        {view}
+                        <div
+                            style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            <ApisEditor/></div>
+                        <div
+                            style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            <Testconfig ref={ref => this.testConfig = ref}/>
+                        </div>
+                        <div
+                            style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            {Array.from(this.state.stories).map((story) => <div key={story}
+                                                                                style={this.state.currentStory === story ? {visibility: "visible"} : {visibility: "hidden"}}>
+                                <GraphView story={story} ref={(ref) => {
+                                    if (ref) {
+                                        this.graphViews.add(ref);
+                                    }
+                                }}/></div>)}
+                        </div>
                     </div>
                 </div>
 

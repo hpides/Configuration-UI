@@ -74,7 +74,13 @@ export class Sidebar extends React.Component<IProps, IState> {
                 >UserStories</button>
                 {
                     this.state.stories.map((story) =>
-                        <button key={story} className={story === this.state.activeStory ? "active story-button" : "story-button"} onClick={(event) => this.changeActiveStory(story)}>{story}</button>,
+                        <div key={story}>
+                            <button  className={story === this.state.activeStory ? "active story-button" : "story-button"} onClick={(event) => this.changeActiveStory(story)}>{story}</button>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                        </div>
                     )
                 }
                 <input type="text" value={this.state.currentlyAddStory} onChange={this.handleInput} className="newStoryTextField"/> <button onClick={(event) => this.addStory(this.state.currentlyAddStory)}>Add story</button>
