@@ -208,8 +208,9 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
 
         keys.push(key);
     }
-    // To-Do : generate unique table name
-    const tableName: string = "abcdef";
+    // Generate a pseudo random unique tablename 
+    // https://gist.github.com/gordonbrander/2230317
+    const tableName: string = '_' + Math.random().toString(36).substr(2,9);
     if (keys.length > 0) {
         atoms.push({
             ...baseAtomObj,
