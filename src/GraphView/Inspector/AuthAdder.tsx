@@ -10,6 +10,8 @@ interface IProps {
     onAdd: (user: string, password: string) => void;
     onCancel: () => void;
     auth: IBasicAuth;
+    disableDeleteKey: () => void;
+    enableDeleteKey: () => void;
 }
 
 interface IState {
@@ -66,6 +68,7 @@ export class AuthAdder extends React.Component<IProps, IState> {
                         type="text"
                         name="user"
                         onChange={this.inputChanged}
+                        onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
                         value={this.state.user}
                     />
                     <label>Password</label>
@@ -73,6 +76,7 @@ export class AuthAdder extends React.Component<IProps, IState> {
                         type="text"
                         name="password"
                         onChange={this.inputChanged}
+                        onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
                         value={this.state.password}
                     />
                     <button

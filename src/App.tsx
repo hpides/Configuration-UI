@@ -74,14 +74,15 @@ class App extends React.Component<{}, IState> {
             const views = Array.from(this.graphViews);
             for (let i = 0; i < views.length; i++) {
                 views[i].importNodes(stories[i]);
+                // else all nodes are visible for a moment
+                views[i].setVisibility(false);
             }
         });
     }
 
     public render() {
         this.graphViews.forEach((view) => {
-            view.setVisibility(this.state.currentView === Views.UserStories && view.getStory() === this.state.currentStory);
-            console.log(this.state.currentView + "  " + view.getStory());
+            view.setVisibility(this.state.currentView === Views.UserStories && this.state.currentStory !== null && view.getStory() === this.state.currentStory);
         });
         return (
             <div className="App">
