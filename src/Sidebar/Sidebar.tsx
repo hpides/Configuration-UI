@@ -19,7 +19,7 @@ export class Sidebar extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             activeStory: null,
-            currentlyAddStory: "enter story name here",
+            currentlyAddStory: "enter story name",
             stories: [],
         };
     }

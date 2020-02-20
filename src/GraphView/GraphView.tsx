@@ -199,9 +199,6 @@ export class GraphView extends React.Component<IProps, IState> {
                     <CanvasWidget engine={this.engine}/>
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
-                <button className="exportButton" onClick={(event) => console.log(this.exportNodes(null))}>Export</button>
-                <button className="importButton" onClick={(event) => this.importNodes(
-                    JSON.parse(prompt("JSON for this  story please: ", "{}") || "{}"))}>Import</button>
                 {inspector}
 
             </div>

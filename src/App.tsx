@@ -45,14 +45,17 @@ class App extends React.Component<{}, IState> {
 
     public import = (stories: any[]): void => {
         for (const story of stories) {
+            // this creates the respective graph view
             this.state.stories.add(story.name);
+            // this creates the sidebar button
             if (this.sidebar) {
                 this.sidebar.addStory(story.name);
             }
 
         }
+        // need to re-render to create respective views before we can call the update
         this.forceUpdate(() => {
-            console.log("In Callback!");
+            // enough graph views have been created
             const views = Array.from(this.graphViews);
             for (let i = 0; i < views.length; i++) {
                 views[i].importNodes(stories[i]);
