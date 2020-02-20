@@ -6,10 +6,13 @@ import {GeneratorConfig} from "./Inspector/GeneratorConfig";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
 import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
-
+import {DiagramModel} from "@projectstorm/react-diagrams";
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
     node: Node;
+    model: DiagramModel,
+    disableDeleteKey: ()=>void
+    enableDeleteKey: ()=>void
 }
 
 interface IState {
@@ -118,6 +121,8 @@ export class Inspector extends React.Component<IProps, IState> {
         );
     }
 
+
+
     public render() {
         const node = this.props.node;
         const inputs: JSX.Element[] = [];
@@ -143,7 +148,7 @@ export class Inspector extends React.Component<IProps, IState> {
             // users should not enter IDs or dataToGenerate, this is handled in the background
             } else if (!(key === "id" || key === "dataToGenerate")) {
 
-                const input = <input key={i}
+                const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                     type="text"
                     name={key}
                     value={node.getAttribute(key)}

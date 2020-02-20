@@ -42,7 +42,7 @@ interface IProps {
 export class GraphView extends React.Component<IProps, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
-
+    private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
     constructor(props: IProps) {
         super(props);
 
@@ -56,7 +56,8 @@ export class GraphView extends React.Component<IProps, IState> {
         this.model = new DiagramModel();
         this.engine.setModel(this.model);
 
-        this.engine.getActionEventBus().registerAction(new DeleteItemsAction({ keyCodes: [46]}));
+        this.engine.getActionEventBus().registerAction(this.deleteAction);
+        this.engine.getActionEventBus().deregisterAction(this.deleteAction);
     }
 
     public componentDidMount() {
@@ -66,12 +67,15 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public handleSelectionChanged = (event: BaseEvent) => {
+        //user might have clicked away from the inspector --> re-enable backspace
+        this.enableDeleteKey();
         const nodes = this.state.nodes;
 
         this.setState({selectedNode: undefined});
 
         nodes.forEach((node: Node) => {
             if (node.isSelected()) {
+                this.engine.getActionEventBus().deregisterAction(this.deleteAction);
                 this.setState({selectedNode: node});
                 return;
             }
@@ -189,10 +193,23 @@ export class GraphView extends React.Component<IProps, IState> {
         this.state.visible[0] = visible;
     }
 
+    //used by inspector to disable and re-enable backspace key when typing
+
+    public disableDeleteKey = ():void =>{
+        this.engine.getActionEventBus().deregisterAction(this.deleteAction)
+    };
+
+    public enableDeleteKey = ():void =>{
+        this.engine.getActionEventBus().registerAction(this.deleteAction)
+    };
+
     public render() {
         let inspector;
         if (this.state.selectedNode) {
             inspector = <Inspector
+                disableDeleteKey={this.disableDeleteKey}
+                enableDeleteKey={this.enableDeleteKey}
+                model={this.model}
                 onValueChanged={this.handleInspectorValueChanged}
                 node={this.state.selectedNode}
             />;
@@ -209,7 +226,6 @@ export class GraphView extends React.Component<IProps, IState> {
                 </div>
                 <NodeAdder onAddNode={this.addNode}/>
                 {inspector}
-
             </div>
         );
     }
