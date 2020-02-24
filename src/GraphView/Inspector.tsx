@@ -1,12 +1,16 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import React from "react";
 import "./Inspector.css";
-import { AuthAdder } from "./Inspector/AuthAdder";
-import { GeneratorAdder } from "./Inspector/GeneratorAdder";
+import {AssertionAdder} from "./Inspector/AssertionAdder";
+import {ContentNotEmptyAssertion, ContentTypeAssertion, ResponseCodeAssertion} from "./Inspector/AssertionConfig";
+import {AssertionConfig} from "./Inspector/AssertionConfig";
+import {AuthAdder} from "./Inspector/AuthAdder";
+import {GeneratorAdder} from "./Inspector/GeneratorAdder";
 import {GeneratorConfig} from "./Inspector/GeneratorConfig";
-import { DataGenerationNode } from "./Nodes/DataGenerationNode";
-import { Node } from "./Nodes/Node";
-import { RequestNode } from "./Nodes/RequestNode";
+import {DataGenerationNode} from "./Nodes/DataGenerationNode";
+import {Node} from "./Nodes/Node";
+import {RequestNode} from "./Nodes/RequestNode";
+
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
     node: Node;
@@ -18,6 +22,7 @@ interface IProps {
 interface IState {
     addingGenerator: boolean;
     addingAuth: boolean;
+    addingAssertion: boolean;
 }
 
 interface IBasicAuth {
@@ -30,6 +35,7 @@ export class Inspector extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            addingAssertion: false,
             addingAuth: false,
             addingGenerator: false,
         };
@@ -50,7 +56,7 @@ export class Inspector extends React.Component<IProps, IState> {
 
         const node: DataGenerationNode = this.props.node;
 
-        // node.dataToGenerate[name] = genConfig;
+        // node.dataToGenerate[name] = assertionConfig;
         node.addData(name, genConfig);
 
         this.setState({addingGenerator: false});
@@ -62,6 +68,27 @@ export class Inspector extends React.Component<IProps, IState> {
 
     public addAuth = () => {
         this.setState({addingAuth: true});
+    }
+
+    public handleAddAssertionDialog = (config: AssertionConfig) => {
+        if (!(this.props.node instanceof RequestNode)) {
+            return;
+        }
+
+        const node: RequestNode = this.props.node;
+
+        // node.dataToGenerate[name] = assertionConfig;
+        node.addAssertion(config);
+
+        this.setState({addingAssertion: false});
+    }
+
+    public handleCancelAddAssertionDialogf = () => {
+        this.setState({addingAssertion: false});
+    }
+
+    public addAssertion = () => {
+        this.setState({addingAssertion: true});
     }
 
     public handleAddAuthDialog = (user: string, password: string) => {
@@ -96,9 +123,9 @@ export class Inspector extends React.Component<IProps, IState> {
         for (let i = 0; i < keys.length; i++) {
             // react needs a key element for every tr
             rows.push(
-                <tr  key={i}>
+                <tr key={i}>
                     <td>{keys[i]}</td>
-                    <td >{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
+                    <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
                 </tr>,
             );
         }
@@ -116,7 +143,8 @@ export class Inspector extends React.Component<IProps, IState> {
                 </table>
                 <button
                     onClick={this.addGenerator}
-                >Add Data</button>
+                >Add Data
+                </button>
             </div>
         );
     }
@@ -126,9 +154,13 @@ export class Inspector extends React.Component<IProps, IState> {
         const inputs: JSX.Element[] = [];
 
         for (let i = 0; i < node.getKeys().length; i++) {
-            const key = node.getKeys()[i];
+            const key: string = node.getKeys()[i];
+            let note = "";
+            if (key === "requestParams" || key === "responseJSONObject") {
+                note += " (comma separated)";
+            }
             const label = <label key={key}>
-                {key}
+                {key + note}
             </label>;
 
             if (key === "basicAuth") {
@@ -139,22 +171,55 @@ export class Inspector extends React.Component<IProps, IState> {
                     buttonString = authObject.user + ":" + authObject.password;
                 }
                 const authButton = <button key={i}
-                    onClick={this.addAuth}
+                                           onClick={this.addAuth}
                 >{buttonString}</button>;
                 inputs.push(label);
                 inputs.push(authButton);
-            // users should not enter IDs or dataToGenerate, this is handled in the background
-            } else if (!(key === "id" || key === "dataToGenerate")) {
-
+                // users should not enter IDs or dataToGenerate, this is handled in the background
+            } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
-                    type="text"
-                    name={key}
-                    value={node.getAttribute(key)}
-                    onChange={this.inputChanged}
+                                     type="text"
+                                     name={key}
+                                     value={node.getAttribute(key)}
+                                     onChange={this.inputChanged}
                 />;
                 inputs.push(label);
                 inputs.push(input);
 
+            } else if (key === "assertions") {
+                const buttonString = "Add Assertion";
+                const assertionButton = <button key={i}
+                                                onClick={this.addAssertion}
+                >{buttonString}</button>;
+                inputs.push(<div key={i + " label"}>{label} <br/></div>);
+                if (node instanceof RequestNode) {
+                    const request: RequestNode = node;
+                    for (const assertion of request.getAttribute("assertions")) {
+                        // one can assume assertion names are unique for a request
+                        if (assertion instanceof ResponseCodeAssertion) {
+                            inputs.push(
+                                <div key={assertion.name}>
+                                    <br/>
+                                    <div>Response Code is {assertion.responseCode} ({assertion.name})</div>
+                                </div>);
+                        }
+                        if (assertion instanceof ContentTypeAssertion) {
+                            inputs.push(
+                                <div key={assertion.name}>
+                                    <br/>
+                                    <div>Response Content Type is {assertion.contentType} ({assertion.name})</div>
+                                </div>);
+                        }
+                        if (assertion instanceof ContentNotEmptyAssertion) {
+                            inputs.push(
+                                <div key={assertion.name}>
+                                    <br/>
+                                    <div>Response is not empty ({assertion.name})</div>
+                                </div>);
+                        }
+                    }
+                }
+                inputs.push(assertionButton);
             }
         }
 
@@ -181,6 +246,16 @@ export class Inspector extends React.Component<IProps, IState> {
             />;
         }
 
+        let assertionAdder;
+        if (this.state.addingAssertion) {
+            assertionAdder = <AssertionAdder
+                enableDeleteKey={this.props.enableDeleteKey}
+                disableDeleteKey={this.props.disableDeleteKey}
+                onAdd={this.handleAddAssertionDialog}
+                onCancel={this.handleCancelAuthDialog}
+            />;
+        }
+
         return (
             <div className="inspector">
                 <h3>Inspector</h3>
@@ -190,6 +265,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 {table}
                 {generatorAdder}
                 {authAdder}
+                {assertionAdder}
             </div>
         );
     }

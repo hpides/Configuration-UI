@@ -186,7 +186,26 @@ export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], sta
 function applyAttributes(target: Node, source: any) {
     for (const property in source) {
         if (property) {
-            target.setAttribute(property, source[property]);
+            if (property === "requestParams" || property  === "responseJSONObject") {
+                const value = source[property];
+                let actual = "";
+                let first = false;
+
+                // frontend represents arrays comma-separated
+                for (const part of value) {
+                    if (!first) {
+                        first = true;
+                    } else {
+                        actual += ", ";
+                    }
+                    // there might be whitespaces
+                    actual += part.trim();
+                }
+
+                target.setAttribute(property, actual);
+            } else {
+                target.setAttribute(property, source[property]);
+            }
         }
     }
 }
@@ -239,8 +258,9 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         field.import(generatorToXml(genConfig));
         pdgfFields.push(field);
     }
-    // To-Do : generate unique table name
-    const tableName: string = "abcdef";
+    // Generate a pseudo random unique tablename
+    // https://gist.github.com/gordonbrander/2230317
+    const tableName: string = "_" + Math.random().toString(36).substr(2, 9);
     if (keys.length > 0) {
         atoms.push({
             ...baseAtomObj,
