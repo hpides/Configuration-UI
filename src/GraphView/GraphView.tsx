@@ -159,7 +159,7 @@ export class GraphView extends React.Component<IProps, IState> {
             console.log(root.end({prettyPrint:true}));
 
             story.story.name = this.props.story;
-            return story.story;
+            return story;
         }
         return {};
 
