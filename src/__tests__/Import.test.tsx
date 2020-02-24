@@ -2,18 +2,26 @@ import {LinkModel} from "@projectstorm/react-diagrams-core";
 import {expect} from "chai";
 import React from "react";
 import {ConvertStoryToGraph} from "../GraphView/ConfigJson";
+import {ResponseCodeAssertion} from "../GraphView/Inspector/AssertionConfig";
 import {DataGenerationNode} from "../GraphView/Nodes/DataGenerationNode";
 import {Node} from "../GraphView/Nodes/Node";
 import {RequestNode} from "../GraphView/Nodes/RequestNode";
 import {StartNode} from "../GraphView/Nodes/StartNode";
 /*tslint:disable*/
-function getFixture(): string {
+function getFixture(): any {
     return JSON.parse("{\"name\":\"Rail\",\"scalePercentage\":1,\"atoms\":[{\"name\":\"Start\",\"id\":1,\"repeat\":1,\"successors\":[0],\"type\":\"START\",\"x\":23.993003498250875,\"y\":108.95052473763118},{\"name\":\"Warmup End\",\"id\":0,\"repeat\":1,\"successors\":[2],\"type\":\"WARMUP_END\",\"x\":164.52023988005996,\"y\":109.02598700649675},{\"name\":\"Delay\",\"id\":2,\"repeat\":1,\"successors\":[3,4],\"type\":\"DELAY\",\"x\":330,\"y\":97,\"delay\":\"100\"},{\"name\":\"Data Generation\",\"id\":4,\"repeat\":1,\"successors\":[5],\"type\":\"DATA_GENERATION\",\"x\":477.7661169415293,\"y\":174.9175412293853,\"table\":\"abcdef\",\"data\":[\"username\",\"password\"],\"dataToGenerate\":\"{\\\"value\\\":{\\\"username\\\":{\\\"attributes\\\":{\\\"maxChars\\\":\\\"10\\\"},\\\"__type\\\":\\\"RANDOM_STRING\\\"},\\\"password\\\":{\\\"attributes\\\":{\\\"maxChars\\\":\\\"20\\\"},\\\"__type\\\":\\\"RANDOM_STRING\\\"}}}\"},{\"name\":\"Request\",\"id\":5,\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":760.6246876561719,\"y\":174.9175412293853,\"verb\":\"GET\",\"addr\":\"http://test.host\",\"requestJSONObject\":\"{\\\"user\\\":\\\"$username\\\"}\"},{\"name\":\"Delay\",\"id\":3,\"repeat\":1,\"successors\":[6],\"type\":\"DELAY\",\"x\":549.7301349325337,\"y\":51.97901049475263,\"delay\":\"1\"},{\"name\":\"Request\",\"id\":6,\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":813.1959020489755,\"y\":61.04997501249374,\"verb\":\"GET\",\"addr\":\"http://test.host\"}]}");
 
 }
+function getFixtureWithRequestParams(): any {
+    return JSON.parse("{\"repeat\":\"1\",\"scalePercentage\":\"70\",\"activeInstancesPerSecond\":\"30\",\"maximumConcurrentRequests\":\"50\",\"stories\":[{\"atoms\":[{\"id\":1,\"name\":\"Start\",\"repeat\":1,\"successors\":[0],\"type\":\"START\",\"x\":23.993003498250875,\"y\":108.95052473763118},{\"id\":0,\"name\":\"Warmup End\",\"repeat\":1,\"successors\":[2],\"type\":\"WARMUP_END\",\"x\":164.52023988005996,\"y\":109.02598700649675},{\"id\":2,\"name\":\"Delay\",\"repeat\":1,\"successors\":[3,4],\"type\":\"DELAY\",\"x\":330,\"y\":97,\"delay\":\"100\"},{\"id\":4,\"name\":\"Data Generation\",\"repeat\":1,\"successors\":[5],\"type\":\"DATA_GENERATION\",\"x\":477.7661169415293,\"y\":174.9175412293853,\"data\":[\"username\",\"password\"],\"dataToGenerate\":\"{\\\"value\\\":{\\\"username\\\":{\\\"attributes\\\":{\\\"maxChars\\\":\\\"10\\\"},\\\"__type\\\":\\\"RANDOM_STRING\\\"},\\\"password\\\":{\\\"attributes\\\":{\\\"maxChars\\\":\\\"20\\\"},\\\"__type\\\":\\\"RANDOM_STRING\\\"}}}\",\"table\":\"abcdef\"},{\"id\":5,\"name\":\"Request\",\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":760.6246876561719,\"y\":174.9175412293853,\"addr\":\"http://test.host\",\"verb\":\"GET\",\"requestJSONObject\":\"{\\\"user\\\":\\\"$username\\\"}\"},{\"id\":3,\"name\":\"Delay\",\"repeat\":1,\"successors\":[6],\"type\":\"DELAY\",\"x\":549.7301349325337,\"y\":51.97901049475263,\"delay\":\"1\"},{\"id\":6,\"name\":\"Request\",\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":813.1959020489755,\"y\":61.04997501249374,\"addr\":\"http://test.host\",\"verb\":\"GET\",\"requestParams\":[\"username\",\" password\"],\"responseJSONObject\":[\"username\",\" password\"]}],\"name\":\"Rail\",\"scalePercentage\":1}]}");
+
+}
+
+function getFixtureWithAssertions():any {
+    return JSON.parse("{\"repeat\":\"1\",\"scaleFactor\":\"70\",\"activeInstancesPerSecond\":\"30\",\"maximumConcurrentRequests\":\"50\",\"stories\":[{\"atoms\":[{\"id\":1,\"name\":\"Start\",\"repeat\":1,\"successors\":[0],\"type\":\"START\",\"x\":10,\"y\":10},{\"id\":0,\"name\":\"Request\",\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":371,\"y\":118.30000305175781,\"addr\":\"http://google.com\",\"verb\":\"GET\",\"assertions\":[{\"type\":\"RESPONSE_CODE\",\"_keyhandler\":{},\"name\":\"returns 200\",\"responseCode\":\"200\"},{\"type\":\"CONTENT_NOT_EMPTY\",\"_keyhandler\":{},\"name\":\"Google has something to tell us\"},{\"type\":\"CONTENT_TYPE\",\"_keyhandler\":{},\"name\":\"Google returns html\",\"contentType\":\"text/html; charset=UTF-8\"}]}],\"name\":\"enter story name\",\"scalePercentage\":1}]}");
+}
 
 describe("importer", () => {
-    console.log(getFixture());
     test("should find nodes", async () => {
         const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
         expect(nodes.nodes).to.not.be.empty;
@@ -52,5 +60,35 @@ describe("importer", () => {
         expect(req.getAttribute("verb")).to.eq("GET");
         expect(req.getAttribute("addr")).to.eq("http://test.host");
         expect(req.getAttribute("requestJSONObject")).to.eq("{\"user\":\"$username\"}");
+    });
+
+    test("should preserve Request params", async () => {
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixtureWithRequestParams().stories[0]);
+        const req: RequestNode = nodes.nodes[6] as RequestNode;
+        console.log(req)
+        expect(req.getAttribute("verb")).to.eq("GET");
+        expect(req.getAttribute("addr")).to.eq("http://test.host");
+        expect(req.getAttribute("requestParams")).to.eq("username, password");
+    });
+
+    test("should preserve responseJSONObject", async () => {
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixtureWithRequestParams().stories[0]);
+        const req: RequestNode = nodes.nodes[6] as RequestNode;
+        expect(req.getAttribute("verb")).to.eq("GET");
+        expect(req.getAttribute("addr")).to.eq("http://test.host");
+        expect(req.getAttribute("responseJSONObject")).to.eq("username, password");
+    });
+
+    test("should preserve assertions", async () => {
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixtureWithAssertions().stories[0]);
+        const req: RequestNode = nodes.nodes[1] as RequestNode;
+        console.log(req.getAttribute("assertions"))
+        expect(req.getAttribute("assertions")[0].name).to.eq("returns 200");
+        expect(req.getAttribute("assertions")[0].responseCode).to.eq("200");
+
+        expect(req.getAttribute("assertions")[1].name).to.eq("Google has something to tell us");
+
+        expect(req.getAttribute("assertions")[2].name).to.eq("Google returns html");
+        expect(req.getAttribute("assertions")[2].contentType).to.eq("text/html; charset=UTF-8");
     });
 });
