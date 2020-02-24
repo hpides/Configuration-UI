@@ -49,8 +49,8 @@ export class GraphView extends React.Component<IProps, IState> {
 
         this.state = {
             nodes: [],
+            scalePercentage: 1,
             visible: [true],
-            scalePercentage: 1
         };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});

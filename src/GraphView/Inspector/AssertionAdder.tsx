@@ -1,11 +1,11 @@
 import React from "react";
-import "./GeneratorAdder.css";
 import {
     AssertionConfig,
     ContentNotEmptyAssertion,
     ContentTypeAssertion,
-    ResponseCodeAssertion
+    ResponseCodeAssertion,
 } from "./AssertionConfig";
+import "./GeneratorAdder.css";
 
 interface IProps {
     onAdd: (assertionConfig: AssertionConfig) => void;
@@ -54,19 +54,19 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                 break;
         }
 
-    };
+    }
 
     public doneButtonClicked = () => {
         this.props.onAdd(this.state.assertionConfig);
         // left menu --> should be allowed to delete again
         this.props.enableDeleteKey();
-    };
+    }
 
     public cancelButtonClicked = () => {
         // left menu --> should be allowed to delete again
         this.props.enableDeleteKey();
         this.props.onCancel();
-    };
+    }
 
     public render() {
 

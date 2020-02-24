@@ -1,6 +1,6 @@
+import {Exclude} from "class-transformer";
 import React from "react";
 import "reflect-metadata";
-import {Exclude} from "class-transformer";
 /*tslint:disable:max-classes-per-file*/
 /* tslint:disable:variable-name ... */
 export abstract class AssertionConfig {
@@ -10,14 +10,18 @@ export abstract class AssertionConfig {
         return this._keyhandler;
     }
 
+    public static getTypeString(): string {
+        return "";
+    }
+
     public abstract type: string;
+
+    public name: string = "";
 
     private readonly _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
     };
-
-    public name:string = "";
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         this._keyhandler = {
             disableDeleteKey,
@@ -25,16 +29,11 @@ export abstract class AssertionConfig {
         };
     }
 
-    public static getTypeString(): string{
-        return "";
-    }
-
-
     public setAttribute(key: string, value: any) {
         if (this.getKeys().includes(key)) {
-            const val: {[key:string]: any} = {};
+            const val: {[key: string]: any} = {};
             val[key] = value;
-            Object.assign(this, val)
+            Object.assign(this, val);
         }
     }
 
@@ -47,7 +46,7 @@ export abstract class AssertionConfig {
         if (event) {
             this.setAttribute(event.currentTarget.name, event.currentTarget.value);
         }
-    };
+    }
 
     public render() {
         return(
@@ -58,14 +57,14 @@ export abstract class AssertionConfig {
 }
 
 export class ResponseCodeAssertion extends AssertionConfig {
+
+    public static getTypeString() {
+        return "RESPONSE_CODE";
+    }
     public type = ResponseCodeAssertion.getTypeString();
     public responseCode = 200;
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
-    }
-
-    public static getTypeString() {
-        return "RESPONSE_CODE";
     }
 
     public render() {
@@ -83,15 +82,15 @@ export class ResponseCodeAssertion extends AssertionConfig {
 }
 
 export class ContentTypeAssertion extends AssertionConfig {
+
+    public static getTypeString() {
+        return "CONTENT_TYPE";
+    }
     public type = ContentTypeAssertion.getTypeString();
     public contentType = "application/JSON";
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
 
-    }
-
-    public static getTypeString() {
-        return "CONTENT_TYPE";
     }
 
     public render() {
@@ -109,13 +108,13 @@ export class ContentTypeAssertion extends AssertionConfig {
 }
 
 export class ContentNotEmptyAssertion extends AssertionConfig {
-    public type = ContentNotEmptyAssertion.getTypeString();
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
-        super(disableDeleteKey, enableDeleteKey);
-    }
 
     public static  getTypeString() {
         return "CONTENT_NOT_EMPTY";
+    }
+    public type = ContentNotEmptyAssertion.getTypeString();
+    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
+        super(disableDeleteKey, enableDeleteKey);
     }
 
     public render() {

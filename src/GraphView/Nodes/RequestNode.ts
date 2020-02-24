@@ -1,12 +1,12 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
 import { AtomType } from "../ConfigJson";
-import { Node } from "./Node";
 import {
     AssertionConfig,
     ContentNotEmptyAssertion,
     ContentTypeAssertion,
-    ResponseCodeAssertion
+    ResponseCodeAssertion,
 } from "../Inspector/AssertionConfig";
+import { Node } from "./Node";
 
 import {classToPlain, Type} from "class-transformer";
 import "reflect-metadata";
@@ -17,6 +17,16 @@ interface IBasicAuth {
 }
 
 export class RequestNode extends Node {
+
+    private keyhandler: {
+        disableDeleteKey: () => void,
+        enableDeleteKey: () => void,
+    } = {disableDeleteKey: () => {
+            // do nothing because there is not view which can disable the delete key
+        },
+        enableDeleteKey: () => {
+            // do nothing because there is not view which can enable the delete key
+        } };
 
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
@@ -36,22 +46,12 @@ export class RequestNode extends Node {
         return "REQUEST";
     }
 
-    private keyhandler: {
-        disableDeleteKey: () => void,
-        enableDeleteKey: () => void,
-    } = {disableDeleteKey: () => {
-            // do nothing because there is not view which can disable the delete key
-        },
-        enableDeleteKey: () => {
-            // do nothing because there is not view which can enable the delete key
-        } };
-
     public setAttribute(attr: string, value: any) {
         super.setAttribute(attr, value);
         if (attr === "assertions") {
-            //logic relies on custom parsing
-            if(typeof value !== "string"){
-                value = JSON.stringify(value)
+            // logic relies on custom parsing
+            if (typeof value !== "string") {
+                value = JSON.stringify(value);
             }
             const parsed = JSON.parse(value);
             this.attributes.assertions = [];
@@ -74,16 +74,16 @@ export class RequestNode extends Node {
                         alert("Can not deserialize a " + current.__type);
                         return;
                 }
-                //will copy all keys over
+                // will copy all keys over
                 Object.assign(conf, current);
-                this.attributes.assertions.push(conf)
+                this.attributes.assertions.push(conf);
             }
         }
     }
 
-    public addAssertion(assertion: AssertionConfig){
+    public addAssertion(assertion: AssertionConfig) {
         this.keyhandler = assertion.keyhandler;
         this.attributes.assertions.push(assertion);
-        this.setAttribute("assertions",JSON.stringify(classToPlain(this.attributes.assertions)));
+        this.setAttribute("assertions", JSON.stringify(classToPlain(this.attributes.assertions)));
     }
 }
