@@ -191,7 +191,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 const assertionButton = <button key={i}
                                                 onClick={this.addAssertion}
                 >{buttonString}</button>;
-                inputs.push(<div key={i+" label"}>{label} <br/></div>);
+                inputs.push(<div key={i + " label"}>{label} <br/></div>);
                 if (node instanceof RequestNode) {
                     const request: RequestNode = node;
                     for (const assertion of request.getAttribute("assertions")) {
