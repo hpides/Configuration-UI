@@ -152,8 +152,8 @@ export class GraphView extends React.Component<IProps, IState> {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
-            story.name = this.props.story;
-            story.scalePercentage = this.state.scalePercentage;
+            story.story.name = this.props.story;
+            story.story.scalePercentage = this.state.scalePercentage;
             console.log(JSON.stringify(story.story));
 
             const root = create().ele("schema");
@@ -199,6 +199,7 @@ export class GraphView extends React.Component<IProps, IState> {
 
     public setVisibility(visible: boolean): void {
         // can not use setState here since this method is called during render. So use the array as wrapper and mutate it
+        // eslint-disable-next-line
         this.state.visible[0] = visible;
     }
 

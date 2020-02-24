@@ -63,9 +63,6 @@ export class ResponseCodeAssertion extends AssertionConfig {
     }
     public type = ResponseCodeAssertion.getTypeString();
     public responseCode = 200;
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
-        super(disableDeleteKey, enableDeleteKey);
-    }
 
     public render() {
         return(
@@ -88,10 +85,6 @@ export class ContentTypeAssertion extends AssertionConfig {
     }
     public type = ContentTypeAssertion.getTypeString();
     public contentType = "application/JSON";
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
-        super(disableDeleteKey, enableDeleteKey);
-
-    }
 
     public render() {
         return(
@@ -113,9 +106,6 @@ export class ContentNotEmptyAssertion extends AssertionConfig {
         return "CONTENT_NOT_EMPTY";
     }
     public type = ContentNotEmptyAssertion.getTypeString();
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
-        super(disableDeleteKey, enableDeleteKey);
-    }
 
     public render() {
         return(

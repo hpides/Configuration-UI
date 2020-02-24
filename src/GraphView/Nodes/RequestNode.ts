@@ -8,7 +8,7 @@ import {
 } from "../Inspector/AssertionConfig";
 import { Node } from "./Node";
 
-import {classToPlain, Type} from "class-transformer";
+import {classToPlain} from "class-transformer";
 import "reflect-metadata";
 
 interface IBasicAuth {
