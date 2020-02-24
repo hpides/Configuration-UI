@@ -48,7 +48,11 @@ export class RequestNode extends Node {
 
     public setAttribute(attr: string, value: any) {
         super.setAttribute(attr, value);
-        if (attr === "assertions" && typeof value === "string") {
+        if (attr === "assertions") {
+            //logic relies on custom parsing
+            if(typeof value !== "string"){
+                value = JSON.stringify(value)
+            }
             const parsed = JSON.parse(value);
             this.attributes.assertions = [];
             for (const current of parsed) {
@@ -74,8 +78,6 @@ export class RequestNode extends Node {
                 Object.assign(conf, current);
                 this.attributes.assertions.push(conf)
             }
-        } else if (attr === "assertions") {
-            this.attributes.assertions = value;
         }
     }
 

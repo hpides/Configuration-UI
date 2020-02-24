@@ -3,6 +3,7 @@ import React from "react";
 import "./Inspector.css";
 import { AuthAdder } from "./Inspector/AuthAdder";
 import { AssertionAdder } from "./Inspector/AssertionAdder";
+import { ResponseCodeAssertion, ContentNotEmptyAssertion, ContentTypeAssertion } from "./Inspector/AssertionConfig";
 import { GeneratorAdder } from "./Inspector/GeneratorAdder";
 import {GeneratorConfig} from "./Inspector/GeneratorConfig";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
@@ -102,11 +103,11 @@ export class Inspector extends React.Component<IProps, IState> {
         } as IBasicAuth);
 
         this.setState({addingAuth: false});
-    }
+    };
 
     public handleCancelAuthDialog = () => {
         this.setState({addingAuth: false});
-    }
+    };
 
     public renderTable() {
         if (!(this.props.node instanceof DataGenerationNode)) {
@@ -188,7 +189,19 @@ export class Inspector extends React.Component<IProps, IState> {
                 const assertionButton = <button key={i}
                                            onClick={this.addAssertion}
                 >{buttonString}</button>;
-                inputs.push(label);
+                inputs.push(label, <br/>);
+                if(node instanceof RequestNode){
+                    let request: RequestNode = node;
+                    for(let assertion of request.getAttribute("assertions")){
+                        //one can assume assertion names are unique for a request
+                        if(assertion instanceof ResponseCodeAssertion)
+                            inputs.push(<div key={assertion.name}><br/><div>Response Code is {assertion.responseCode} ({assertion.name})</div></div>);
+                        if(assertion instanceof ContentTypeAssertion)
+                            inputs.push(<div key={assertion.name}><br/>, <div>Response Content Type is {assertion.contentType} ({assertion.name})</div></div>);
+                        if(assertion instanceof ContentNotEmptyAssertion)
+                            inputs.push(<div key={assertion.name}><br/>, <div>Response is not empty ({assertion.name})</div></div>)
+                    }
+                }
                 inputs.push(assertionButton);
             }
         }

@@ -6,7 +6,7 @@ import {Exclude} from "class-transformer";
 export abstract class AssertionConfig {
 
     @Exclude()
-    protected get keyhandler(): { enableDeleteKey: () => void; disableDeleteKey: () => void } {
+     get keyhandler(): { enableDeleteKey: () => void; disableDeleteKey: () => void } {
         return this._keyhandler;
     }
 
@@ -47,7 +47,7 @@ export abstract class AssertionConfig {
         if (event) {
             this.setAttribute(event.currentTarget.name, event.currentTarget.value);
         }
-    }
+    };
 
     public render() {
         return(
