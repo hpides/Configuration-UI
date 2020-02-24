@@ -2,11 +2,13 @@ import {DiagramModel} from "@projectstorm/react-diagrams";
 import React from "react";
 import "./Inspector.css";
 import { AuthAdder } from "./Inspector/AuthAdder";
+import { AssertionAdder } from "./Inspector/AssertionAdder";
 import { GeneratorAdder } from "./Inspector/GeneratorAdder";
 import {GeneratorConfig} from "./Inspector/GeneratorConfig";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
 import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
+import {AssertionConfig} from "./Inspector/AssertionConfig";
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
     node: Node;
@@ -18,6 +20,7 @@ interface IProps {
 interface IState {
     addingGenerator: boolean;
     addingAuth: boolean;
+    addingAssertion: boolean;
 }
 
 interface IBasicAuth {
@@ -32,6 +35,7 @@ export class Inspector extends React.Component<IProps, IState> {
         this.state = {
             addingAuth: false,
             addingGenerator: false,
+            addingAssertion: false
         };
     }
 
@@ -50,7 +54,7 @@ export class Inspector extends React.Component<IProps, IState> {
 
         const node: DataGenerationNode = this.props.node;
 
-        // node.dataToGenerate[name] = genConfig;
+        // node.dataToGenerate[name] = assertionConfig;
         node.addData(name, genConfig);
 
         this.setState({addingGenerator: false});
@@ -62,6 +66,27 @@ export class Inspector extends React.Component<IProps, IState> {
 
     public addAuth = () => {
         this.setState({addingAuth: true});
+    }
+
+    public handleAddAssertionDialog = (config: AssertionConfig) => {
+        if (!(this.props.node instanceof RequestNode)) {
+            return;
+        }
+
+        const node: RequestNode = this.props.node;
+
+        // node.dataToGenerate[name] = assertionConfig;
+        node.addAssertion(config);
+
+        this.setState({addingAssertion: false});
+    }
+
+    public handleCancelAddAssertionDialogf = () => {
+        this.setState({addingAssertion: false});
+    }
+
+    public addAssertion = () => {
+        this.setState({addingAssertion: true});
     }
 
     public handleAddAuthDialog = (user: string, password: string) => {
@@ -126,7 +151,7 @@ export class Inspector extends React.Component<IProps, IState> {
         const inputs: JSX.Element[] = [];
 
         for (let i = 0; i < node.getKeys().length; i++) {
-            const key = node.getKeys()[i];
+            const key:string = node.getKeys()[i];
             let note = "";
             if (key === "requestParams" || key === "responseJSONObject") {
                note += " (comma separated)"
@@ -148,7 +173,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(label);
                 inputs.push(authButton);
             // users should not enter IDs or dataToGenerate, this is handled in the background
-            } else if (!(key === "id" || key === "dataToGenerate")) {
+            } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                     type="text"
                     name={key}
@@ -158,6 +183,13 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(label);
                 inputs.push(input);
 
+            } else if(key === "assertions"){
+                let buttonString = "Add Assertion";
+                const assertionButton = <button key={i}
+                                           onClick={this.addAssertion}
+                >{buttonString}</button>;
+                inputs.push(label);
+                inputs.push(assertionButton);
             }
         }
 
@@ -184,6 +216,16 @@ export class Inspector extends React.Component<IProps, IState> {
             />;
         }
 
+        let assertionAdder;
+        if (this.state.addingAssertion) {
+            authAdder = <AssertionAdder
+                enableDeleteKey={this.props.enableDeleteKey}
+                disableDeleteKey={this.props.disableDeleteKey}
+                onAdd={this.handleAddAssertionDialog}
+                onCancel={this.handleCancelAuthDialog}
+            />;
+        }
+
         return (
             <div className="inspector">
                 <h3>Inspector</h3>
@@ -193,6 +235,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 {table}
                 {generatorAdder}
                 {authAdder}
+                {assertionAdder}
             </div>
         );
     }

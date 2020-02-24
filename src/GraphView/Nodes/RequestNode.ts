@@ -1,6 +1,10 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
 import { AtomType } from "../ConfigJson";
 import { Node } from "./Node";
+import {AssertionConfig} from "../Inspector/AssertionConfig";
+
+import {classToPlain, Type} from "class-transformer";
+import "reflect-metadata";
 
 interface IBasicAuth {
     user: string;
@@ -20,9 +24,14 @@ export class RequestNode extends Node {
         this.attributes.responseJSONObject = "";
         this.attributes.requestParams = "";
         this.attributes.basicAuth = null;
+        this.attributes.assertions = [];
     }
 
     public getAtomType(): AtomType {
         return "REQUEST";
+    }
+
+    public addAssertion(assertion: AssertionConfig){
+        this.attributes.assertions.push(JSON.stringify(classToPlain(assertion)));
     }
 }
