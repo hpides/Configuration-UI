@@ -14,6 +14,7 @@ import {
     DeleteItemsAction,
 } from "@projectstorm/react-canvas-core";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
+import { create } from "xmlbuilder2";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
 import { Inspector } from "./Inspector";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
@@ -149,7 +150,15 @@ export class GraphView extends React.Component<IProps, IState> {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
-            story.name = this.props.story;
+            console.log(JSON.stringify(story.story));
+
+            const root = create().ele("schema");
+            for (const table of story.pdgfTables) {
+                root.import(table);
+            }
+            console.log(root.end({prettyPrint: true}));
+
+            story.story.name = this.props.story;
             return story;
         }
         return {};
