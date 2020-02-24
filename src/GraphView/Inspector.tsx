@@ -127,8 +127,12 @@ export class Inspector extends React.Component<IProps, IState> {
 
         for (let i = 0; i < node.getKeys().length; i++) {
             const key = node.getKeys()[i];
+            let note = "";
+            if (key === "requestParams" || key === "responseJSONObject") {
+               note += " (comma separated)"
+            }
             const label = <label key={key}>
-                {key}
+                {key+note}
             </label>;
 
             if (key === "basicAuth") {
@@ -145,7 +149,6 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(authButton);
             // users should not enter IDs or dataToGenerate, this is handled in the background
             } else if (!(key === "id" || key === "dataToGenerate")) {
-
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                     type="text"
                     name={key}
