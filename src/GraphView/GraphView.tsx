@@ -152,8 +152,11 @@ export class GraphView extends React.Component<IProps, IState> {
             const story = ConvertGraphToStory("Rail", 1, startNode);
             console.log(JSON.stringify(story.story));
 
-            const root = create().ele("schema");
+            const root = create().ele("schema", {name: "demo", "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation": "structure/pdgfSchema.xsd"});
+            root.ele("seed").txt("1234567890");
+            root.ele("property", {name: "SF", type: "double"}).txt("1");
             for (const table of story.pdgfTables) {
+                table.ele("size").txt("10");
                 root.import(table);
             }
             console.log(root.end({prettyPrint: true}));

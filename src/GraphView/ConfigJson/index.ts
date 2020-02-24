@@ -235,7 +235,7 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         }
 
         keys.push(key);
-        const field = fragment().ele("field", {name: key});
+        const field = fragment().ele("field", {name: key, type: "VARCHAR"});
         field.import(generatorToXml(genConfig));
         pdgfFields.push(field);
     }

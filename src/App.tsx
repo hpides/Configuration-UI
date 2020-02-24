@@ -65,7 +65,6 @@ class App extends React.Component<{}, IState> {
         console.log(JSON.stringify(testConfigJSON));
 
         const root = create().ele("schema");
-        console.log("created ele");
         for (const table of pdgfTables) {
             console.log("adding table");
             root.import(table);
