@@ -1,7 +1,12 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
 import { AtomType } from "../ConfigJson";
 import { Node } from "./Node";
-import {AssertionConfig} from "../Inspector/AssertionConfig";
+import {
+    AssertionConfig,
+    ContentNotEmptyAssertion,
+    ContentTypeAssertion,
+    ResponseCodeAssertion
+} from "../Inspector/AssertionConfig";
 
 import {classToPlain, Type} from "class-transformer";
 import "reflect-metadata";
@@ -31,7 +36,52 @@ export class RequestNode extends Node {
         return "REQUEST";
     }
 
+    private keyhandler: {
+        disableDeleteKey: () => void,
+        enableDeleteKey: () => void,
+    } = {disableDeleteKey: () => {
+            // do nothing because there is not view which can disable the delete key
+        },
+        enableDeleteKey: () => {
+            // do nothing because there is not view which can enable the delete key
+        } };
+
+    public setAttribute(attr: string, value: any) {
+        super.setAttribute(attr, value);
+        if (attr === "assertions" && typeof value === "string") {
+            const parsed = JSON.parse(value);
+            this.attributes.assertions = [];
+            for (const current of parsed) {
+                let conf;
+                switch (current.type) {
+                    case ResponseCodeAssertion.getTypeString():
+                        conf = new ResponseCodeAssertion(this.keyhandler.disableDeleteKey,
+                            this.keyhandler.enableDeleteKey);
+                        break;
+                    case ContentNotEmptyAssertion.getTypeString():
+                        conf = new ContentNotEmptyAssertion(this.keyhandler.disableDeleteKey,
+                            this.keyhandler.enableDeleteKey);
+                        break;
+                    case ContentTypeAssertion.getTypeString():
+                        conf = new ContentTypeAssertion(this.keyhandler.disableDeleteKey,
+                            this.keyhandler.enableDeleteKey);
+                        break;
+                    default:
+                        alert("Can not deserialize a " + current.__type);
+                        return;
+                }
+                //will copy all keys over
+                Object.assign(conf, current);
+                this.attributes.assertions.push(conf)
+            }
+        } else if (attr === "assertions") {
+            this.attributes.assertions = value;
+        }
+    }
+
     public addAssertion(assertion: AssertionConfig){
-        this.attributes.assertions.push(JSON.stringify(classToPlain(assertion)));
+        this.keyhandler = assertion.keyhandler;
+        this.attributes.assertions.push(assertion);
+        this.setAttribute("assertions",JSON.stringify(classToPlain(this.attributes.assertions)));
     }
 }

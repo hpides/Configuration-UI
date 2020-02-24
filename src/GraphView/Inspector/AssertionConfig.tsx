@@ -4,13 +4,14 @@ import {Exclude} from "class-transformer";
 /*tslint:disable:max-classes-per-file*/
 /* tslint:disable:variable-name ... */
 export abstract class AssertionConfig {
-    get keyhandler(): { enableDeleteKey: () => void; disableDeleteKey: () => void } {
+
+    @Exclude()
+    protected get keyhandler(): { enableDeleteKey: () => void; disableDeleteKey: () => void } {
         return this._keyhandler;
     }
 
     public abstract type: string;
 
-    @Exclude()
     private readonly _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
@@ -24,7 +25,9 @@ export abstract class AssertionConfig {
         };
     }
 
-    public abstract getTypeString(): string;
+    public static getTypeString(): string{
+        return "";
+    }
 
 
     public setAttribute(key: string, value: any) {
@@ -55,13 +58,13 @@ export abstract class AssertionConfig {
 }
 
 export class ResponseCodeAssertion extends AssertionConfig {
-    public type = this.getTypeString();
+    public type = ResponseCodeAssertion.getTypeString();
     public responseCode = 200;
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
     }
 
-    public getTypeString() {
+    public static getTypeString() {
         return "RESPONSE_CODE";
     }
 
@@ -80,14 +83,14 @@ export class ResponseCodeAssertion extends AssertionConfig {
 }
 
 export class ContentTypeAssertion extends AssertionConfig {
-    public type = this.getTypeString();
+    public type = ContentTypeAssertion.getTypeString();
     public contentType = "application/JSON";
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
 
     }
 
-    public getTypeString() {
+    public static getTypeString() {
         return "CONTENT_TYPE";
     }
 
@@ -106,12 +109,12 @@ export class ContentTypeAssertion extends AssertionConfig {
 }
 
 export class ContentNotEmptyAssertion extends AssertionConfig {
-    public type = this.getTypeString();
+    public type = ContentNotEmptyAssertion.getTypeString();
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
     }
 
-    public getTypeString() {
+    public static  getTypeString() {
         return "CONTENT_NOT_EMPTY";
     }
 
