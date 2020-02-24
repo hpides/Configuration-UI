@@ -73,7 +73,7 @@ export abstract class Node extends DefaultNodeModel {
         }
     }
 
-    public getKeys() {
+    public getKeys(): string[] {
         return Object.keys(this.attributes);
     }
 
