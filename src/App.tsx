@@ -64,10 +64,11 @@ class App extends React.Component<{}, IState> {
         testConfigJSON.stories  = stories;
         console.log(JSON.stringify(testConfigJSON));
 
-        const root = create().ele("schema");
-        console.log("created ele");
+        const root = create().ele("schema", {"name": "demo", "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation": "structure/pdgfSchema.xsd"});
+        root.ele("seed").txt("1234567890");
+        root.ele("property", {name: "SF", type: "double"}).txt("1");
         for (const table of pdgfTables) {
-            console.log("adding table");
+            table.ele("size").txt(testConfigJSON.scaleFactor); // To-Do multiply with stories scalefactor
             root.import(table);
         }
         console.log(root.end({prettyPrint: true}));
