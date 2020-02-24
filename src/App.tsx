@@ -1,5 +1,7 @@
 import React from "react";
 import "reflect-metadata";
+import { create } from "xmlbuilder2";
+import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ApisEditor} from "./ApisEditor/ApisEditor";
 import "./App.css";
 import {GraphView} from "./GraphView/GraphView";
@@ -7,8 +9,6 @@ import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
-import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
-import { create } from "xmlbuilder2";
 
 interface IState {
     currentView: Views;
@@ -64,13 +64,13 @@ class App extends React.Component<{}, IState> {
         testConfigJSON.stories  = stories;
         console.log(JSON.stringify(testConfigJSON));
 
-        const root = create().ele('schema');
+        const root = create().ele("schema");
         console.log("created ele");
         for (const table of pdgfTables) {
             console.log("adding table");
             root.import(table);
         }
-        console.log(root.end({prettyPrint:true}));
+        console.log(root.end({prettyPrint: true}));
 
         return "";
     }

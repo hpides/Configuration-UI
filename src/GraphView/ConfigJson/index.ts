@@ -2,6 +2,9 @@ import { Point } from "@projectstorm/geometry";
 import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
 import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
+import { fragment } from "xmlbuilder2";
+import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
+import { GeneratorConfig } from "../Inspector/GeneratorConfig";
 import {DataGenerationNode} from "../Nodes/DataGenerationNode";
 import {DelayNode} from "../Nodes/DelayNode";
 import {RequestNode} from "../Nodes/RequestNode";
@@ -10,9 +13,6 @@ import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import { StartNode } from "./../Nodes/StartNode";
 import IDictionary from "./IDictionary";
-import { fragment, create } from "xmlbuilder2";
-import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
-import { GeneratorConfig } from "../Inspector/GeneratorConfig";
 
 export interface ITest {
     repeat: number;
@@ -75,7 +75,7 @@ interface IBasicAuth {
 }
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
-export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode): {story: IStory, pdgfTables: XMLBuilder[]} {
+export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode): {pdgfTables: XMLBuilder[], story: IStory} {
     const atoms: IBaseAtom[] = [];
     const closedNodeIds: Set<string> = new Set();
     const nodesToProcess: BaseNode[] = [];
@@ -111,11 +111,13 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
         node = nodesToProcess.pop();
     }
 
-    return {story: {
-        atoms,
-        name,
-        scalePercentage,
-    }, pdgfTables: pdgfTables};
+    return {pdgfTables,
+        story: {
+            atoms,
+            name,
+            scalePercentage,
+        },
+    };
 }
 
 export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
@@ -193,10 +195,10 @@ function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
     const frag = fragment();
     switch (genConfig.getTypeString()) {
         case "RANDOM_STRING":
-            frag.ele('gen_RandomString').ele('max').txt(genConfig.getAttribute('maxChars'));
+            frag.ele("gen_RandomString").ele("max").txt(genConfig.getAttribute("maxChars"));
             break;
         case "E_MAIL":
-            frag.ele('gen_Email');
+            frag.ele("gen_Email");
             break;
         default:
             console.log(genConfig.getTypeString() + " unknown generator");
@@ -233,8 +235,8 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         }
 
         keys.push(key);
-        const field = fragment().ele('field', {name: key});
-        field.import(generatorToXml(genConfig))
+        const field = fragment().ele("field", {name: key});
+        field.import(generatorToXml(genConfig));
         pdgfFields.push(field);
     }
     // To-Do : generate unique table name
@@ -249,8 +251,7 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         });
     }
 
-    
-    const pdgfTable = fragment().ele('table', {name: tableName});
+    const pdgfTable = fragment().ele("table", {name: tableName});
     for (const field of pdgfFields) {
         pdgfTable.import(field);
     }
@@ -285,7 +286,7 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     if (atoms.length > 1) {
         atoms[atoms.length - 1].successors = baseAtomObj.successors;
     }
-    return {atoms: atoms, pdgfTable: pdgfTable};
+    return {atoms, pdgfTable};
 }
 
 function ConvertNode(idMap: IdMap, node: BaseNode): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
