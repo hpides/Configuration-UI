@@ -31,6 +31,7 @@ interface IStory {
 
 interface IState extends IStory {
     visible: boolean[];
+    scalePercentage: number;
 }
 
 interface IProps {
@@ -49,6 +50,7 @@ export class GraphView extends React.Component<IProps, IState> {
         this.state = {
             nodes: [],
             visible: [true],
+            scalePercentage: 1
         };
 
         this.engine = createEngine({registerDefaultDeleteItemsAction: false});
@@ -150,6 +152,7 @@ export class GraphView extends React.Component<IProps, IState> {
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode);
             story.name = this.props.story;
+            story.scalePercentage = this.state.scalePercentage;
             return story;
         }
         return {};
@@ -162,7 +165,7 @@ export class GraphView extends React.Component<IProps, IState> {
 
     public importNodes = (story: any): void => {
         const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(story);
-        this.setState({nodes: []});
+        this.setState({nodes: [], scalePercentage: story.scalePercentage});
 
         for (const node of nodes.nodes) {
             node.registerListener({
@@ -213,18 +216,29 @@ export class GraphView extends React.Component<IProps, IState> {
             />;
         }
         return (
-            <div id="graphview" style={this.state.visible[0] ? {visibility: "visible"} : {visibility: "hidden"}}>
-                <div className="container"
-                    onDrop={this.handleDrop}
-                    onDragOver={(event) => {
-                        event.preventDefault();
-                    }}
-                >
-                    <CanvasWidget engine={this.engine}/>
+            <div style={this.state.visible[0] ? {visibility: "visible"} : {visibility: "hidden"}}>
+                <div className="scalePercentageText">Scale percentage: </div>
+                <input type="number" value={this.state.scalePercentage} onChange={this.handleScalePercentageChanged} className="scalePercentageTextField"/>
+                <div>
+                <div id="graphview">
+
+                    <div className="container"
+                         onDrop={this.handleDrop}
+                         onDragOver={(event) => {
+                             event.preventDefault();
+                         }}
+                    >
+                        <CanvasWidget engine={this.engine}/>
+                    </div>
+                    <NodeAdder onAddNode={this.addNode}/>
+                    {inspector}
                 </div>
-                <NodeAdder onAddNode={this.addNode}/>
-                {inspector}
+                </div>
             </div>
         );
+    }
+
+    private handleScalePercentageChanged = (event: React.FormEvent<HTMLInputElement>): void => {
+        this.setState({scalePercentage: +event.currentTarget.value});
     }
 }
