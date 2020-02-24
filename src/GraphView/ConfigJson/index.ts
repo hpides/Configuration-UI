@@ -2,6 +2,9 @@ import { Point } from "@projectstorm/geometry";
 import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
 import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
+import { fragment } from "xmlbuilder2";
+import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
+import { GeneratorConfig } from "../Inspector/GeneratorConfig";
 import {DataGenerationNode} from "../Nodes/DataGenerationNode";
 import {DelayNode} from "../Nodes/DelayNode";
 import {RequestNode} from "../Nodes/RequestNode";
@@ -10,6 +13,7 @@ import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import { StartNode } from "./../Nodes/StartNode";
 import IDictionary from "./IDictionary";
+
 export interface ITest {
     repeat: number;
     scaleFactor: number;
@@ -32,7 +36,6 @@ interface IBaseAtom {
     type: AtomType;
     x: number;
     y: number;
-
 }
 
 interface IDataGenerationAtom extends IBaseAtom {
@@ -72,18 +75,23 @@ interface IBasicAuth {
 }
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
-export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode): IStory {
+export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode): {pdgfTables: XMLBuilder[], story: IStory} {
     const atoms: IBaseAtom[] = [];
     const closedNodeIds: Set<string> = new Set();
     const nodesToProcess: BaseNode[] = [];
     const idMap = new IdMap();
 
+    const pdgfTables: XMLBuilder[] = [];
+
     let node: BaseNode | undefined = startNode;
     closedNodeIds.add(startNode.getID());
     while (node) {
         const baseAtoms = ConvertNode(idMap, node);
-        for (const atom of baseAtoms) {
+        for (const atom of baseAtoms.atoms) {
             atoms.push(atom);
+        }
+        if (baseAtoms.pdgfTable) {
+            pdgfTables.push(baseAtoms.pdgfTable);
         }
         for (const port of node.getOutPorts()) {
             if (port) {
@@ -103,11 +111,13 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
         node = nodesToProcess.pop();
     }
 
-    return {
-        atoms,
-        name,
-        scalePercentage,
-    } as IStory;
+    return {pdgfTables,
+        story: {
+            atoms,
+            name,
+            scalePercentage,
+        },
+    };
 }
 
 export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
@@ -200,18 +210,36 @@ function applyAttributes(target: Node, source: any) {
     }
 }
 
-function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): IDataGenerationAtom[] {
+function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
+    const frag = fragment();
+    switch (genConfig.getTypeString()) {
+        case "RANDOM_STRING":
+            frag.ele("gen_RandomString").ele("max").txt(genConfig.getAttribute("maxChars"));
+            break;
+        case "E_MAIL":
+            frag.ele("gen_Email");
+            break;
+        default:
+            console.log(genConfig.getTypeString() + " unknown generator");
+            break;
+    }
+    return frag;
+}
+
+function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): {atoms: IDataGenerationAtom[], pdgfTable?: XMLBuilder} {
     const atoms: IDataGenerationAtom[] = [];
+
+    const pdgfFields: XMLBuilder[] = [];
 
     const dataToGenerate = node.dataToGenerate;
     if (Array.from(node.dataToGenerate.value.keys()).length === 0) {
-        return [{
+        return {atoms: [{
             ...baseAtomObj,
             data: [],
             dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: "",
-        }];
+        }]};
     }
 
     /*
@@ -226,9 +254,13 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         }
 
         keys.push(key);
+        const field = fragment().ele("field", {name: key});
+        field.import(generatorToXml(genConfig));
+        pdgfFields.push(field);
     }
-    // To-Do : generate unique table name
-    const tableName: string = "abcdef";
+    // Generate a pseudo random unique tablename
+    // https://gist.github.com/gordonbrander/2230317
+    const tableName: string = "_" + Math.random().toString(36).substr(2, 9);
     if (keys.length > 0) {
         atoms.push({
             ...baseAtomObj,
@@ -237,6 +269,11 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
             name: node.getAttribute("name"),
             table: tableName,
         });
+    }
+
+    const pdgfTable = fragment().ele("table", {name: tableName});
+    for (const field of pdgfFields) {
+        pdgfTable.import(field);
     }
 
     /*
@@ -269,10 +306,10 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     if (atoms.length > 1) {
         atoms[atoms.length - 1].successors = baseAtomObj.successors;
     }
-    return atoms;
+    return {atoms, pdgfTable};
 }
 
-function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
+function ConvertNode(idMap: IdMap, node: BaseNode): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
     const type = node.getAtomType();
 
     const successors: number[] = [];
@@ -306,11 +343,11 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
             const ret = ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
             return ret;
         case "DELAY":
-            return [{
+            return {atoms: [{
                 ...baseAtomObj,
                 delay: node.getAttribute("delay"),
                 name: node.getAttribute("name"),
-            } as IDelayAtom];
+            } as IDelayAtom]};
         case "REQUEST":
             const request = {
                 ...baseAtomObj,
@@ -342,9 +379,9 @@ function ConvertNode(idMap: IdMap, node: BaseNode): IBaseAtom[] {
             if (attr) {
                 request.assertions = attr;
             }
-            return [request];
+            return {atoms: [request]};
     }
-    return [baseAtomObj];
+    return {atoms: [baseAtomObj]};
 }
 
 class IdMap {
