@@ -1,5 +1,4 @@
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import {ChartOptions, ChartPoint} from "chart.js";
 import jspdf from "jspdf";
 import {Client, connect} from "mqtt";

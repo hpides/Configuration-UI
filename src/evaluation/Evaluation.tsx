@@ -1,5 +1,5 @@
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "./Evaluation.css"
 import React, {Component} from "react";
 import {MqttWorker} from "./mqtt_worker";
 
@@ -17,10 +17,8 @@ interface IAppState {
 
 export class Evaluation extends Component<IProps, IAppState> {
     private interval: any = null;
-    private checkedParameter: boolean = false;
-    constructor(props: any) {
-        super(props);
-    }
+
+    private currentId?:string = undefined;
 
     public componentDidMount() {
         this.setState({runningTests: [], finishedTests: []});
@@ -39,13 +37,13 @@ export class Evaluation extends Component<IProps, IAppState> {
         if (this.state && this.state.currentId) {
             ret = <div className={"text-center"}>
                 <h1 className={"display-4"}>Evaluation UI - Test in progress</h1>
-                <button className={"btn btn-secondary"} onClick={(event: any) => this.back()}>Back to overview</button>
+                <button style={{display:"inline"}} onClick={(event: any) => this.back()}>Back to overview</button>
                 <MqttWorker testId={this.state.currentId} isRunning={this.state.currentIdIsRunning}/>
             </div>;
         } else {
-            ret = <div className="App">
-                <h2 className={"display-4"}>Running tests</h2>
-                <ul className={"list-group text-center"}>
+            ret = <div className="Evaluation multiColumnDiv">
+                <h2>Running tests</h2>
+                <ul className={"multiColumnDiv"}>
                     {this.state && this.state.runningTests && this.state.runningTests.map((id, index) => {
                         return <li className={"list-group-item list-group-item-action"} key={id}>
                             <button onClick={(event: any) => {
@@ -82,7 +80,12 @@ export class Evaluation extends Component<IProps, IAppState> {
         }).then((response) => {
             this.setState({finishedTests: response.data});
             if(this.props.id){
-                this.renderMqttWorker(this.props.id.toString(), !this.isIncluded(this.props.id, response.data))
+                //make sure we do not keep loading the same ID
+                if(!this.currentId || this.currentId !== this.props.id) {
+                    this.currentId = this.props.id;
+                    this.renderMqttWorker(this.props.id.toString(), !this.isIncluded(this.props.id, response.data));
+                    this.forceUpdate()
+                }
             }
         });
     }

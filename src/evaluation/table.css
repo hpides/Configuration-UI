@@ -22,6 +22,7 @@ ul {
     width: 33vw;
     height: 100%;
     overflow: auto;
+    background-color: white;
 }
 
 .scrollHorizontally {
