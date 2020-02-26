@@ -115,16 +115,19 @@ class App extends React.Component<{}, IState> {
         axios.post("http://localhost:8080/uploadPDGF", config.xml, axiosParams).then((r) => {
                 console.log(r.status);
                 if (r.status === 200) {
+                    const date = new Date(0);
+                    date.setUTCMilliseconds(+config.id);
+                    const dateString = date.toLocaleString();
                     alert("PDGF finished, press \"OK\" to start actual test!");
                     this.setState({pdgfRunning: false});
                     axiosParams.headers = {
                         "Content-Type": "application/json",
                     };
-                    axios.post("http://localhost:8080/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + config.id + " finished!")).catch((e) => alert(e));
+                    axios.post("http://localhost:8080/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + dateString + " finished!")).catch((e) => alert(e));
                     this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
                 }
         },
-            ).catch((e) => alert(e));
+            ).catch((e) => {alert(e); this.setState({pdgfRunning: false}); });
     }
 
     public render() {
