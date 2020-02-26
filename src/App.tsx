@@ -1,4 +1,5 @@
 import axios, {AxiosRequestConfig} from "axios";
+import {classToPlain} from "class-transformer";
 import React from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 import "reflect-metadata";
@@ -12,7 +13,6 @@ import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
-import {classToPlain} from "class-transformer";
 
 interface IState {
     currentView: Views;
@@ -70,7 +70,7 @@ class App extends React.Component<{}, IState> {
             testConfigJSON.maximumConcurrentRequests = testConfigState.maximumConcurrentRequests;
         }
         testConfigJSON.stories  = stories;
-        //make sure to remove excluded attributes before export
+        // make sure to remove excluded attributes before export
         console.log(JSON.stringify(classToPlain(testConfigJSON)));
 
         const root = create().ele("schema", {"name": "demo", "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation": "structure/pdgfSchema.xsd"});
@@ -82,7 +82,7 @@ class App extends React.Component<{}, IState> {
         }
         console.log(root.end({prettyPrint: true}));
 
-        //make sure to remove excluded attributes before export
+        // make sure to remove excluded attributes before export
         return {json: JSON.stringify(classToPlain(testConfigJSON)), xml: root.end({prettyPrint: true}).toString(), id: Date.now()};
     }
 
