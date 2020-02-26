@@ -58,6 +58,10 @@ export class Sidebar extends React.Component<IProps, IState> {
         return (
             <div className="sidebar">
                 <button
+                    name="overview"
+                    onClick={event => window.location.href = "/evaluation"}
+                >Running and finished tests</button>
+                <button
                     name="apis"
                     className={cv === Views.Apis ? "active" : ""}
                     onClick={this.changeView}
