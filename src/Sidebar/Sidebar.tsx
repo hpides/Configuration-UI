@@ -36,6 +36,9 @@ export class Sidebar extends React.Component<IProps, IState> {
             case "userstories":
                 nextView = Views.UserStories;
                 break;
+            case "evaluation":
+                nextView = Views.Evaluation;
+                break;
             default:
                 nextView = Views.Apis;
                 break;
@@ -57,6 +60,11 @@ export class Sidebar extends React.Component<IProps, IState> {
 
         return (
             <div className="sidebar">
+                <button
+                    name="evaluation"
+                    className={cv === Views.Evaluation ? "active" : ""}
+                    onClick={this.changeView}
+                >Running and finished tests</button>
                 <button
                     name="apis"
                     className={cv === Views.Apis ? "active" : ""}

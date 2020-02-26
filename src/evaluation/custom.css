@@ -1,0 +1,44 @@
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+code {
+    color: #E01A76;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.rest-op-get {
+    background-color: #00CC00;
+}
+
+.rest-op-delete {
+    background-color: #ff0000;
+}
+
+.rest-op-post {
+    background-color: #ff7400;
+}
+
+.rest-op-patch {
+    background-color: #ff0000;
+}
+
+.rest-op-put {
+    background-color: #009999;
+}
+
+.node-editor-body {
+    display: flex;
+    flex-direction: row;
+}
+
+.node-inspector {
+    min-width: 100px;
+    flex-grow: 0;
+}
