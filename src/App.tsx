@@ -10,11 +10,13 @@ import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
 import axios, {AxiosRequestConfig} from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 
 interface IState {
     currentView: Views;
     currentStory: string | null;
     readonly stories: Set<string>;
+    pdgfRunning: boolean
 }
 
 /*tslint:disable:no-console*/
@@ -34,6 +36,7 @@ class App extends React.Component<{}, IState> {
             currentStory: null,
             currentView: Views.UserStories,
             stories: new Set<string>(),
+            pdgfRunning: false
         };
     }
 
@@ -44,7 +47,7 @@ class App extends React.Component<{}, IState> {
         this.setState({currentView: view, currentStory: story});
 
     }
-    public export = (): {json:string, xml:string} => {
+    public export = (): {json:string, xml:string, id: number} => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
         this.graphViews.forEach((graphView) => {
@@ -74,7 +77,7 @@ class App extends React.Component<{}, IState> {
         }
         console.log(root.end({prettyPrint: true}));
 
-        return {json: JSON.stringify(testConfigJSON), xml: root.end({prettyPrint: true}).toString()};
+        return {json: JSON.stringify(testConfigJSON), xml: root.end({prettyPrint: true}).toString(), id: Date.now()};
     };
 
     public import = (testConfig: any): void => {
@@ -102,6 +105,7 @@ class App extends React.Component<{}, IState> {
 
     public startTest = ():void => {
         const config = this.export();
+        this.setState({pdgfRunning: true});
         const axiosParams = {headers: {
             "Content-Type": "application/xml"
             }} as AxiosRequestConfig;
@@ -109,10 +113,11 @@ class App extends React.Component<{}, IState> {
                 console.log(r.status);
                 if(r.status === 200){
                     alert("PDGF finished, press \"OK\" to start actual test!");
+                    this.setState({pdgfRunning: false});
                     axiosParams.headers = {
                         "Content-Type": "application/json"
                     };
-                    axios.post("http://localhost:8080/upload", config.json, axiosParams).then(r=> alert(r.status)).catch(e => alert(e))
+                    axios.post("http://localhost:8080/upload/"+config.id, config.json, axiosParams).then(r=> alert("Test "+config.id+" finished!")).catch(e => alert(e))
                 }
         }
             ).catch(e => alert(e))
@@ -133,6 +138,10 @@ class App extends React.Component<{}, IState> {
 
                     <button onClick={this.startTest}>Start test</button>
                     <img src={logo} className="App-logo" alt="logo"/>
+                    <div style={this.state.pdgfRunning ? {visibility: "visible"} : {visibility: "hidden"}}>
+                        PDGF running
+                    </div>
+                    <ClipLoader loading={this.state.pdgfRunning}/>
                 </header>
                 <div className="content">
                     <Sidebar currentView={this.state.currentView} changeView={this.changeView}
