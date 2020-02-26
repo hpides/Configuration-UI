@@ -5,6 +5,7 @@ import {MqttWorker} from "./mqtt_worker";
 
 interface IProps {
     id?: string;
+    importTestConfig: (testConfig: any) => void
 }
 
 interface IAppState {
@@ -36,6 +37,7 @@ export class Evaluation extends Component<IProps, IAppState> {
         if (this.state && this.state.currentId) {
             ret = <div className={"text-center"}>
                 <button style={{display: "inline"}} onClick={(event: any) => this.back()}>Back to overview</button>
+                <button style={{display: "inline"}} onClick={(event: any) => this.import()}>Import config of test</button>
                 <MqttWorker testId={this.state.currentId} isRunning={this.state.currentIdIsRunning}/>
             </div>;
         } else {
@@ -108,6 +110,13 @@ export class Evaluation extends Component<IProps, IAppState> {
 
     private back() {
         this.setState({currentId: null});
+    }
+
+    private import() {
+        axios.get<any>("http://users:8080/test/"+this.state.currentId).then(response => {
+            this.props.importTestConfig(JSON.parse(response.data.testConfig))
+        }).catch(e => alert(e))
+
     }
 }
 
