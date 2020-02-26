@@ -36,21 +36,24 @@ export class Sidebar extends React.Component<IProps, IState> {
             case "userstories":
                 nextView = Views.UserStories;
                 break;
+            case "evaluation":
+                nextView = Views.Evaluation;
+                break;
             default:
                 nextView = Views.Apis;
                 break;
         }
         this.props.changeView(nextView, this.state.activeStory);
-    }
+    };
 
     public addStory = (story: string) => {
         this.state.stories.push(story);
         this.setState({stories: this.state.stories});
-    }
+    };
 
     public handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
         this.setState({currentlyAddStory: event.currentTarget.value});
-    }
+    };
 
     public render() {
         const cv = this.props.currentView;
@@ -58,8 +61,9 @@ export class Sidebar extends React.Component<IProps, IState> {
         return (
             <div className="sidebar">
                 <button
-                    name="overview"
-                    onClick={event => window.location.href = "/evaluation"}
+                    name="evaluation"
+                    className={cv === Views.Evaluation ? "active" : ""}
+                    onClick={this.changeView}
                 >Running and finished tests</button>
                 <button
                     name="apis"

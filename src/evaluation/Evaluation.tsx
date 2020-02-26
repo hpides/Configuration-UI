@@ -1,9 +1,11 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, {Component} from "react";
-import {match} from "react-router";
-//import "./Evaluation.css";
 import {MqttWorker} from "./mqtt_worker";
+
+interface IProps {
+    id?: string
+}
 
 interface IAppState {
     runningTests: string[];
@@ -12,16 +14,8 @@ interface IAppState {
     currentIdIsRunning: boolean;
 }
 
-interface IDParams {
-    id: string;
-}
 
-interface IDProps {
-    required: string;
-    match?: match<IDParams>;
-}
-
-export class Evaluation extends Component<IDProps, IAppState> {
+export class Evaluation extends Component<IProps, IAppState> {
     private interval: any = null;
     private checkedParameter: boolean = false;
     constructor(props: any) {
@@ -42,18 +36,14 @@ export class Evaluation extends Component<IDProps, IAppState> {
 
     public render() {
         let ret: any;
-        const returnButton =
-            <button className={"btn btn-secondary"} onClick={(event: any) => window.location.href = "/"}>Back to test configuration</button>;
         if (this.state && this.state.currentId) {
             ret = <div className={"text-center"}>
                 <h1 className={"display-4"}>Evaluation UI - Test in progress</h1>
                 <button className={"btn btn-secondary"} onClick={(event: any) => this.back()}>Back to overview</button>
-                {returnButton}
                 <MqttWorker testId={this.state.currentId} isRunning={this.state.currentIdIsRunning}/>
             </div>;
         } else {
             ret = <div className="App">
-                {returnButton}
                 <h2 className={"display-4"}>Running tests</h2>
                 <ul className={"list-group text-center"}>
                     {this.state && this.state.runningTests && this.state.runningTests.map((id, index) => {
@@ -91,11 +81,8 @@ export class Evaluation extends Component<IDProps, IAppState> {
             url: "http://users:8080/tests/finished",
         }).then((response) => {
             this.setState({finishedTests: response.data});
-            // do not set requested test every 2 seconds
-            if (this.props.match && this.props.match.params.id && !this.checkedParameter) {
-                const id = this.props.match.params.id.toString();
-                this.checkedParameter = true;
-                this.renderMqttWorker(id, !this.isIncluded(id, response.data));
+            if(this.props.id){
+                this.renderMqttWorker(this.props.id.toString(), !this.isIncluded(this.props.id, response.data))
             }
         });
     }
