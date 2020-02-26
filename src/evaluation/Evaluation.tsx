@@ -20,6 +20,13 @@ export class Evaluation extends Component<IProps, IAppState> {
 
     private currentId?: string = undefined;
 
+    private readonly performanceDataStorageHost: string;
+
+    public constructor(props: IProps) {
+        super(props);
+        this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || "localhost";
+    }
+
     public componentDidMount() {
         this.setState({runningTests: [], finishedTests: []});
         this.loadTests();
@@ -76,12 +83,12 @@ export class Evaluation extends Component<IProps, IAppState> {
 
     private loadTests() {
         axios.request<string[]>({
-            url: "http://users:8080/tests/running",
+            url: "http://" + this.performanceDataStorageHost + "/tests/running",
         }).then((response) => {
             this.setState({runningTests: response.data});
         });
         axios.request<string[]>({
-            url: "http://users:8080/tests/finished",
+            url: "http://" + this.performanceDataStorageHost + "/tests/finished",
         }).then((response) => {
             this.setState({finishedTests: response.data});
             if (this.props.id) {
@@ -114,7 +121,8 @@ export class Evaluation extends Component<IProps, IAppState> {
     }
 
     private import() {
-        axios.get<any>("http://users:8080/test/" + this.state.currentId).then((response) => {
+        axios.get<any>("http://" + this.performanceDataStorageHost
+            + "/test/" + this.state.currentId).then((response) => {
             this.props.importTestConfig(JSON.parse(response.data.testConfig));
         }).catch((e) => alert(e));
 

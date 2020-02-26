@@ -1,5 +1,11 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Environment variables
 
+Set the following environment variables to define hosts for the other components:
+
+- **REACT_APP_PDS_HOST** Host of performance data storage, e.g. example.com:8080, defaults to *localhost*
+- **REACT_APP_REQGEN_HOST** Host of request generator, e.g. example.com:8080, defaults to *localhost*
+- **REACT_APP_MQTT_HOST** Host of mqtt broker, e.g. example.com, defaults to *localhost*
 ## Available Scripts
 
 In the project directory, you can run:
