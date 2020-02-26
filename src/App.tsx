@@ -1,4 +1,6 @@
+import axios, {AxiosRequestConfig} from "axios";
 import React from "react";
+import ClipLoader from "react-spinners/ClipLoader";
 import "reflect-metadata";
 import { create } from "xmlbuilder2";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
@@ -9,14 +11,12 @@ import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
-import axios, {AxiosRequestConfig} from "axios";
-import ClipLoader from "react-spinners/ClipLoader";
 
 interface IState {
     currentView: Views;
     currentStory: string | null;
     readonly stories: Set<string>;
-    pdgfRunning: boolean
+    pdgfRunning: boolean;
 }
 
 /*tslint:disable:no-console*/
@@ -35,8 +35,8 @@ class App extends React.Component<{}, IState> {
         this.state = {
             currentStory: null,
             currentView: Views.UserStories,
+            pdgfRunning: false,
             stories: new Set<string>(),
-            pdgfRunning: false
         };
     }
 
@@ -47,7 +47,7 @@ class App extends React.Component<{}, IState> {
         this.setState({currentView: view, currentStory: story});
 
     }
-    public export = (): {json:string, xml:string, id: number} => {
+    public export = (): {json: string, xml: string, id: number} => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
         this.graphViews.forEach((graphView) => {
@@ -78,7 +78,7 @@ class App extends React.Component<{}, IState> {
         console.log(root.end({prettyPrint: true}));
 
         return {json: JSON.stringify(testConfigJSON), xml: root.end({prettyPrint: true}).toString(), id: Date.now()};
-    };
+    }
 
     public import = (testConfig: any): void => {
         const stories: any[] = testConfig.stories;
@@ -101,27 +101,27 @@ class App extends React.Component<{}, IState> {
                 views[i].setVisibility(false);
             }
         });
-    };
+    }
 
-    public startTest = ():void => {
+    public startTest = (): void => {
         const config = this.export();
         this.setState({pdgfRunning: true});
         const axiosParams = {headers: {
-            "Content-Type": "application/xml"
+            "Content-Type": "application/xml",
             }} as AxiosRequestConfig;
-        axios.post("http://localhost:8080/uploadPDGF", config.xml, axiosParams).then(r => {
+        axios.post("http://localhost:8080/uploadPDGF", config.xml, axiosParams).then((r) => {
                 console.log(r.status);
-                if(r.status === 200){
+                if (r.status === 200) {
                     alert("PDGF finished, press \"OK\" to start actual test!");
                     this.setState({pdgfRunning: false});
                     axiosParams.headers = {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     };
-                    axios.post("http://localhost:8080/upload/"+config.id, config.json, axiosParams).then(r=> alert("Test "+config.id+" finished!")).catch(e => alert(e))
+                    axios.post("http://localhost:8080/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + config.id + " finished!")).catch((e) => alert(e));
                 }
-        }
-            ).catch(e => alert(e))
-    };
+        },
+            ).catch((e) => alert(e));
+    }
 
     public render() {
         this.graphViews.forEach((view) => {
