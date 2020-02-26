@@ -9,6 +9,7 @@ import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
+import axios, {AxiosRequestConfig} from "axios";
 
 interface IState {
     currentView: Views;
@@ -43,7 +44,7 @@ class App extends React.Component<{}, IState> {
         this.setState({currentView: view, currentStory: story});
 
     }
-    public export = (): string => {
+    public export = (): {json:string, xml:string} => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
         this.graphViews.forEach((graphView) => {
@@ -73,8 +74,8 @@ class App extends React.Component<{}, IState> {
         }
         console.log(root.end({prettyPrint: true}));
 
-        return "";
-    }
+        return {json: JSON.stringify(testConfigJSON), xml: root.end({prettyPrint: true}).toString()};
+    };
 
     public import = (testConfig: any): void => {
         const stories: any[] = testConfig.stories;
@@ -97,7 +98,25 @@ class App extends React.Component<{}, IState> {
                 views[i].setVisibility(false);
             }
         });
-    }
+    };
+
+    public startTest = ():void => {
+        const config = this.export();
+        const axiosParams = {headers: {
+            "Content-Type": "application/xml"
+            }} as AxiosRequestConfig;
+        axios.post("http://localhost:8080/uploadPDGF", config.xml, axiosParams).then(r => {
+                console.log(r.status);
+                if(r.status === 200){
+                    alert("PDGF finished, press \"OK\" to start actual test!");
+                    axiosParams.headers = {
+                        "Content-Type": "application/json"
+                    };
+                    axios.post("http://localhost:8080/upload", config.json, axiosParams).then(r=> alert(r.status)).catch(e => alert(e))
+                }
+        }
+            ).catch(e => alert(e))
+    };
 
     public render() {
         this.graphViews.forEach((view) => {
@@ -111,6 +130,8 @@ class App extends React.Component<{}, IState> {
                     <button
                         onClick={(event) => this.import(JSON.parse(prompt("Array of stories JSON please:") || "[]"))}>Import
                     </button>
+
+                    <button onClick={this.startTest}>Start test</button>
                     <img src={logo} className="App-logo" alt="logo"/>
                 </header>
                 <div className="content">
