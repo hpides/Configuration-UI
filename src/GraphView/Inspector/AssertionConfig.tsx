@@ -17,7 +17,7 @@ export abstract class AssertionConfig {
     public abstract type: string;
 
     public name: string = "";
-
+    @Exclude()
     private readonly _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
