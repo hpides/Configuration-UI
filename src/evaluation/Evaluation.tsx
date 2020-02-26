@@ -43,22 +43,26 @@ export class Evaluation extends Component<IProps, IAppState> {
                 <h2>Running tests</h2>
                 <ul className={"multiColumnDiv"}>
                     {this.state && this.state.runningTests && this.state.runningTests.map((id, index) => {
+                        const date = new Date(0);
+                        date.setUTCMilliseconds(+id);
                         return <li className={"list-group-item list-group-item-action"} key={id}>
                             <button onClick={(event: any) => {
                                 this.renderMqttWorker(id, true);
                             }}
-                                    className={"btn"}>Test {id}</button>
+                                    className={"btn"}>Test {date.toLocaleString()}</button>
                         </li>;
                     })}
                 </ul>
                 <h2 className={"display-4"}>Finished tests</h2>
                 <ul className={"list-group text-center"}>
                     {this.state && this.state.finishedTests && this.state.finishedTests.map((id, index) => {
+                        const date = new Date(0);
+                        date.setUTCMilliseconds(+id);
                         return <li className={"list-group-item list-group-item-action"} key={id}>
                             <button onClick={(event: any) => {
                                 this.renderMqttWorker(id, false);
                             }}
-                                    className={"btn"}>Test {id}</button>
+                                    className={"btn"}>Test {date.toLocaleString()}</button>
                         </li>;
                     })}
                 </ul>
