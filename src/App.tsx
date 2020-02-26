@@ -127,7 +127,7 @@ class App extends React.Component<{}, IState> {
                     this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
                 }
         },
-            ).catch((e) => {alert(e); this.setState({pdgfRunning: false});});
+            ).catch((e) => {alert(e); this.setState({pdgfRunning: false}); });
     }
 
     public render() {
