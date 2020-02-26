@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import App from "./App";
-import {Evaluation as EvaluationApp} from "./evaluation/Evaluation"
+import {Evaluation as EvaluationApp} from "./evaluation/Evaluation";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter as Router, Route } from "react-router-dom";
 
 ReactDOM.render(<Router>
     <Route path="/" exact component={App}/>

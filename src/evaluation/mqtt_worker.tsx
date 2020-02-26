@@ -5,10 +5,10 @@ import jspdf from "jspdf";
 import {Client, connect} from "mqtt";
 import React, {Component} from "react";
 import { Line } from "react-chartjs-2";
+import ClipLoader from "react-spinners/ClipLoader";
 import {Alert, Button} from "reactstrap";
 import {Histogram} from "./percentile";
 import "./table.css";
-import ClipLoader from "react-spinners/ClipLoader";
 
 enum teststate {NOT_STARTED, RUNNING, FINISHED}
 
@@ -223,7 +223,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
             let object = JSON.parse(msg.toString());
             // ignore messages for another test
             const id = object.testId;
-            //this ignores issues with data types
+            // this ignores issues with data types
             if (!(id.toString() === this.testId.toString())) {
                 return;
             }

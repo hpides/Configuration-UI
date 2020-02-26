@@ -118,7 +118,7 @@ class App extends React.Component<{}, IState> {
                         "Content-Type": "application/json",
                     };
                     axios.post("http://localhost:8080/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + config.id + " finished!")).catch((e) => alert(e));
-                    window.location.href = "/evaluation/"+config.id
+                    window.location.href = "/evaluation/" + config.id;
                 }
         },
             ).catch((e) => alert(e));

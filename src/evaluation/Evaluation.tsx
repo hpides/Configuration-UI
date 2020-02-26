@@ -1,9 +1,9 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, {Component} from "react";
+import {match} from "react-router";
 import "./Evaluation.css";
 import {MqttWorker} from "./mqtt_worker";
-import {match} from "react-router";
 
 interface IAppState {
     runningTests: string[];
@@ -27,7 +27,6 @@ export class Evaluation extends Component<IDProps, IAppState> {
     constructor(props: any) {
         super(props);
     }
-
 
     public componentDidMount() {
         this.setState({runningTests: [], finishedTests: []});
@@ -89,18 +88,18 @@ export class Evaluation extends Component<IDProps, IAppState> {
             url: "http://users:8080/tests/finished",
         }).then((response) => {
             this.setState({finishedTests: response.data});
-            //do not set requested test every 2 seconds
-            if(this.props.match && this.props.match.params.id && !this.checkedParameter){
+            // do not set requested test every 2 seconds
+            if (this.props.match && this.props.match.params.id && !this.checkedParameter) {
                 const id = this.props.match.params.id.toString();
                 this.checkedParameter = true;
-                this.renderMqttWorker(id, !this.isIncluded(id, response.data))
+                this.renderMqttWorker(id, !this.isIncluded(id, response.data));
             }
         });
     }
 
-    private isIncluded(id:string, ids: string[]):boolean{
-        for(let current of ids){
-            if(current.toString() === id){
+    private isIncluded(id: string, ids: string[]): boolean {
+        for (const current of ids) {
+            if (current.toString() === id) {
                 return true;
             }
         }
