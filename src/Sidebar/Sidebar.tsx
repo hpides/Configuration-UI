@@ -44,16 +44,16 @@ export class Sidebar extends React.Component<IProps, IState> {
                 break;
         }
         this.props.changeView(nextView, this.state.activeStory);
-    };
+    }
 
     public addStory = (story: string) => {
         this.state.stories.push(story);
         this.setState({stories: this.state.stories});
-    };
+    }
 
     public handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
         this.setState({currentlyAddStory: event.currentTarget.value});
-    };
+    }
 
     public render() {
         const cv = this.props.currentView;

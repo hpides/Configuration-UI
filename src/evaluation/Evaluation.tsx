@@ -1,10 +1,10 @@
 import axios from "axios";
-import "./Evaluation.css"
 import React, {Component} from "react";
+import "./Evaluation.css";
 import {MqttWorker} from "./mqtt_worker";
 
 interface IProps {
-    id?: string
+    id?: string;
 }
 
 interface IAppState {
@@ -14,11 +14,10 @@ interface IAppState {
     currentIdIsRunning: boolean;
 }
 
-
 export class Evaluation extends Component<IProps, IAppState> {
     private interval: any = null;
 
-    private currentId?:string = undefined;
+    private currentId?: string = undefined;
 
     public componentDidMount() {
         this.setState({runningTests: [], finishedTests: []});
@@ -36,7 +35,7 @@ export class Evaluation extends Component<IProps, IAppState> {
         let ret: any;
         if (this.state && this.state.currentId) {
             ret = <div className={"text-center"}>
-                <button style={{display:"inline"}} onClick={(event: any) => this.back()}>Back to overview</button>
+                <button style={{display: "inline"}} onClick={(event: any) => this.back()}>Back to overview</button>
                 <MqttWorker testId={this.state.currentId} isRunning={this.state.currentIdIsRunning}/>
             </div>;
         } else {
@@ -78,13 +77,13 @@ export class Evaluation extends Component<IProps, IAppState> {
             url: "http://users:8080/tests/finished",
         }).then((response) => {
             this.setState({finishedTests: response.data});
-            if(this.props.id){
-                //make sure we do not keep loading the same ID
-                if(!this.currentId || this.currentId !== this.props.id) {
+            if (this.props.id) {
+                // make sure we do not keep loading the same ID
+                if (!this.currentId || this.currentId !== this.props.id) {
                     this.currentId = this.props.id;
                     this.renderMqttWorker(this.props.id.toString(), !this.isIncluded(this.props.id, response.data));
-                    //mqttworker needs to be re-created
-                    this.forceUpdate()
+                    // mqttworker needs to be re-created
+                    this.forceUpdate();
                 }
             }
         });

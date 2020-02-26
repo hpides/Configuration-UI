@@ -6,12 +6,12 @@ import { create } from "xmlbuilder2";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ApisEditor} from "./ApisEditor/ApisEditor";
 import "./App.css";
+import {Evaluation} from "./evaluation/Evaluation";
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
-import {Evaluation} from "./evaluation/Evaluation";
 
 interface IState {
     currentView: Views;
@@ -36,10 +36,10 @@ class App extends React.Component<{}, IState> {
         super(props);
         this.state = {
             currentStory: null,
+            currentTestId: undefined,
             currentView: Views.UserStories,
             pdgfRunning: false,
             stories: new Set<string>(),
-            currentTestId: undefined
         };
     }
 
@@ -121,7 +121,7 @@ class App extends React.Component<{}, IState> {
                         "Content-Type": "application/json",
                     };
                     axios.post("http://localhost:8080/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + config.id + " finished!")).catch((e) => alert(e));
-                    this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()})
+                    this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
                 }
         },
             ).catch((e) => alert(e));
