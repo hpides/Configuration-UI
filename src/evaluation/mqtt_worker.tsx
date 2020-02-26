@@ -111,7 +111,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
     private readonly assertionsTopic = "de.hpi.tdgt.assertions";
     private readonly controlTopic = "de.hpi.tdgt.control";
     // Chart.js can only set its height to pixels, so set this relative to the windows height
-    private chartHeight = window.innerHeight / 2;
+    private chartHeight = window.innerHeight / 3;
     private readonly maxHistogram = new Histogram();
     private histogramLabelsInitialized = false;
     // we need to store this twice because using state.nines
@@ -123,11 +123,9 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
     private maxFinished = false;
     private avgFinished = false;
     private throughputFinished = false;
-    private readonly testId: string;
     private maxChartHeight = 0;
     constructor(props: ITestConfig) {
         super(props);
-        this.testId = this.props.testId;
         this.getTimesAndAssertionsFromPerformanceDataStorage();
         this.mqtt = connect("mqtt://" + this.host + ":" + this.port);
         const client = this.mqtt;
@@ -193,7 +191,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
                 // ignore messages for another test
                 const currentId: string = components[1];
                 // there was some type problem here
-                if (!(currentId.toString() === this.testId.toString())) {
+                if (!(currentId.toString() === this.props.testId.toString())) {
                     return;
                 }
 
@@ -223,7 +221,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
             // ignore messages for another test
             const id = object.testId;
             // this ignores issues with data types
-            if (!(id.toString() === this.testId.toString())) {
+            if (!(id.toString() === this.props.testId.toString())) {
                 return;
             }
             if (topic === this.timesTopic) {
@@ -366,14 +364,14 @@ public componentDidUpdate(prevProps: Readonly<ITestConfig>, prevState: Readonly<
 public render() {
         let alert = <div/>;
         if (this.state.current_state === teststate.RUNNING) {
-            alert = <Alert color="primary">Test running (#{this.testId})</Alert>;
+            alert = <Alert color="primary">Test running (#{this.props.testId})</Alert>;
         }
         if (this.state.current_state === teststate.FINISHED) {
-            alert = <Alert color="primary">Test finished (#{this.testId})<br/> <Button active={this.state.reportReady && !this.state.preparingReport} onClick={this.downloadReport}>Download report</Button> <ClipLoader loading={this.state.preparingReport}/></Alert>;
+            alert = <Alert color="primary">Test finished (#{this.props.testId})<br/> <Button active={this.state.reportReady && !this.state.preparingReport} onClick={this.downloadReport}>Download report</Button> <ClipLoader loading={this.state.preparingReport}/></Alert>;
         }
         return <div>
         {alert}
-        <table style={{height: 400}}>
+        <table>
         <tbody>
         <tr>
 
@@ -463,7 +461,7 @@ public render() {
 
     private getTimesAndAssertionsFromPerformanceDataStorage() {
         axios.request<string[]>({
-            url: "http://users:8080/test/" + this.testId + "/times",
+            url: "http://users:8080/test/" + this.props.testId + "/times",
         }).then((response) => {
             const data = response.data;
             data.forEach( (time) =>  {
@@ -473,7 +471,7 @@ public render() {
             });
         }).then( (dealtResponse) => {
             axios.request<string[]>({
-                url: "http://users:8080/test/" + this.testId + "/assertions",
+                url: "http://users:8080/test/" + this.props.testId + "/assertions",
             }).then((response) => {
                 const data = response.data;
                 data.forEach((assertion) => {

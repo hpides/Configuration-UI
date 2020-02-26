@@ -36,7 +36,6 @@ export class Evaluation extends Component<IProps, IAppState> {
         let ret: any;
         if (this.state && this.state.currentId) {
             ret = <div className={"text-center"}>
-                <h1 className={"display-4"}>Evaluation UI - Test in progress</h1>
                 <button style={{display:"inline"}} onClick={(event: any) => this.back()}>Back to overview</button>
                 <MqttWorker testId={this.state.currentId} isRunning={this.state.currentIdIsRunning}/>
             </div>;
@@ -84,6 +83,7 @@ export class Evaluation extends Component<IProps, IAppState> {
                 if(!this.currentId || this.currentId !== this.props.id) {
                     this.currentId = this.props.id;
                     this.renderMqttWorker(this.props.id.toString(), !this.isIncluded(this.props.id, response.data));
+                    //mqttworker needs to be re-created
                     this.forceUpdate()
                 }
             }
