@@ -6,6 +6,7 @@ import { create } from "xmlbuilder2";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ApisEditor} from "./ApisEditor/ApisEditor";
 import "./App.css";
+import {Evaluation} from "./evaluation/Evaluation";
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
@@ -17,6 +18,7 @@ interface IState {
     currentStory: string | null;
     readonly stories: Set<string>;
     pdgfRunning: boolean;
+    currentTestId: string | undefined;
 }
 
 /*tslint:disable:no-console*/
@@ -34,6 +36,7 @@ class App extends React.Component<{}, IState> {
         super(props);
         this.state = {
             currentStory: null,
+            currentTestId: undefined,
             currentView: Views.UserStories,
             pdgfRunning: false,
             stories: new Set<string>(),
@@ -118,6 +121,7 @@ class App extends React.Component<{}, IState> {
                         "Content-Type": "application/json",
                     };
                     axios.post("http://localhost:8080/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + config.id + " finished!")).catch((e) => alert(e));
+                    this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
                 }
         },
             ).catch((e) => alert(e));
@@ -150,14 +154,18 @@ class App extends React.Component<{}, IState> {
                     }
                     <div className="main">
                         <div
-                            style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            style={this.state.currentView === Views.Evaluation ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
+                            <Evaluation id={this.state.currentTestId}/>
+                        </div>
+                        <div
+                            style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <ApisEditor/></div>
                         <div
-                            style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <Testconfig ref={(ref) => this.testConfig = ref}/>
                         </div>
                         <div
-                            style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             {Array.from(this.state.stories).map((story) => <div key={story}
                                                                                 style={this.state.currentStory === story ? {visibility: "visible"} : {visibility: "hidden"}}>
                                 <GraphView story={story} ref={(ref) => {
