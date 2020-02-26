@@ -161,7 +161,7 @@ class App extends React.Component<{}, IState> {
                     <div className="main">
                         <div
                             style={this.state.currentView === Views.Evaluation ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            <Evaluation id={this.state.currentTestId}/>
+                            <Evaluation id={this.state.currentTestId} importTestConfig={this.import}/>
                         </div>
                         <div
                             style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
