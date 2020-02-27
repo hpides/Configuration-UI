@@ -32,7 +32,6 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
 
     public mqtt: Client;
     public reconnectTimeout: number = 2000;
-    public host: string = "users";
     public port: number = 9001;
     // references that will be set by react
     public chartMin: Line|null = null;
@@ -100,6 +99,8 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
 
         },
     };
+
+    private readonly mqttHost: string;
     private doc: jspdf | null = null;
     // in production, these values will never be visible because this age will be shown when the test is already running
     private maxLatencyMaximum = -1;
@@ -124,10 +125,14 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
     private avgFinished = false;
     private throughputFinished = false;
     private maxChartHeight = 0;
+    private readonly performanceDataStorageHost: string;
     constructor(props: ITestConfig) {
         super(props);
+
+        this.mqttHost = process.env.REACT_APP_MQTT_HOST || "localhost";
+        this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || "localhost";
         this.getTimesAndAssertionsFromPerformanceDataStorage();
-        this.mqtt = connect("mqtt://" + this.host + ":" + this.port);
+        this.mqtt = connect("mqtt://" + this.mqttHost + ":" + this.port);
         const client = this.mqtt;
 
         this.mqtt.on("connect", () => {
@@ -146,13 +151,14 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
         this.throughputOptions.animation = {easing: "linear", onComplete: this.throughputChanged};
     }
     public onConnect(client: Client) {
-        client.subscribe(this.timesTopic, (err) => {
+        // subscribe with qos 2 to receive all packets exactly once
+        client.subscribe(this.timesTopic, {qos: 2}, (err) => {
             // TODO error handling
         });
-        client.subscribe(this.assertionsTopic, (err) => {
+        client.subscribe(this.assertionsTopic, {qos: 2}, (err) => {
             // TODO error handling
         });
-        client.subscribe(this.controlTopic, (err) => {
+        client.subscribe(this.controlTopic, {qos: 2}, (err) => {
             // TODO error handling
         });
     }
@@ -362,6 +368,7 @@ public componentDidUpdate(prevProps: Readonly<ITestConfig>, prevState: Readonly<
         this.componentDidMount();
 }
 public render() {
+
         let alert = <div/>;
         const date = new Date(0);
         date.setUTCMilliseconds(+this.props.testId);
@@ -464,7 +471,7 @@ public render() {
 
     private getTimesAndAssertionsFromPerformanceDataStorage() {
         axios.request<string[]>({
-            url: "http://users:8080/test/" + this.props.testId + "/times",
+            url: "http://" + this.performanceDataStorageHost + "/test/" + this.props.testId + "/times",
         }).then((response) => {
             const data = response.data;
             data.forEach( (time) =>  {
@@ -474,7 +481,7 @@ public render() {
             });
         }).then( (dealtResponse) => {
             axios.request<string[]>({
-                url: "http://users:8080/test/" + this.props.testId + "/assertions",
+                url: "http://" + this.performanceDataStorageHost + "/test/" + this.props.testId + "/assertions",
             }).then((response) => {
                 const data = response.data;
                 data.forEach((assertion) => {
