@@ -368,6 +368,7 @@ public componentDidUpdate(prevProps: Readonly<ITestConfig>, prevState: Readonly<
         this.componentDidMount();
 }
 public render() {
+
         let alert = <div/>;
         const date = new Date(0);
         date.setUTCMilliseconds(+this.props.testId);
@@ -480,7 +481,7 @@ public render() {
             });
         }).then( (dealtResponse) => {
             axios.request<string[]>({
-                url: "http://" + this.performanceDataStorageHost + ":8080/test/" + this.props.testId + "/assertions",
+                url: "http://" + this.performanceDataStorageHost + "/test/" + this.props.testId + "/assertions",
             }).then((response) => {
                 const data = response.data;
                 data.forEach((assertion) => {
