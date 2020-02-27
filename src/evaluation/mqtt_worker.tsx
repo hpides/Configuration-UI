@@ -151,13 +151,14 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
         this.throughputOptions.animation = {easing: "linear", onComplete: this.throughputChanged};
     }
     public onConnect(client: Client) {
-        client.subscribe(this.timesTopic, (err) => {
+        //subscribe with qos 2 to receive all packets exactly once
+        client.subscribe(this.timesTopic, {qos: 2}, (err) => {
             // TODO error handling
         });
-        client.subscribe(this.assertionsTopic, (err) => {
+        client.subscribe(this.assertionsTopic, {qos: 2},(err) => {
             // TODO error handling
         });
-        client.subscribe(this.controlTopic, (err) => {
+        client.subscribe(this.controlTopic, {qos: 2},(err) => {
             // TODO error handling
         });
     }
