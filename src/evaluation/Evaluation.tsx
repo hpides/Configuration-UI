@@ -42,12 +42,13 @@ export class Evaluation extends Component<IProps, IAppState> {
     public render() {
         let ret: any;
         if (this.state && this.state.currentId) {
-            //re-renders when key is changed
+            // re-renders when key is changed
             ret = <div className={"text-center"}>
                 <button style={{display: "inline"}} onClick={(event: any) => this.back()}>Back to overview</button>
                 <button style={{display: "inline"}} onClick={(event: any) => this.import()}
                 >Import config of test</button>
-                <MqttWorker testId={this.state.currentId} isRunning={this.state.currentIdIsRunning} key={this.state.currentId}/>
+                <MqttWorker testId={this.state.currentId} isRunning={this.state.currentIdIsRunning}
+                            key={this.state.currentId}/>
             </div>;
         } else {
             ret = <div className="Evaluation multiColumnDiv">
