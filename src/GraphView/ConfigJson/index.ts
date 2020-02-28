@@ -74,10 +74,11 @@ interface IBasicAuth {
     password: string;
 }
 /* tslint:disable:no-console ... */
-function doDepthFirstSearch(node: Node | undefined, idMap:IdMap, atoms: IBaseAtom[], pdgfTables: XMLBuilder[], closedNodeIds: Set<string>) {
+function doDepthFirstSearch(node: Node | undefined, idMap: IdMap, atoms: IBaseAtom[],
+                            pdgfTables: XMLBuilder[], closedNodeIds: Set<string>) {
     const nodesToProcess: BaseNode[] = [];
     while (node) {
-        //do not export again
+        // do not export again
         node.visited = true;
         const baseAtoms = ConvertNode(idMap, node);
         for (const atom of baseAtoms.atoms) {
@@ -106,26 +107,26 @@ function doDepthFirstSearch(node: Node | undefined, idMap:IdMap, atoms: IBaseAto
 }
 
 /* tslint:disable:max-line-length ... */
-export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes:Node[]): {pdgfTables: XMLBuilder[], story: IStory} {
+export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes: Node[]): {pdgfTables: XMLBuilder[], story: IStory} {
     const atoms: IBaseAtom[] = [];
     const closedNodeIds: Set<string> = new Set();
     const idMap = new IdMap();
 
     const pdgfTables: XMLBuilder[] = [];
 
-    let node: BaseNode | undefined = startNode;
+    const node: BaseNode | undefined = startNode;
     closedNodeIds.add(startNode.getID());
     doDepthFirstSearch(node, idMap, atoms, pdgfTables, closedNodeIds);
     // catch all nodes that are isolated from the start node, i.e. not connected
     for (const currentNode of nodes) {
-        if(!currentNode.visited) {
+        if (!currentNode.visited) {
             doDepthFirstSearch(currentNode, idMap, atoms, pdgfTables, closedNodeIds);
         }
     }
 
-    //reset visited for next export or start of test
-    for(const currentNode of nodes){
-        currentNode.visited = false
+    // reset visited for next export or start of test
+    for (const currentNode of nodes) {
+        currentNode.visited = false;
     }
 
     return {pdgfTables,

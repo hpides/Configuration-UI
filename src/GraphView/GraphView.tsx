@@ -181,7 +181,7 @@ export class GraphView extends React.Component<IProps, IState> {
         }
 
         if (this.state.startNode) {
-            this.model.removeNode(this.state.startNode);
+            this.state.startNode.remove();
         }
         if (nodes.startNode) {
             this.setState({startNode: nodes.startNode});

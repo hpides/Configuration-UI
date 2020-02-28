@@ -2,11 +2,11 @@ import { DefaultNodeModel, DefaultNodeModelOptions, PortModelAlignment } from "@
 import { AtomType } from "./../ConfigJson";
 import { AcyclicPort } from "./AcyclicPort";
 export abstract class Node extends DefaultNodeModel {
-    protected attributes: { [key: string]: any };
 
     /*
     true if this node has been visited by the export process*/
-    protected visited: boolean = false;
+    public visited: boolean = false;
+    protected attributes: { [key: string]: any };
 
     constructor(options?: DefaultNodeModelOptions) {
         super(options);
