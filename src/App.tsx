@@ -74,7 +74,8 @@ class App extends React.Component<{}, IState> {
         }
         testConfigJSON.stories  = stories;
         // make sure to remove excluded attributes before export
-        console.log(JSON.stringify(classToPlain(testConfigJSON)));
+        // also, pretty-print
+        console.log(JSON.stringify(classToPlain(testConfigJSON), null, 4));
 
         const root = create().ele("schema", {"name": "demo", "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation": "structure/pdgfSchema.xsd"});
         root.ele("seed").txt("1234567890");
