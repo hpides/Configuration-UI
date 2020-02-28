@@ -74,17 +74,8 @@ interface IBasicAuth {
     password: string;
 }
 /* tslint:disable:no-console ... */
-/* tslint:disable:max-line-length ... */
-export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode): {pdgfTables: XMLBuilder[], story: IStory} {
-    const atoms: IBaseAtom[] = [];
-    const closedNodeIds: Set<string> = new Set();
+function doDepthFirstSearch(node: Node | undefined, idMap:IdMap, atoms: IBaseAtom[], pdgfTables: XMLBuilder[], closedNodeIds: Set<string>) {
     const nodesToProcess: BaseNode[] = [];
-    const idMap = new IdMap();
-
-    const pdgfTables: XMLBuilder[] = [];
-
-    let node: BaseNode | undefined = startNode;
-    closedNodeIds.add(startNode.getID());
     while (node) {
         const baseAtoms = ConvertNode(idMap, node);
         for (const atom of baseAtoms.atoms) {
@@ -109,6 +100,23 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
             }
         }
         node = nodesToProcess.pop();
+    }
+}
+
+/* tslint:disable:max-line-length ... */
+export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes:Node[]): {pdgfTables: XMLBuilder[], story: IStory} {
+    const atoms: IBaseAtom[] = [];
+    const closedNodeIds: Set<string> = new Set();
+    const idMap = new IdMap();
+
+    const pdgfTables: XMLBuilder[] = [];
+
+    let node: BaseNode | undefined = startNode;
+    closedNodeIds.add(startNode.getID());
+    doDepthFirstSearch(node, idMap, atoms, pdgfTables, closedNodeIds);
+    //catch all nodes that are isolated from the start node, i.e. not connected
+    for(let node of nodes){
+        doDepthFirstSearch(node, idMap, atoms, pdgfTables, closedNodeIds);
     }
 
     return {pdgfTables,
