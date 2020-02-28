@@ -13,6 +13,7 @@ import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
+import {fragment} from "xmlbuilder2/lib";
 
 interface IState {
     currentView: Views;
@@ -78,9 +79,21 @@ class App extends React.Component<{}, IState> {
         const root = create().ele("schema", {"name": "demo", "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation": "structure/pdgfSchema.xsd"});
         root.ele("seed").txt("1234567890");
         root.ele("property", {name: "SF", type: "double"}).txt("1");
+        let importedAnything = false;
         for (const table of pdgfTables) {
+            importedAnything = true;
             table.ele("size").txt(testConfigJSON.scaleFactor); // To-Do multiply with stories scalefactor
             root.import(table);
+        }
+        //PDGF will fail if no tables at all exist, so create one in case
+        if(!importedAnything){
+            console.log("Imported table");
+            const defaultTable = fragment().ele("table", {name: "defaultTable"});
+            defaultTable.ele("size").txt("1");
+            const defaultField = defaultTable.ele("field", {name: "default", type:"VARCHAR"});
+            const defaultGenerator = defaultField.ele("gen_RandomString");
+            defaultGenerator.ele("max").txt("1");
+            root.import(defaultTable)
         }
         console.log(root.end({prettyPrint: true}));
 
