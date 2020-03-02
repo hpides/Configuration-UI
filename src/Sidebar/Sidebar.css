@@ -37,16 +37,10 @@
 }
 
 .sidebar ul.stories-list input {
-    width: 80%;
-    padding: 6px 8px 6px 16px;
+    width: calc(100% - 42px);
     text-align: left;
     margin-left: 10px;
     margin-top: 10px;
-    font-size: 18px;
-    color: #e3e3e3;
-    background-color: transparent;
-    border: solid 1px white;
-    display: block;
 }
 
 .stories-btn {
