@@ -45,6 +45,7 @@ export class GraphView extends React.Component<IProps, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
     private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
+    private storyName: string;
 
     private waitingForSetState = false;
     constructor(props: IProps) {
@@ -62,6 +63,8 @@ export class GraphView extends React.Component<IProps, IState> {
         this.engine.setModel(this.model);
 
         this.engine.getActionEventBus().registerAction(this.deleteAction);
+
+        this.storyName = this.props.story;
     }
 
     public componentDidMount() {
@@ -165,7 +168,11 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public getStory = (): string => {
-        return this.props.story;
+        return this.storyName;
+    }
+
+    public setStory = (story: string) => {
+        this.storyName = story;
     }
 
     public importNodes = (story: any): void => {

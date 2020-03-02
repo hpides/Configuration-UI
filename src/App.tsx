@@ -60,15 +60,28 @@ class App extends React.Component<{}, IState> {
             return;
         }
 
+        let oldGraphView: any;
+
         this.graphViews.forEach((view) => {
             if (view.getStory() === oldName) {
-                // tell graphview prop the new name
+                oldGraphView = view.exportNodes(null);
             }
         });
 
         const stories = this.state.stories;
         stories.delete(oldName);
         stories.add(newName);
+
+        this.forceUpdate(() => {
+            this.graphViews.forEach((view) => {
+                console.log("inside callback");
+                if (view.getStory() === newName) {
+                    console.log("Inside callback found story");
+                    view.importNodes(oldGraphView)
+                    console.log("imported nodes");
+                }
+            })
+        });
 
         let currentStory = this.state.currentStory;
         if (currentStory === oldName) {
@@ -78,7 +91,7 @@ class App extends React.Component<{}, IState> {
         this.setState({stories: stories, currentStory: currentStory})
         
     }
-    
+
     public export = (): {json: string, xml: string, id: number} => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
