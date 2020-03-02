@@ -53,8 +53,9 @@ export class Sidebar extends React.Component<IProps, IState> {
 
         this.props.renameStory(oldName, newName);
 
-        // this.state.stories[oldIndex] = newName;
-        // this.setState({stories: this.state.stories, activeStory: newName});
+        // eslint-disable-next-line
+        this.state.stories[oldIndex] = newName;
+        this.setState({stories: this.state.stories, activeStory: newName});
 
         this.forceUpdate(() => {
         });

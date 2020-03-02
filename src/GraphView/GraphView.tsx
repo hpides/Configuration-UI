@@ -22,7 +22,6 @@ import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
-import { timingSafeEqual } from "crypto";
 
 interface IStory {
     nodes: Node[];
@@ -35,20 +34,17 @@ interface IState extends IStory {
     scalePercentage: number;
 }
 
-interface IProps {
-    story: string;
-}
 
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
-export class GraphView extends React.Component<IProps, IState> {
+export class GraphView extends React.Component<{}, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
     private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
     private storyName: string;
 
     private waitingForSetState = false;
-    constructor(props: IProps) {
+    constructor(props: {}) {
         super(props);
 
         this.state = {
@@ -63,8 +59,8 @@ export class GraphView extends React.Component<IProps, IState> {
         this.engine.setModel(this.model);
 
         this.engine.getActionEventBus().registerAction(this.deleteAction);
-
-        this.storyName = this.props.story;
+        //will be set in a second by parent
+        this.storyName = "";
     }
 
     public componentDidMount() {
