@@ -43,6 +43,30 @@ class App extends React.Component<{}, IState> {
         this.setState({currentView: view, currentStory: story});
 
     }
+    public renameStory = (oldName: string, newName: string) => {
+        if (!this.state.stories.has(oldName)) {
+            // we don't know about the story to be renamed
+            return;
+        }
+
+        this.graphViews.forEach((view) => {
+            if (view.getStory() === oldName) {
+                // tell graphview prop the new name
+            }
+        });
+
+        const stories = this.state.stories;
+        stories.delete(oldName);
+        stories.add(newName);
+
+        let currentStory = this.state.currentStory;
+        if (currentStory === oldName) {
+            currentStory = newName;
+        }
+
+        this.setState({stories: stories, currentStory: currentStory})
+        
+    }
     public export = (): string => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
@@ -114,8 +138,12 @@ class App extends React.Component<{}, IState> {
                     <img src={logo} className="App-logo" alt="logo"/>
                 </header>
                 <div className="content">
-                    <Sidebar currentView={this.state.currentView} changeView={this.changeView}
-                             ref={(ref) => this.sidebar = ref}/>
+                    <Sidebar currentView={this.state.currentView}
+                        changeView={this.changeView}
+                        renameStory={this.renameStory}
+                        ref={(ref) => this.sidebar = ref}
+                    />
+
                     {// We need to render all elements at all time so their state does not get recycled
                     }
                     <div className="main">

@@ -5,12 +5,12 @@ import "./Sidebar.css";
 interface IState {
     stories: string[];
     activeStory: string | null;
-    currentlyAddStory: string;
 }
 
 interface IProps {
     currentView: Views;
     changeView: (view: Views, story: string | null) => void;
+    renameStory: (oldName: string, newName: string) => void;
 }
 
 export class Sidebar extends React.Component<IProps, IState> {
@@ -19,7 +19,6 @@ export class Sidebar extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             activeStory: null,
-            currentlyAddStory: "enter story name",
             stories: [],
         };
     }
@@ -43,13 +42,41 @@ export class Sidebar extends React.Component<IProps, IState> {
         this.props.changeView(nextView, this.state.activeStory);
     }
 
-    public addStory = (story: string) => {
-        this.state.stories.push(story);
+    public renameStory = (event: React.FormEvent<HTMLInputElement>) => {
+        let oldIndex = Number(event.currentTarget.name);
+        let oldName = this.state.stories[oldIndex];
+        let newName = event.currentTarget.value;
+
+        this.props.renameStory(oldName, newName);
+
+        this.state.stories[oldIndex] = newName;
+        this.setState({stories: this.state.stories, activeStory: newName});
+    }
+
+    public addStory = (story?: string) => {
+        let storyName: string = (story) ? story: "Story #" + this.state.stories.length.toString();
+        this.state.stories.push(storyName);
         this.setState({stories: this.state.stories});
     }
 
-    public handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
-        this.setState({currentlyAddStory: event.currentTarget.value});
+    public renderStoryListItem(story: string): JSX.Element {
+        let content = <button
+            className={story === this.state.activeStory ? "active" : ""}
+            onClick={(event) => this.changeActiveStory(story)}
+        >{story}</button>;
+
+        if (story === this.state.activeStory) {
+            content = <input
+                name={this.state.stories.indexOf(story).toString()}
+                type="text"
+                value={story}
+                onChange={this.renameStory}
+            />
+        }
+
+        return <li key={story}>
+           {content}
+        </li>
     }
 
     public render() {
@@ -69,21 +96,21 @@ export class Sidebar extends React.Component<IProps, IState> {
                 >Testconfig</button>
                 <button
                     name="userstories"
-                    className={cv === Views.UserStories ? "active" : ""}
+                    className={cv === Views.UserStories ? "active stories-btn" : "stories-btn"}
                     onClick={this.changeView}
                 >UserStories</button>
-                {
-                    this.state.stories.map((story) =>
-                        <div key={story}>
-                            <button  className={story === this.state.activeStory ? "active story-button" : "story-button"} onClick={(event) => this.changeActiveStory(story)}>{story}</button>
-                            <br/>
-                            <br/>
-                            <br/>
-                            <br/>
-                        </div>,
-                    )
-                }
-                <input type="text" value={this.state.currentlyAddStory} onChange={this.handleInput} className="newStoryTextField"/> <button onClick={(event) => this.addStory(this.state.currentlyAddStory)}>Add story</button>
+                <button
+                    className="add-story-btn"
+                    onClick={(event) => this.addStory()}
+                >+</button>
+                <ul className="stories-list" >
+                    { this.state.stories.map((story) => this.renderStoryListItem(story)) }
+                </ul>
+                {/*<input
+                    type="text"
+                    value={this.state.currentlyAddStory}
+                    onChange={this.handleInput}
+                    className="newStoryTextField"/>*/}
             </div>
         );
     }

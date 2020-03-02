@@ -23,6 +23,7 @@ import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
+import { timingSafeEqual } from "crypto";
 
 interface IStory {
     nodes: Node[];
