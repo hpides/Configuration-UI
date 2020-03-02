@@ -46,14 +46,18 @@ export class Sidebar extends React.Component<IProps, IState> {
     }
 
     public renameStory = (event: React.FormEvent<HTMLInputElement>) => {
+        console.log(event);
         let oldIndex = Number(event.currentTarget.name);
         let oldName = this.state.stories[oldIndex];
         let newName = event.currentTarget.value;
 
         this.props.renameStory(oldName, newName);
 
-        this.state.stories[oldIndex] = newName;
-        this.setState({stories: this.state.stories, activeStory: newName});
+        // this.state.stories[oldIndex] = newName;
+        // this.setState({stories: this.state.stories, activeStory: newName});
+
+        this.forceUpdate(() => {
+        });
     }
 
     public addStory = (story?: string) => {
@@ -74,8 +78,15 @@ export class Sidebar extends React.Component<IProps, IState> {
                 type="text"
                 value={story}
                 onChange={this.renameStory}
+                ref={(reference) => {
+                    if (reference) {
+                        reference.focus();
+                    }
+                }}
             />
         }
+
+
 
         return <li key={story}>
            {content}

@@ -64,31 +64,29 @@ class App extends React.Component<{}, IState> {
 
         this.graphViews.forEach((view) => {
             if (view.getStory() === oldName) {
-                oldGraphView = view.exportNodes(null);
+                view.setStory(newName);
+                console.log(newName);
             }
         });
 
         const stories = this.state.stories;
-        stories.delete(oldName);
-        stories.add(newName);
+        // stories.delete(oldName);
+        // stories.add(newName);
 
-        this.forceUpdate(() => {
-            this.graphViews.forEach((view) => {
-                console.log("inside callback");
-                if (view.getStory() === newName) {
-                    console.log("Inside callback found story");
-                    view.importNodes(oldGraphView)
-                    console.log("imported nodes");
-                }
-            })
-        });
+        // this.forceUpdate(() => {
+        //     this.graphViews.forEach((view) => {
+        //         if (view.getStory() === newName) {
+        //             view.importNodes(oldGraphView.story);
+        //         }
+        //     })
+        // });
 
-        let currentStory = this.state.currentStory;
-        if (currentStory === oldName) {
-            currentStory = newName;
-        }
+        // let currentStory = this.state.currentStory;
+        // if (currentStory === oldName) {
+        //     currentStory = newName;
+        // }
 
-        this.setState({stories: stories, currentStory: currentStory})
+        this.setState({stories: stories, currentStory: this.state.currentStory})
         
     }
 

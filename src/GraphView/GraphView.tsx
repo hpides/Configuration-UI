@@ -158,7 +158,7 @@ export class GraphView extends React.Component<IProps, IState> {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode, this.state.nodes);
-            story.story.name = this.props.story;
+            story.story.name = this.storyName;
             story.story.scalePercentage = this.state.scalePercentage;
 
             return story;

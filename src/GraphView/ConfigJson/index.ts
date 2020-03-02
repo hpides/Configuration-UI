@@ -142,6 +142,7 @@ export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], sta
     const ret: Node[] = [];
     const links: LinkModel[] = [];
     let startNode: StartNode|null = null;
+    console.log(deserializedStory);
     for (const currentAtom of deserializedStory.atoms) {
 
         const type = currentAtom.type;
