@@ -61,9 +61,12 @@ export class GraphView extends React.Component<IProps, IState> {
         this.engine.getActionEventBus().registerAction(this.deleteAction);
     }
 
+    private waitingForSetState = false;
+
     public componentDidMount() {
         const start = this.addNode("START");
-        this.setState({ startNode: start as StartNode });
+        this.waitingForSetState = true;
+        this.setState({ startNode: start as StartNode }, () => {this.waitingForSetState = false});
 
     }
 
@@ -165,29 +168,37 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public importNodes = (story: any): void => {
-        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(story);
-        this.setState({nodes: [], scalePercentage: story.scalePercentage});
+        //direct mutation of state in componentDidMount crashes export later on, state cannot be set in constructor because graph view is not initialized, so we have to wait for setState...
+        const startAsync = async (callback:any) => {
+            while (this.waitingForSetState) {
+                await new Promise(res => setTimeout(res, 100));
+            }
+            const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(story);
+            this.setState({nodes: [], scalePercentage: story.scalePercentage});
 
-        for (const node of nodes.nodes) {
-            node.registerListener({
-                selectionChanged: this.handleSelectionChanged,
-            });
-            this.model.addNode(node);
-            this.state.nodes.push(node);
-        }
+            for (const node of nodes.nodes) {
+                node.registerListener({
+                    selectionChanged: this.handleSelectionChanged,
+                });
+                this.model.addNode(node);
+                this.state.nodes.push(node);
+            }
 
-        for (const link of nodes.links) {
-            this.model.addLink(link);
-        }
+            for (const link of nodes.links) {
+                this.model.addLink(link);
+            }
 
-        if (this.state.startNode) {
-            this.state.startNode.remove();
+
+            if (nodes.startNode) {
+                if (this.state.startNode) {
+                    this.state.startNode.remove();
+                }
+                this.setState({startNode: nodes.startNode});
+            }
+            this.setState({nodes: this.state.nodes});
+            this.forceUpdate();
         }
-        if (nodes.startNode) {
-            this.setState({startNode: nodes.startNode});
-        }
-        this.setState({nodes: this.state.nodes});
-        this.forceUpdate();
+        startAsync({})
     }
 
     public setVisibility(visible: boolean): void {
