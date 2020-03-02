@@ -44,6 +44,8 @@ export class GraphView extends React.Component<IProps, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
     private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
+
+    private waitingForSetState = false;
     constructor(props: IProps) {
         super(props);
 
@@ -61,12 +63,10 @@ export class GraphView extends React.Component<IProps, IState> {
         this.engine.getActionEventBus().registerAction(this.deleteAction);
     }
 
-    private waitingForSetState = false;
-
     public componentDidMount() {
         const start = this.addNode("START");
         this.waitingForSetState = true;
-        this.setState({ startNode: start as StartNode }, () => {this.waitingForSetState = false});
+        this.setState({ startNode: start as StartNode }, () => {this.waitingForSetState = false; });
 
     }
 
@@ -168,10 +168,10 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public importNodes = (story: any): void => {
-        //direct mutation of state in componentDidMount crashes export later on, state cannot be set in constructor because graph view is not initialized, so we have to wait for setState...
-        const startAsync = async (callback:any) => {
+        // direct mutation of state in componentDidMount crashes export later on, state cannot be set in constructor because graph view is not initialized, so we have to wait for setState...
+        const startAsync = async (callback: any) => {
             while (this.waitingForSetState) {
-                await new Promise(res => setTimeout(res, 100));
+                await new Promise((res) => setTimeout(res, 100));
             }
             const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(story);
             this.setState({nodes: [], scalePercentage: story.scalePercentage});
@@ -188,7 +188,6 @@ export class GraphView extends React.Component<IProps, IState> {
                 this.model.addLink(link);
             }
 
-
             if (nodes.startNode) {
                 if (this.state.startNode) {
                     this.state.startNode.remove();
@@ -197,8 +196,8 @@ export class GraphView extends React.Component<IProps, IState> {
             }
             this.setState({nodes: this.state.nodes});
             this.forceUpdate();
-        }
-        startAsync({})
+        };
+        startAsync({});
     }
 
     public setVisibility(visible: boolean): void {
