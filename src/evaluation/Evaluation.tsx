@@ -14,7 +14,7 @@ interface IAppState {
     currentId: string | null;
     currentIdIsRunning: boolean;
 }
-
+/*tslint:disable:no-console*/
 export class Evaluation extends Component<IProps, IAppState> {
     private interval: any = null;
 
@@ -88,7 +88,10 @@ export class Evaluation extends Component<IProps, IAppState> {
             url: "http://" + this.performanceDataStorageHost + "/tests/running",
         }).then((response) => {
             this.setState({runningTests: response.data});
-        });
+        }).catch((error) => {
+                console.error("Error: " + error + " for url: http://" + this.performanceDataStorageHost + "/tests/running");
+            },
+        );
         axios.request<string[]>({
             url: "http://" + this.performanceDataStorageHost + "/tests/finished",
         }).then((response) => {
@@ -102,7 +105,10 @@ export class Evaluation extends Component<IProps, IAppState> {
                     this.forceUpdate();
                 }
             }
-        });
+        }).catch((error) => {
+                console.error("Error: " + error + " for url: http://" + this.performanceDataStorageHost + "/tests/finished");
+            },
+        );
     }
 
     private isIncluded(id: string, ids: string[]): boolean {
