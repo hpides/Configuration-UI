@@ -34,7 +34,6 @@ interface IState extends IStory {
     scalePercentage: number;
 }
 
-
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
 export class GraphView extends React.Component<{}, IState> {
@@ -59,7 +58,7 @@ export class GraphView extends React.Component<{}, IState> {
         this.engine.setModel(this.model);
 
         this.engine.getActionEventBus().registerAction(this.deleteAction);
-        //will be set in a second by parent
+        // will be set in a second by parent
         this.storyName = "";
     }
 

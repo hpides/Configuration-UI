@@ -50,18 +50,18 @@ class App extends React.Component<{}, IState> {
     public changeView = (view: Views, story: string | null) => {
         if (story) {
             let found = false;
-            for(let existingStory of this.state.stories){
-                if(existingStory === story){
+            for (const existingStory of this.state.stories) {
+                if (existingStory === story) {
                     found = true;
                 }
             }
-            if(!found){this.state.stories.push(story)}
+            if (!found) {this.state.stories.push(story); }
         }
         this.setState({currentView: view, currentStory: story, stories: this.state.stories});
 
     }
     public renameStory = (oldName: string, newName: string) => {
-        
+
         this.graphViews.forEach((view) => {
             if (view.getStory() === oldName) {
                 view.setStory(newName);
@@ -71,7 +71,7 @@ class App extends React.Component<{}, IState> {
         const stories = this.state.stories;
 
         this.state.stories.forEach((value, index) => {
-            if(value === oldName){
+            if (value === oldName) {
                 // eslint-disable-next-line
                 this.state.stories[index] = newName;
             }
@@ -84,8 +84,8 @@ class App extends React.Component<{}, IState> {
             currentStory = newName;
         }
 
-        this.setState({stories: stories, currentStory: currentStory})
-        
+        this.setState({stories, currentStory});
+
     }
 
     public export = (): {json: string, xml: string, id: number} => {
@@ -229,18 +229,19 @@ class App extends React.Component<{}, IState> {
                             {[...Array(this.state.stories.length)].map((item, story) => <div key={story}
                                                                                 style={this.graphViews[story] && this.state.currentStory === this.graphViews[story].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
                                 <GraphView ref={(ref) => {
-                                    //story names can change at any time. Using them as props will destroy the graph view, so set it here instead
+                                    // story names can change at any time. Using them as props will destroy the graph view, so set it here instead
                                     if (ref) {
                                         ref.setStory(this.state.stories[story]);
                                         let exists = false;
-                                        //we do not want the same reference twice
-                                        for(let item of this.graphViews){
-                                            if(item === ref){
+                                        // we do not want the same reference twice
+                                        for (const view of this.graphViews) {
+                                            if (view === ref) {
                                                 exists = false;
                                             }
                                         }
-                                        if(!exists)
+                                        if (!exists) {
                                         this.graphViews.push(ref);
+                                        }
                                     }
                                 }}/></div>)}
                         </div>
