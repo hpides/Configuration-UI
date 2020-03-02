@@ -14,7 +14,6 @@ import {
     DeleteItemsAction,
 } from "@projectstorm/react-canvas-core";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
-import { create } from "xmlbuilder2";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
 import { Inspector } from "./Inspector";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
@@ -46,6 +45,8 @@ export class GraphView extends React.Component<IProps, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
     private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
+
+    private waitingForSetState = false;
     constructor(props: IProps) {
         super(props);
 
@@ -65,7 +66,8 @@ export class GraphView extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         const start = this.addNode("START");
-        this.setState({ startNode: start as StartNode });
+        this.waitingForSetState = true;
+        this.setState({ startNode: start as StartNode }, () => {this.waitingForSetState = false; });
 
     }
 
@@ -152,18 +154,9 @@ export class GraphView extends React.Component<IProps, IState> {
     public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null): any => {
         const startNode = this.state.startNode;
         if (startNode) {
-            const story = ConvertGraphToStory("Rail", 1, startNode);
+            const story = ConvertGraphToStory("Rail", 1, startNode, this.state.nodes);
             story.story.name = this.props.story;
             story.story.scalePercentage = this.state.scalePercentage;
-            console.log(JSON.stringify(story.story));
-
-            const root = create().ele("schema", {"name": "demo", "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation": "structure/pdgfSchema.xsd"});
-            root.ele("seed").txt("1234567890");
-            root.ele("property", {name: "SF", type: "double"}).txt("1");
-            for (const table of story.pdgfTables) {
-                root.import(table);
-            }
-            console.log(root.end({prettyPrint: true}));
 
             return story;
         }
@@ -176,29 +169,36 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public importNodes = (story: any): void => {
-        const nodes: {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} = ConvertStoryToGraph(story);
-        this.setState({nodes: [], scalePercentage: story.scalePercentage});
+        // direct mutation of state in componentDidMount crashes export later on, state cannot be set in constructor because graph view is not initialized, so we have to wait for setState...
+        const startAsync = async (callback: any) => {
+            while (this.waitingForSetState) {
+                await new Promise((res) => setTimeout(res, 100));
+            }
+            const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(story);
+            this.setState({nodes: [], scalePercentage: story.scalePercentage});
 
-        for (const node of nodes.nodes) {
-            node.registerListener({
-                selectionChanged: this.handleSelectionChanged,
-            });
-            this.model.addNode(node);
-            this.state.nodes.push(node);
-        }
+            for (const node of nodes.nodes) {
+                node.registerListener({
+                    selectionChanged: this.handleSelectionChanged,
+                });
+                this.model.addNode(node);
+                this.state.nodes.push(node);
+            }
 
-        for (const link of nodes.links) {
-            this.model.addLink(link);
-        }
+            for (const link of nodes.links) {
+                this.model.addLink(link);
+            }
 
-        if (this.state.startNode) {
-            this.model.removeNode(this.state.startNode);
-        }
-        if (nodes.startNode) {
-            this.setState({startNode: nodes.startNode});
-        }
-        this.setState({nodes: this.state.nodes});
-        this.forceUpdate();
+            if (nodes.startNode) {
+                if (this.state.startNode) {
+                    this.state.startNode.remove();
+                }
+                this.setState({startNode: nodes.startNode});
+            }
+            this.setState({nodes: this.state.nodes});
+            this.forceUpdate();
+        };
+        startAsync({});
     }
 
     public setVisibility(visible: boolean): void {

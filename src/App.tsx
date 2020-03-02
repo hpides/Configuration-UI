@@ -1,9 +1,14 @@
+import axios, {AxiosRequestConfig} from "axios";
+import {classToPlain} from "class-transformer";
 import React from "react";
+import ClipLoader from "react-spinners/ClipLoader";
 import "reflect-metadata";
 import { create } from "xmlbuilder2";
+import {fragment} from "xmlbuilder2/lib";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ApisEditor} from "./ApisEditor/ApisEditor";
 import "./App.css";
+import {Evaluation} from "./evaluation/Evaluation";
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
@@ -14,6 +19,8 @@ interface IState {
     currentView: Views;
     currentStory: string | null;
     readonly stories: Set<string>;
+    pdgfRunning: boolean;
+    currentTestId: string | undefined;
 }
 
 /*tslint:disable:no-console*/
@@ -26,14 +33,18 @@ class App extends React.Component<{}, IState> {
     private sidebar: Sidebar | null = null;
 
     private testConfig: Testconfig | null = null;
+    private readonly requestGeneratorHost: string;
 
     constructor(props: any) {
         super(props);
         this.state = {
             currentStory: null,
+            currentTestId: undefined,
             currentView: Views.UserStories,
+            pdgfRunning: false,
             stories: new Set<string>(),
         };
+        this.requestGeneratorHost = process.env.REACT_APP_REQGEN_HOST || "localhost";
     }
 
     public changeView = (view: Views, story: string | null) => {
@@ -67,7 +78,8 @@ class App extends React.Component<{}, IState> {
         this.setState({stories: stories, currentStory: currentStory})
         
     }
-    public export = (): string => {
+    
+    public export = (): {json: string, xml: string, id: number} => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
         this.graphViews.forEach((graphView) => {
@@ -86,18 +98,33 @@ class App extends React.Component<{}, IState> {
             testConfigJSON.maximumConcurrentRequests = testConfigState.maximumConcurrentRequests;
         }
         testConfigJSON.stories  = stories;
-        console.log(JSON.stringify(testConfigJSON));
+        // make sure to remove excluded attributes before export
+        // also, pretty-print
+        console.log(JSON.stringify(classToPlain(testConfigJSON), null, 4));
 
         const root = create().ele("schema", {"name": "demo", "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation": "structure/pdgfSchema.xsd"});
         root.ele("seed").txt("1234567890");
         root.ele("property", {name: "SF", type: "double"}).txt("1");
+        let importedAnything = false;
         for (const table of pdgfTables) {
+            importedAnything = true;
             table.ele("size").txt(testConfigJSON.scaleFactor); // To-Do multiply with stories scalefactor
             root.import(table);
         }
+        // PDGF will fail if no tables at all exist, so create one in case
+        if (!importedAnything) {
+            console.log("Imported table");
+            const defaultTable = fragment().ele("table", {name: "defaultTable"});
+            defaultTable.ele("size").txt("1");
+            const defaultField = defaultTable.ele("field", {name: "default", type: "VARCHAR"});
+            const defaultGenerator = defaultField.ele("gen_RandomString");
+            defaultGenerator.ele("max").txt("1");
+            root.import(defaultTable);
+        }
         console.log(root.end({prettyPrint: true}));
 
-        return "";
+        // make sure to remove excluded attributes before export
+        return {json: JSON.stringify(classToPlain(testConfigJSON)), xml: root.end({prettyPrint: true}).toString(), id: Date.now()};
     }
 
     public import = (testConfig: any): void => {
@@ -123,6 +150,30 @@ class App extends React.Component<{}, IState> {
         });
     }
 
+    public startTest = (): void => {
+        const config = this.export();
+        this.setState({pdgfRunning: true});
+        const axiosParams = {headers: {
+            "Content-Type": "application/xml",
+            }} as AxiosRequestConfig;
+        axios.post("http://" + this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams).then((r) => {
+                console.log(r.status);
+                if (r.status === 200) {
+                    const date = new Date(0);
+                    date.setUTCMilliseconds(+config.id);
+                    const dateString = date.toLocaleString();
+                    alert("PDGF finished, press \"OK\" to start actual test!");
+                    this.setState({pdgfRunning: false});
+                    axiosParams.headers = {
+                        "Content-Type": "application/json",
+                    };
+                    axios.post("http://" + this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + dateString + " finished!")).catch((e) => alert(e));
+                    this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
+                }
+        },
+            ).catch((e) => {alert(e); this.setState({pdgfRunning: false}); });
+    }
+
     public render() {
         this.graphViews.forEach((view) => {
             view.setVisibility(this.state.currentView === Views.UserStories && this.state.currentStory !== null && view.getStory() === this.state.currentStory);
@@ -135,7 +186,13 @@ class App extends React.Component<{}, IState> {
                     <button
                         onClick={(event) => this.import(JSON.parse(prompt("Array of stories JSON please:") || "[]"))}>Import
                     </button>
+
+                    <button onClick={this.startTest}>Start test</button>
                     <img src={logo} className="App-logo" alt="logo"/>
+                    <div style={this.state.pdgfRunning ? {visibility: "visible"} : {visibility: "hidden"}}>
+                        PDGF running
+                    </div>
+                    <ClipLoader loading={this.state.pdgfRunning}/>
                 </header>
                 <div className="content">
                     <Sidebar currentView={this.state.currentView}
@@ -148,14 +205,18 @@ class App extends React.Component<{}, IState> {
                     }
                     <div className="main">
                         <div
-                            style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            style={this.state.currentView === Views.Evaluation ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
+                            <Evaluation id={this.state.currentTestId} importTestConfig={this.import}/>
+                        </div>
+                        <div
+                            style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <ApisEditor/></div>
                         <div
-                            style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <Testconfig ref={(ref) => this.testConfig = ref}/>
                         </div>
                         <div
-                            style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             {Array.from(this.state.stories).map((story) => <div key={story}
                                                                                 style={this.state.currentStory === story ? {visibility: "visible"} : {visibility: "hidden"}}>
                                 <GraphView story={story} ref={(ref) => {
