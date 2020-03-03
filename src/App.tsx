@@ -33,7 +33,7 @@ class App extends React.Component<{}, IState> {
     private sidebar: Sidebar | null = null;
 
     private testConfig: Testconfig | null = null;
-    private readonly requestGeneratorHost: string;
+    private  requestGeneratorHost: string | null;
 
     constructor(props: any) {
         super(props);
@@ -44,7 +44,11 @@ class App extends React.Component<{}, IState> {
             pdgfRunning: false,
             stories: new Set<string>(),
         };
-        this.requestGeneratorHost = process.env.REACT_APP_REQGEN_HOST || "localhost";
+        this.requestGeneratorHost = null;
+    }
+
+    public componentDidMount() {
+        this.requestGeneratorHost = process.env.REACT_APP_REQGEN_HOST || window.location + "/reqgen";
     }
 
     public changeView = (view: Views, story: string | null) => {
@@ -126,12 +130,16 @@ class App extends React.Component<{}, IState> {
     }
 
     public startTest = (): void => {
+        // user might not have prefixed host with http://
+        if (this.requestGeneratorHost && !this.requestGeneratorHost.startsWith("http://")) {
+            this.requestGeneratorHost = "http://" + this.requestGeneratorHost;
+        }
         const config = this.export();
         this.setState({pdgfRunning: true});
         const axiosParams = {headers: {
             "Content-Type": "application/xml",
             }} as AxiosRequestConfig;
-        axios.post("http://" + this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams).then((r) => {
+        axios.post(this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams).then((r) => {
                 console.log(r.status);
                 if (r.status === 200) {
                     const date = new Date(0);
@@ -142,7 +150,7 @@ class App extends React.Component<{}, IState> {
                     axiosParams.headers = {
                         "Content-Type": "application/json",
                     };
-                    axios.post("http://" + this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + dateString + " finished!")).catch((e) => alert(e));
+                    axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + dateString + " finished!")).catch((e) => alert(e));
                     this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
                 }
         },
