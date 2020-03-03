@@ -20,14 +20,15 @@ export class Evaluation extends Component<IProps, IAppState> {
 
     private currentId?: string = undefined;
 
-    private readonly performanceDataStorageHost: string;
+    private performanceDataStorageHost: string | null;
 
     public constructor(props: IProps) {
         super(props);
-        this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || "localhost";
+        this.performanceDataStorageHost = null;
     }
 
     public componentDidMount() {
+        this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || window.location+"/pds";
         this.setState({runningTests: [], finishedTests: []});
         this.loadTests();
         this.interval = setInterval(() => this.loadTests(), 2000);
@@ -84,16 +85,21 @@ export class Evaluation extends Component<IProps, IAppState> {
     }
 
     private loadTests() {
+        //user might not have prefixed host with http://
+        if(this.performanceDataStorageHost && !this.performanceDataStorageHost.startsWith("http://")){
+            this.performanceDataStorageHost = "http://"+this.performanceDataStorageHost;
+        }
+
         axios.request<string[]>({
-            url: "http://" + this.performanceDataStorageHost + "/tests/running",
+            url: this.performanceDataStorageHost + "/tests/running",
         }).then((response) => {
             this.setState({runningTests: response.data});
         }).catch((error) => {
-                console.error("Error: " + error + " for url: http://" + this.performanceDataStorageHost + "/tests/running");
+                console.error("Error: " + error + " for url: " + this.performanceDataStorageHost + "/tests/running");
             },
         );
         axios.request<string[]>({
-            url: "http://" + this.performanceDataStorageHost + "/tests/finished",
+            url: this.performanceDataStorageHost + "/tests/finished",
         }).then((response) => {
             this.setState({finishedTests: response.data});
             if (this.props.id) {
@@ -106,7 +112,7 @@ export class Evaluation extends Component<IProps, IAppState> {
                 }
             }
         }).catch((error) => {
-                console.error("Error: " + error + " for url: http://" + this.performanceDataStorageHost + "/tests/finished");
+                console.error("Error: " + error + " for url: " + this.performanceDataStorageHost + "/tests/finished");
             },
         );
     }
@@ -129,7 +135,7 @@ export class Evaluation extends Component<IProps, IAppState> {
     }
 
     private import() {
-        axios.get<any>("http://" + this.performanceDataStorageHost
+        axios.get<any>(this.performanceDataStorageHost
             + "/test/" + this.state.currentId).then((response) => {
             this.props.importTestConfig(JSON.parse(response.data.testConfig));
         }).catch((e) => alert(e));
