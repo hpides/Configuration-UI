@@ -30,7 +30,7 @@ interface IMqttWorkerState {
 
 export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
 
-    public mqtt: Client;
+    public mqtt: Client | null;
     public reconnectTimeout: number = 2000;
     public port: number = 9001;
     // references that will be set by react
@@ -100,7 +100,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
         },
     };
 
-    private readonly mqttHost: string;
+    private mqttHost: string | null;
     private doc: jspdf | null = null;
     // in production, these values will never be visible because this age will be shown when the test is already running
     private maxLatencyMaximum = -1;
@@ -125,22 +125,15 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
     private avgFinished = false;
     private throughputFinished = false;
     private maxChartHeight = 0;
-    private readonly performanceDataStorageHost: string;
+    private performanceDataStorageHost: string| null;
     constructor(props: ITestConfig) {
         super(props);
 
-        this.mqttHost = process.env.REACT_APP_MQTT_HOST || "localhost";
-        this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || "localhost";
-        this.getTimesAndAssertionsFromPerformanceDataStorage();
-        this.mqtt = connect("mqtt://" + this.mqttHost + ":" + this.port);
-        const client = this.mqtt;
+        this.mqttHost = null;
+        this.performanceDataStorageHost = null;
 
-        this.mqtt.on("connect", () => {
-            this.onConnect(client);
-        });
-        this.mqtt.on("message", (topic, message) => {
-            this.onMessageArrived(topic, message);
-        });
+        this.mqtt = null;
+
         /*tslint:disable:max-line-length*/
         this.state = { assertions: [], nines: this.nines, current_state: teststate.RUNNING, reportReady: false, preparingReport: false};
         // else I can not reference it
@@ -150,6 +143,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
         this.avgOptions.animation = {easing: "linear", onComplete: this.avgChanged};
         this.throughputOptions.animation = {easing: "linear", onComplete: this.throughputChanged};
     }
+
     public onConnect(client: Client) {
         // subscribe with qos 2 to receive all packets exactly once
         client.subscribe(this.timesTopic, {qos: 2}, (err) => {
@@ -346,6 +340,27 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
         chart.chartInstance.update();
    }
 public componentDidMount() {
+        // make sure we only initialize once
+        if (this.mqtt === null) {
+            this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || window.location + "/pds";
+            this.mqttHost = process.env.REACT_APP_MQTT_HOST || window.location + "/mosquitto";
+
+            // needs to start with ws://
+            this.mqttHost.replace("http://", "mqtt://");
+
+            // needs host variables that are not reliably set before now
+            this.getTimesAndAssertionsFromPerformanceDataStorage();
+
+            this.mqtt = connect(this.mqttHost);
+            const client = this.mqtt;
+
+            this.mqtt.on("connect", () => {
+                this.onConnect(client);
+            });
+            this.mqtt.on("message", (topic, message) => {
+                this.onMessageArrived(topic, message);
+            });
+        }
         // we need the maximum height for pdf generation
         if (this.maxChartHeight < this.chartMin!.chartInstance.height!) {
             this.maxChartHeight = this.chartMin!.chartInstance.height!;
@@ -470,8 +485,12 @@ public render() {
     }
 
     private getTimesAndAssertionsFromPerformanceDataStorage() {
+        // user might not have prefixed host with http://
+        if (this.performanceDataStorageHost && !this.performanceDataStorageHost.startsWith("http://")) {
+            this.performanceDataStorageHost = "http://" + this.performanceDataStorageHost;
+        }
         axios.request<string[]>({
-            url: "http://" + this.performanceDataStorageHost + "/test/" + this.props.testId + "/times",
+            url: this.performanceDataStorageHost + "/test/" + this.props.testId + "/times",
         }).then((response) => {
             const data = response.data;
             data.forEach( (time) =>  {
@@ -481,7 +500,7 @@ public render() {
             });
         }).then( (dealtResponse) => {
             axios.request<string[]>({
-                url: "http://" + this.performanceDataStorageHost + "/test/" + this.props.testId + "/assertions",
+                url: this.performanceDataStorageHost + "/test/" + this.props.testId + "/assertions",
             }).then((response) => {
                 const data = response.data;
                 data.forEach((assertion) => {
