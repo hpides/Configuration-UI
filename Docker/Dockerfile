@@ -1,13 +1,9 @@
 # base image
-FROM node:13.8.0 as build
+FROM node:13.8.0-alpine as build
 
 #needed by npm
-RUN apt update && apt install -y apache2 git dumb-init
+RUN apk add git
 
-#Apache modules for reverse proxying
-RUN a2enmod proxy proxy_http proxy_wstunnel rewrite
-
-# set working directory
 WORKDIR /app
 
 # add `/app/node_modules/.bin` to $PATH
@@ -24,16 +20,31 @@ RUN npm install react-scripts -g
 
 COPY . .
 
+#creates a static asset containing all html, css, javascript that can be served by a simple webserver
+RUN npm run build
+
+FROM alpine:3
+
+#Apache modules for reverse proxying
+#alpine does not have a2enmod, but there are additional packages for mods
+RUN apk add apache2 apache2-proxy
+
+RUN ls /etc/apache2
+
+#Apache modules for reverse proxying
+#alpine does not have a2enmod, so this needs to be done manually
+#RUN echo "LoadModule proxy_module modules/mod_proxy.so" >> /etc/apache2/httpd.conf
+#RUN echo "LoadModule proxy_http_module modules/mod_proxy_http.so" >> /etc/apache2/httpd.conf
+#RUN echo "LoadModule proxy_wstunnel_module modules/mod_proxy_wstunnel.so" >> /etc/apache2/httpd.conf
+#this comes by default, needs to enabled manually; other modules are enabled by package installer
+RUN echo "LoadModule rewrite_module modules/mod_rewrite.so" >> /etc/apache2/httpd.conf
+
+RUN echo "include /etc/apache2/000-default.conf" >> /etc/apache2/httpd.conf
+
+WORKDIR /app
+
+COPY --from=build /app/build/ /var/www/localhost/htdocs
 
 #contains proxying config
-COPY ./Docker/000-default.conf /etc/apache2/sites-available/000-default.conf
-
-# log errors to stderr
-#RUN sed "s\ErrorLog.*\ErrorLog /dev/stdout\g" /etc/apache2/apache2.conf -i
-
-#log transfers to stdout
-#RUN sed "s\TransferLog.*\TransferLog /dev/stdout\g" /etc/apache2/apache2.conf -i
-
-# start app
-# dumb-init rewrites signals, so you can kill the container using ctrl-c
-CMD ["dumb-init","sh","./buildAndRun.sh"]
+COPY ./Docker/000-default.conf  /etc/apache2/000-default.conf
+CMD ["httpd", "-DFOREGROUND"]
