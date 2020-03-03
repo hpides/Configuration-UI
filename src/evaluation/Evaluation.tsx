@@ -28,7 +28,7 @@ export class Evaluation extends Component<IProps, IAppState> {
     }
 
     public componentDidMount() {
-        this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || window.location+"/pds";
+        this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || window.location + "/pds";
         this.setState({runningTests: [], finishedTests: []});
         this.loadTests();
         this.interval = setInterval(() => this.loadTests(), 2000);
@@ -85,9 +85,9 @@ export class Evaluation extends Component<IProps, IAppState> {
     }
 
     private loadTests() {
-        //user might not have prefixed host with http://
-        if(this.performanceDataStorageHost && !this.performanceDataStorageHost.startsWith("http://")){
-            this.performanceDataStorageHost = "http://"+this.performanceDataStorageHost;
+        // user might not have prefixed host with http://
+        if (this.performanceDataStorageHost && !this.performanceDataStorageHost.startsWith("http://")) {
+            this.performanceDataStorageHost = "http://" + this.performanceDataStorageHost;
         }
 
         axios.request<string[]>({

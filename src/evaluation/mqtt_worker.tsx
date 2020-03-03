@@ -144,7 +144,6 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
         this.throughputOptions.animation = {easing: "linear", onComplete: this.throughputChanged};
     }
 
-
     public onConnect(client: Client) {
         // subscribe with qos 2 to receive all packets exactly once
         client.subscribe(this.timesTopic, {qos: 2}, (err) => {
@@ -341,15 +340,15 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
         chart.chartInstance.update();
    }
 public componentDidMount() {
-        //make sure we only initialize once
-        if(this.mqtt === null) {
+        // make sure we only initialize once
+        if (this.mqtt === null) {
             this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || window.location + "/pds";
             this.mqttHost = process.env.REACT_APP_MQTT_HOST || window.location + "/mosquitto";
 
-            //needs to start with ws://
+            // needs to start with ws://
             this.mqttHost.replace("http://", "mqtt://");
 
-            //needs host variables that are not reliably set before now
+            // needs host variables that are not reliably set before now
             this.getTimesAndAssertionsFromPerformanceDataStorage();
 
             this.mqtt = connect(this.mqttHost);
@@ -486,9 +485,9 @@ public render() {
     }
 
     private getTimesAndAssertionsFromPerformanceDataStorage() {
-        //user might not have prefixed host with http://
-        if(this.performanceDataStorageHost && !this.performanceDataStorageHost.startsWith("http://")){
-            this.performanceDataStorageHost = "http://"+this.performanceDataStorageHost;
+        // user might not have prefixed host with http://
+        if (this.performanceDataStorageHost && !this.performanceDataStorageHost.startsWith("http://")) {
+            this.performanceDataStorageHost = "http://" + this.performanceDataStorageHost;
         }
         axios.request<string[]>({
             url: this.performanceDataStorageHost + "/test/" + this.props.testId + "/times",

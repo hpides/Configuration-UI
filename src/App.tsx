@@ -47,8 +47,8 @@ class App extends React.Component<{}, IState> {
         this.requestGeneratorHost = null;
     }
 
-    public componentDidMount(){
-        this.requestGeneratorHost = process.env.REACT_APP_REQGEN_HOST || window.location+"/reqgen";
+    public componentDidMount() {
+        this.requestGeneratorHost = process.env.REACT_APP_REQGEN_HOST || window.location + "/reqgen";
     }
 
     public changeView = (view: Views, story: string | null) => {
@@ -130,9 +130,9 @@ class App extends React.Component<{}, IState> {
     }
 
     public startTest = (): void => {
-        //user might not have prefixed host with http://
-        if(this.requestGeneratorHost && !this.requestGeneratorHost.startsWith("http://")){
-            this.requestGeneratorHost = "http://"+this.requestGeneratorHost;
+        // user might not have prefixed host with http://
+        if (this.requestGeneratorHost && !this.requestGeneratorHost.startsWith("http://")) {
+            this.requestGeneratorHost = "http://" + this.requestGeneratorHost;
         }
         const config = this.export();
         this.setState({pdgfRunning: true});
