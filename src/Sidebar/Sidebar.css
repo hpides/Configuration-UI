@@ -37,21 +37,15 @@
 }
 
 .sidebar ul.stories-list input {
-    width: 80%;
-    padding: 6px 8px 6px 16px;
+    width: calc(100% - 42px);
     text-align: left;
     margin-left: 10px;
-    margin-top: 10px;
-    font-size: 18px;
-    color: #e3e3e3;
-    background-color: transparent;
-    border: solid 1px white;
-    display: block;
+    margin-top: 0px;
 }
 
 .stories-btn {
-    position: absolute;
-    display: inline-block;
+    position: static;
+    float: left;
     padding-left: 16px;
     padding-right: 0;
     left: 0;
@@ -61,7 +55,7 @@
 	background-color:#44c767;
 	border-radius:28px;
 	border:1px solid #18ab29;
-	display:inline-block;
+	float: left;
 	cursor:pointer;
 	color:#ffffff;
 	font-family:Arial;
@@ -79,6 +73,11 @@
 .add-story-btn:active {
 	/*position:relative;
 	top:1px;*/
+}
+
+.stories-list {
+    width: calc(100% - 20px);
+    float: left;
 }
 
         

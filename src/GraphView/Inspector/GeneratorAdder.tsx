@@ -71,23 +71,29 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
             <div className="generator-adder-container">
                 <div className="generator-adder-background"></div>
                 <div className="generator-adder">
-                    <label>Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        onChange={this.inputChanged}
-                        onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
-                    />
-                    <div className="select-wrapper">
-                        <select
-                            name="generator"
-                            value={this.state.genConfig.getTypeString()}
-                            onChange={this.inputChanged}
-                        >
-                            <option value="RANDOM_STRING">Random String</option>
-                            <option value="E_MAIL">E-Mail</option>
-                            <option value="EXISTING">Existing Data</option>
-                        </select>
+                    <div className="generator-meta">
+                        <div>
+                            <label>Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                onChange={this.inputChanged}
+                                onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
+                            />
+                        </div>
+                        <div>
+                            <div className="select-wrapper">
+                                <select
+                                    name="generator"
+                                    value={this.state.genConfig.getTypeString()}
+                                    onChange={this.inputChanged}
+                                >
+                                    <option value="RANDOM_STRING">Random String</option>
+                                    <option value="E_MAIL">E-Mail</option>
+                                    <option value="EXISTING">Existing Data</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     {this.state.genConfig.render()}
                     <button
