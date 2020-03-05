@@ -3,4 +3,5 @@ export enum Views {
     Testconfig,
     UserStories,
     Evaluation,
+    Existing
 }

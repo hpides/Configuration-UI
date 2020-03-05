@@ -14,6 +14,7 @@ import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
+import {ExistingConfigComponent} from "./ExistingConfig/existingConfigComponent";
 
 interface IState {
     currentView: Views;
@@ -231,6 +232,10 @@ class App extends React.Component<{}, IState> {
                         <div
                             style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <Testconfig ref={(ref) => this.testConfig = ref}/>
+                        </div>
+                        <div
+                            style={this.state.currentView === Views.Existing ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
+                            <ExistingConfigComponent/>
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
