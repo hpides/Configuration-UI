@@ -158,7 +158,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 <tr key={i} data-key={keys[i]} onClick={this.editGenerator}>
                     <td>{keys[i]}</td>
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
-                    <button
+                    <td style={{width: "6vw"}}><button
                         className="delete-data-btn"
                         onClick={(event) => {
                             event.preventDefault();
@@ -166,6 +166,7 @@ export class Inspector extends React.Component<IProps, IState> {
 
                         }}
                     >&times;</button>
+                    </td>
                 </tr>,
             );
         }
