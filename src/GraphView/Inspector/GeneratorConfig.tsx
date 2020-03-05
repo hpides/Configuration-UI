@@ -121,9 +121,9 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
         super(disableDeleteKey, enableDeleteKey);
 
         this.attributes = {
+            characters: "abcdefghijklmnopqrstuvwxyz",
             maxChars: "10",
             minChars: "10",
-            characters: "abcdefghijklmnopqrstuvwxyz"
         };
     }
 
