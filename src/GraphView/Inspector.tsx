@@ -70,6 +70,20 @@ export class Inspector extends React.Component<IProps, IState> {
         });
     }
 
+    public deleteGenerator = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (!(this.props.node instanceof DataGenerationNode)) {
+            return;
+        }
+
+        const node: DataGenerationNode = this.props.node;
+
+        const key = event.currentTarget.getAttribute("data-key");
+        if (!key) { return; }
+
+        node.removeData(key);
+        this.forceUpdate();
+    }
+
     public handleAddGeneratorDialog = (key: string, genConfig: GeneratorConfig) => {
         if (!(this.props.node instanceof DataGenerationNode)) {
             return;
@@ -160,11 +174,8 @@ export class Inspector extends React.Component<IProps, IState> {
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
                     <button
                         className="delete-data-btn"
-                        onClick={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
-
-                        }}
+                        data-key={keys[i]}
+                        onClick={this.deleteGenerator}
                     >&times;</button>
                 </tr>,
             );

@@ -69,6 +69,12 @@
     right: 0;
     margin: 0;
     padding: 0;
+    transition: all 0.3s ease 0s;
+}
+
+.inspector .data-generation-table table tr:hover .delete-data-btn:before {
+    opacity: 1.0;
+    right: 15px;
 }
 
 .inspector .delete-data-btn:before {
@@ -85,10 +91,12 @@
     padding:0px 7px;
 	text-decoration:none;
     margin: 0;
-    right: 15px;
+    right: -15px;
     height: 30px;
     width: 15px;
+    transition: all 0.3s ease 0s;
+    opacity: 0;
 }
-.inspector .delete-data-btn:hover {
-	background-color:#5cbf2a;
+.inspector .delete-data-btn:hover:before {
+	background-color:#b04c41;
 }
