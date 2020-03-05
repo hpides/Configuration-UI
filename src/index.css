@@ -7,7 +7,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #505460;
   color: white;
-  overflow: auto;
+  overflow: hidden;
 }
 
 code {
@@ -35,4 +35,16 @@ button {
 
 button:hover {
   color: #7986ae;
+}
+
+input {
+  padding: 6px 8px 6px 14px;
+  text-align: left;
+  /*margin-left: 10px;*/
+  margin-top: 10px;
+  font-size: 18px;
+  color: #e3e3e3;
+  background-color: transparent;
+  border: solid 1px white;
+  display: block;
 }
