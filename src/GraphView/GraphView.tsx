@@ -34,19 +34,16 @@ interface IState extends IStory {
     scalePercentage: number;
 }
 
-interface IProps {
-    story: string;
-}
-
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
-export class GraphView extends React.Component<IProps, IState> {
+export class GraphView extends React.Component<{}, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
     private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
+    private storyName: string;
 
     private waitingForSetState = false;
-    constructor(props: IProps) {
+    constructor(props: {}) {
         super(props);
 
         this.state = {
@@ -61,6 +58,8 @@ export class GraphView extends React.Component<IProps, IState> {
         this.engine.setModel(this.model);
 
         this.engine.getActionEventBus().registerAction(this.deleteAction);
+        // will be set in a second by parent
+        this.storyName = "";
     }
 
     public componentDidMount() {
@@ -99,7 +98,7 @@ export class GraphView extends React.Component<IProps, IState> {
                 node = new StartNode(nodeOptions);
                 break;
             case "DATA_GENERATION":
-                node = new DataGenerationNode(nodeOptions);
+                node = new DataGenerationNode( this.disableDeleteKey, this.enableDeleteKey, nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
@@ -154,7 +153,7 @@ export class GraphView extends React.Component<IProps, IState> {
         const startNode = this.state.startNode;
         if (startNode) {
             const story = ConvertGraphToStory("Rail", 1, startNode, this.state.nodes);
-            story.story.name = this.props.story;
+            story.story.name = this.storyName;
             story.story.scalePercentage = this.state.scalePercentage;
 
             return story;
@@ -164,7 +163,11 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public getStory = (): string => {
-        return this.props.story;
+        return this.storyName;
+    }
+
+    public setStory = (story: string) => {
+        this.storyName = story;
     }
 
     public importNodes = (story: any): void => {
@@ -173,7 +176,7 @@ export class GraphView extends React.Component<IProps, IState> {
             while (this.waitingForSetState) {
                 await new Promise((res) => setTimeout(res, 100));
             }
-            const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(story);
+            const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(this.disableDeleteKey, this.enableDeleteKey, story);
             this.setState({nodes: [], scalePercentage: story.scalePercentage});
 
             for (const node of nodes.nodes) {
@@ -182,6 +185,7 @@ export class GraphView extends React.Component<IProps, IState> {
                 });
                 this.model.addNode(node);
                 this.state.nodes.push(node);
+
             }
 
             for (const link of nodes.links) {

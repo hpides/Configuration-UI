@@ -18,7 +18,7 @@ import {Views} from "./Views";
 interface IState {
     currentView: Views;
     currentStory: string | null;
-    readonly stories: Set<string>;
+    readonly stories: string[];
     pdgfRunning: boolean;
     currentTestId: string | undefined;
 }
@@ -28,7 +28,7 @@ interface IState {
 /*tslint:disable:max-line-length*/
 class App extends React.Component<{}, IState> {
 
-    private readonly graphViews: Set<GraphView> = new Set<GraphView>();
+    private readonly graphViews: GraphView[] = [];
 
     private sidebar: Sidebar | null = null;
 
@@ -42,7 +42,7 @@ class App extends React.Component<{}, IState> {
             currentTestId: undefined,
             currentView: Views.UserStories,
             pdgfRunning: false,
-            stories: new Set<string>(),
+            stories: [],
         };
         this.requestGeneratorHost = null;
     }
@@ -53,11 +53,45 @@ class App extends React.Component<{}, IState> {
 
     public changeView = (view: Views, story: string | null) => {
         if (story) {
-            this.state.stories.add(story);
+            let found = false;
+            for (const existingStory of this.state.stories) {
+                if (existingStory === story) {
+                    found = true;
+                }
+            }
+            if (!found) {this.state.stories.push(story); }
         }
-        this.setState({currentView: view, currentStory: story});
+        this.setState({currentView: view, currentStory: story, stories: this.state.stories});
 
     }
+    public renameStory = (oldName: string, newName: string) => {
+
+        this.graphViews.forEach((view) => {
+            if (view.getStory() === oldName) {
+                view.setStory(newName);
+            }
+        });
+
+        const stories = this.state.stories;
+
+        this.state.stories.forEach((value, index) => {
+            if (value === oldName) {
+                // eslint-disable-next-line
+                this.state.stories[index] = newName;
+            }
+        });
+
+        this.forceUpdate();
+
+        let currentStory = this.state.currentStory;
+        if (currentStory === oldName) {
+            currentStory = newName;
+        }
+
+        this.setState({stories, currentStory});
+
+    }
+
     public export = (): {json: string, xml: string, id: number} => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
@@ -110,7 +144,7 @@ class App extends React.Component<{}, IState> {
         const stories: any[] = testConfig.stories;
         for (const story of stories) {
             // this creates the respective graph view
-            this.state.stories.add(story.name);
+            this.state.stories.push(story.name);
             // this creates the sidebar button
             if (this.sidebar) {
                 this.sidebar.addStory(story.name);
@@ -178,8 +212,12 @@ class App extends React.Component<{}, IState> {
                     <ClipLoader loading={this.state.pdgfRunning}/>
                 </header>
                 <div className="content">
-                    <Sidebar currentView={this.state.currentView} changeView={this.changeView}
-                             ref={(ref) => this.sidebar = ref}/>
+                    <Sidebar currentView={this.state.currentView}
+                        changeView={this.changeView}
+                        renameStory={this.renameStory}
+                        ref={(ref) => this.sidebar = ref}
+                    />
+
                     {// We need to render all elements at all time so their state does not get recycled
                     }
                     <div className="main">
@@ -196,11 +234,22 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            {Array.from(this.state.stories).map((story) => <div key={story}
-                                                                                style={this.state.currentStory === story ? {visibility: "visible"} : {visibility: "hidden"}}>
-                                <GraphView story={story} ref={(ref) => {
+                            {[...Array(this.state.stories.length)].map((item, story) => <div key={story}
+                                                                                style={this.graphViews[story] && this.state.currentStory === this.graphViews[story].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
+                                <GraphView ref={(ref) => {
+                                    // story names can change at any time. Using them as props will destroy the graph view, so set it here instead
                                     if (ref) {
-                                        this.graphViews.add(ref);
+                                        ref.setStory(this.state.stories[story]);
+                                        let exists = false;
+                                        // we do not want the same reference twice
+                                        for (const view of this.graphViews) {
+                                            if (view === ref) {
+                                                exists = false;
+                                            }
+                                        }
+                                        if (!exists) {
+                                        this.graphViews.push(ref);
+                                        }
                                     }
                                 }}/></div>)}
                         </div>

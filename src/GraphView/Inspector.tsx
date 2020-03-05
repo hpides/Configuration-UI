@@ -23,6 +23,7 @@ interface IState {
     addingGenerator: boolean;
     addingAuth: boolean;
     addingAssertion: boolean;
+    activeGenerator: {key: string, genConfig: GeneratorConfig} | null;
 }
 
 interface IBasicAuth {
@@ -35,6 +36,7 @@ export class Inspector extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            activeGenerator: null,
             addingAssertion: false,
             addingAuth: false,
             addingGenerator: false,
@@ -49,21 +51,51 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({addingGenerator: true});
     }
 
-    public handleAddGeneratorDialog = (name: string, genConfig: GeneratorConfig) => {
+    public editGenerator = (event: React.MouseEvent<HTMLTableRowElement>) => {
         if (!(this.props.node instanceof DataGenerationNode)) {
             return;
         }
 
         const node: DataGenerationNode = this.props.node;
 
-        // node.dataToGenerate[name] = assertionConfig;
-        node.addData(name, genConfig);
+        const key = event.currentTarget.getAttribute("data-key");
+        if (!key) { return; }
 
-        this.setState({addingGenerator: false});
+        const gen = node.dataToGenerate.value.get(key);
+        if (!gen) { return; }
+
+        this.setState({
+            activeGenerator: {key, genConfig: gen},
+            addingGenerator: true,
+        });
+    }
+
+    public handleAddGeneratorDialog = (key: string, genConfig: GeneratorConfig) => {
+        if (!(this.props.node instanceof DataGenerationNode)) {
+            return;
+        }
+
+        const node: DataGenerationNode = this.props.node;
+
+        node.addData(key, genConfig);
+
+        if (this.state.activeGenerator) {
+            if (this.state.activeGenerator.key !== key) {
+                node.removeData(this.state.activeGenerator.key);
+            }
+        }
+
+        this.setState({
+            activeGenerator: null,
+            addingGenerator: false,
+        });
     }
 
     public handleCancelGeneratorDialog = () => {
-        this.setState({addingGenerator: false});
+        this.setState({
+            activeGenerator: null,
+            addingGenerator: false,
+        });
     }
 
     public addAuth = () => {
@@ -123,9 +155,18 @@ export class Inspector extends React.Component<IProps, IState> {
         for (let i = 0; i < keys.length; i++) {
             // react needs a key element for every tr
             rows.push(
-                <tr key={i}>
+                <tr key={i} data-key={keys[i]} onClick={this.editGenerator}>
                     <td>{keys[i]}</td>
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
+                    <td style={{width: "6vw"}}><button
+                        className="delete-data-btn"
+                        onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                        }}
+                    >&times;</button>
+                    </td>
                 </tr>,
             );
         }
@@ -136,7 +177,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     <tbody>
                     <tr>
                         <th>Key</th>
-                        <th>Generator</th>
+                        <th colSpan={2}>Generator</th>
                     </tr>
                     {rows}
                     </tbody>
@@ -232,6 +273,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 disableDeleteKey={this.props.disableDeleteKey}
                 onAdd={this.handleAddGeneratorDialog}
                 onCancel={this.handleCancelGeneratorDialog}
+                generator={this.state.activeGenerator}
             />;
         }
 
