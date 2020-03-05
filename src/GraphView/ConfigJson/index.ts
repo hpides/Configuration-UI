@@ -138,10 +138,19 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
     };
 }
 
-export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
+/**
+ * Convert given deserialized JSON to nodes
+ * @param {() => void} disableDeleteKey method for datageneration that disables the delete key
+ * @param {() => void} enableDeleteKey method for datageneration that enables the delete key
+ * @param deserializedStory story representation as plain JS object
+ * @returns {{nodes: Node[]; startNode: StartNode | null; links: LinkModel[]}} extracted nodes, the startNode if present, and links between nodes to be added to the model
+ * @constructor
+ */
+export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKey: () => void, deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
     const ret: Node[] = [];
     const links: LinkModel[] = [];
     let startNode: StartNode|null = null;
+    console.log(deserializedStory);
     for (const currentAtom of deserializedStory.atoms) {
 
         const type = currentAtom.type;
@@ -157,7 +166,8 @@ export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], sta
                 startNode = node;
                 break;
             case "DATA_GENERATION":
-                node = new DataGenerationNode(nodeOptions);
+                // so existing properties can be edited
+                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
@@ -234,8 +244,10 @@ function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
         case "RANDOM_STRING":
             frag.ele("gen_RandomString").ele("max").txt(genConfig.getAttribute("maxChars"));
             break;
-        case "E_MAIL":
-            frag.ele("gen_Email");
+        case "RANDOM_SENTENCE":
+            const gen = frag.ele("gen_RandomSentence");
+            gen.ele("max").txt(genConfig.getAttribute("max"));
+            gen.ele("min").txt(genConfig.getAttribute("min"));
             break;
         default:
             console.log(genConfig.getTypeString() + " unknown generator");
