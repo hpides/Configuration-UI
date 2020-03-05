@@ -6,14 +6,15 @@ import { EMailGeneratorConfig } from "./GeneratorConfig";
 import { ExistingDataConfig } from "./GeneratorConfig";
 
 interface IProps {
-    onAdd: (name: string, genConfig: GeneratorConfig) => void;
+    onAdd: (key: string, genConfig: GeneratorConfig) => void;
     onCancel: () => void;
     disableDeleteKey: () => void;
     enableDeleteKey: () => void;
+    generator: {key: string, genConfig: GeneratorConfig} | null;
 }
 
 interface IState {
-    name: string;
+    key: string;
     genConfig: GeneratorConfig;
 }
 
@@ -21,17 +22,25 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
     constructor(props: any) {
         super(props);
 
+        let genConfig = new RandomStringGeneratorConfig(this.props.disableDeleteKey, this.props.enableDeleteKey);
+        let key = "";
+
+        if (this.props.generator) {
+            genConfig = this.props.generator.genConfig;
+            key = this.props.generator.key;
+        }
+
         this.state = {
-            genConfig: new RandomStringGeneratorConfig(this.props.disableDeleteKey, this.props.enableDeleteKey),
-            name: "",
+            genConfig: genConfig,
+            key: key,
         };
     }
 
     public inputChanged = (event: any) => {
 
         switch (event.currentTarget.name) {
-            case "name":
-                this.setState({name: event.currentTarget.value});
+            case "key":
+                this.setState({key: event.currentTarget.value});
                 break;
             case "generator":
                 switch (event.currentTarget.value) {
@@ -53,8 +62,18 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
 
     }
 
+    public generatorChanged = (event: React.FormEvent<HTMLInputElement>) => {
+
+        const genConfig = this.state.genConfig;
+        genConfig.setAttribute(event.currentTarget.name, event.currentTarget.value)
+        this.setState({
+            genConfig: genConfig
+        });
+
+    }
+
     public doneButtonClicked = () => {
-        this.props.onAdd(this.state.name, this.state.genConfig);
+        this.props.onAdd(this.state.key, this.state.genConfig);
         // left menu --> should be allowed to delete again
         this.props.enableDeleteKey();
     }
@@ -73,12 +92,13 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                 <div className="generator-adder">
                     <div className="generator-meta">
                         <div>
-                            <label>Name</label>
+                            <label>Key</label>
                             <input
                                 type="text"
-                                name="name"
+                                name="key"
                                 onChange={this.inputChanged}
                                 onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
+                                value={this.state.key}
                             />
                         </div>
                         <div>
@@ -95,7 +115,7 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                             </div>
                         </div>
                     </div>
-                    {this.state.genConfig.render()}
+                    {this.state.genConfig.render(this.generatorChanged)}
                     <button
                         onClick={this.doneButtonClicked}
                     >Add</button>
