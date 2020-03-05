@@ -1,6 +1,7 @@
 import React from "react";
 import Dropzone from 'react-dropzone'
-
+import "../evaluation/Evaluation.css"
+import Alert from "reactstrap/lib/Alert";
 export interface IUploadedFile {
     existingTables: string[],
     tableMapping: Map<string, string[]>,
@@ -8,13 +9,14 @@ export interface IUploadedFile {
 }
 
 export interface IState {
-    uploadedFiles: Map<string, IUploadedFile>
+    uploadedFiles: Map<string, IUploadedFile>,
+    lastError: string
 }
 
 export class ExistingConfigComponent extends React.Component<{},IState> {
     public constructor(props:{}){
         super(props);
-        this.state={uploadedFiles: new Map<string, IUploadedFile>()}
+        this.state={uploadedFiles: new Map<string, IUploadedFile>(), lastError: ""}
     }
 
     public onDrop(files: File[]){
@@ -30,8 +32,17 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
     }
 
     public processFileContents(reader:string, filename: string) {
-        const xml = new DOMParser().parseFromString(reader.toString(), "text/xml");
-        const tables = xml.evaluate("//table/@name", xml, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
+        this.setState({lastError: ""});
+        let tables, xml;
+            xml = new DOMParser().parseFromString(reader.toString(), "text/xml");
+            console.log(xml);
+            if(xml.documentElement.nodeName === "parsererror"){
+                console.log("NOPE");
+                this.setState({lastError: xml.documentElement.textContent+""});
+                return
+            }
+            tables = xml.evaluate("//table/@name", xml, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
+
         let node;
         const uploadedFileRepr : IUploadedFile = {fileContent: reader, existingTables: [], tableMapping: new Map<string, string[]>()};
         while ((node = tables.iterateNext()) !== null) {
@@ -54,6 +65,9 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
 
     public render(){
         return <div>
+            <div>
+                {this.state.lastError === ""? <div/> : <Alert color="danger">Import error: {this.state.lastError}</Alert>}
+            </div>
             <Dropzone onDrop={ (files) => this.onDrop(files)}>
                 {({getRootProps, getInputProps}) => (
                     <section>
@@ -76,8 +90,7 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
                             })}</li>
                         })}
                     </ul>
-
-                        }</li>
+                }</li>
             })}
             </ul>
         </div>

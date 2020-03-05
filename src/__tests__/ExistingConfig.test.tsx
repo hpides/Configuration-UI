@@ -38,4 +38,11 @@ describe("The ExistingConfigComponent", () => {
         expect(wrapper.text().includes("Table: Posts, Fields: title, text")).toBe(true);
         expect(wrapper.text().includes("Table: Search, Fields: Benutzer")).toBe(true);
     });
+
+    it("shows an error message", () => {
+        const component = <ExistingConfigComponent/>;
+        const wrapper = mount<ExistingConfigComponent, IState>(component, {});
+        wrapper.instance().processFileContents("Nothing to see here", "customer.xml");
+        expect(wrapper.instance().state.lastError).not.toBe("")
+    });
 });
