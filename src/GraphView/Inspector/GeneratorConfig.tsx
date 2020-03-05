@@ -46,7 +46,6 @@ export abstract class GeneratorConfig {
         return Object.keys(this.attributes);
     }
 
-
     public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void) {
         return(
             <div className="generator-config">

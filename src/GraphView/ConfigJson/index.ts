@@ -166,8 +166,8 @@ export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKe
                 startNode = node;
                 break;
             case "DATA_GENERATION":
-                //so existing properties can be edited
-                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey,nodeOptions);
+                // so existing properties can be edited
+                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
