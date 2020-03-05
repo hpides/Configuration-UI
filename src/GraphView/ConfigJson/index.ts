@@ -379,10 +379,14 @@ function ConvertNode(idMap: IdMap, node: BaseNode): {atoms: IBaseAtom[], pdgfTab
             }
             attr = node.getAttribute("responseJSONObject");
             if ((typeof attr === "string" || attr instanceof String) && attr.trim() !== "") {
+                //remove whitespaces around comma since they would alter the names the backend looks out for
+                attr = attr.replace(/\s*,\s*/, ",");
                 request.responseJSONObject = attr.split(",");
             }
             attr = node.getAttribute("requestParams");
             if ((typeof attr === "string" || attr instanceof String) && attr.trim() !== "") {
+                //remove whitespaces around comma since they would alter the names the backend looks out for
+                attr = attr.replace(/\s*,\s*/, ",");
                 request.requestParams = attr.split(",");
             }
             attr = node.getAttribute("basicAuth");
