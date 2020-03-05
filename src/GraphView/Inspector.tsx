@@ -158,6 +158,9 @@ export class Inspector extends React.Component<IProps, IState> {
                 <tr key={keys[i]} data-key={keys[i]} onClick={this.editGenerator}>
                     <td>{keys[i]}</td>
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
+                    <button
+                        className="delete-data-btn"
+                    >&times;</button>
                 </tr>,
             );
         }
@@ -168,7 +171,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     <tbody>
                     <tr>
                         <th>Key</th>
-                        <th>Generator</th>
+                        <th colSpan={2}>Generator</th>
                     </tr>
                     {rows}
                     </tbody>
