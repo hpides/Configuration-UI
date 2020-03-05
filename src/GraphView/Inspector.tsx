@@ -23,7 +23,7 @@ interface IState {
     addingGenerator: boolean;
     addingAuth: boolean;
     addingAssertion: boolean;
-    activeGenerator: {key: string, genConfig: GeneratorConfig} | null; 
+    activeGenerator: {key: string, genConfig: GeneratorConfig} | null;
 }
 
 interface IBasicAuth {
@@ -36,10 +36,10 @@ export class Inspector extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            activeGenerator: null,
             addingAssertion: false,
             addingAuth: false,
             addingGenerator: false,
-            activeGenerator: null,
         };
     }
 
@@ -59,15 +59,15 @@ export class Inspector extends React.Component<IProps, IState> {
         const node: DataGenerationNode = this.props.node;
 
         const key = event.currentTarget.getAttribute("data-key");
-        if (!key) return;
+        if (!key) { return; }
 
         const gen = node.dataToGenerate.value.get(key);
-        if (!gen) return;
+        if (!gen) { return; }
 
         this.setState({
             activeGenerator: {key, genConfig: gen},
             addingGenerator: true,
-        })
+        });
     }
 
     public handleAddGeneratorDialog = (key: string, genConfig: GeneratorConfig) => {
@@ -86,15 +86,15 @@ export class Inspector extends React.Component<IProps, IState> {
         }
 
         this.setState({
-            addingGenerator: false,
             activeGenerator: null,
+            addingGenerator: false,
         });
     }
 
     public handleCancelGeneratorDialog = () => {
         this.setState({
+            activeGenerator: null,
             addingGenerator: false,
-            activeGenerator: null
         });
     }
 
@@ -155,7 +155,7 @@ export class Inspector extends React.Component<IProps, IState> {
         for (let i = 0; i < keys.length; i++) {
             // react needs a key element for every tr
             rows.push(
-                <tr key={keys[i]} data-key={keys[i]} onClick={this.editGenerator}>
+                <tr key={i} data-key={keys[i]} onClick={this.editGenerator}>
                     <td>{keys[i]}</td>
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
                     <button
@@ -163,7 +163,7 @@ export class Inspector extends React.Component<IProps, IState> {
                         onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
-                            console.log("CLICKED");
+
                         }}
                     >&times;</button>
                 </tr>,

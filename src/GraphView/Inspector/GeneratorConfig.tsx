@@ -50,7 +50,7 @@ export abstract class GeneratorConfig {
         // called during deserialization for some reason with undefined event. Do not perform operation in this case
         if (event) {
             this.setAttribute(event.currentTarget.name, event.currentTarget.value);
-            
+
         }
     }
 

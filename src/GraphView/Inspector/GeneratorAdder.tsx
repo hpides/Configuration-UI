@@ -31,8 +31,8 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
         }
 
         this.state = {
-            genConfig: genConfig,
-            key: key,
+            genConfig,
+            key,
         };
     }
 
@@ -65,9 +65,9 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
     public generatorChanged = (event: React.FormEvent<HTMLInputElement>) => {
 
         const genConfig = this.state.genConfig;
-        genConfig.setAttribute(event.currentTarget.name, event.currentTarget.value)
+        genConfig.setAttribute(event.currentTarget.name, event.currentTarget.value);
         this.setState({
-            genConfig: genConfig
+            genConfig,
         });
 
     }
