@@ -122,6 +122,8 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
 
         this.attributes = {
             maxChars: "10",
+            minChars: "10",
+            characters: "abcdefghijklmnopqrstuvwxyz"
         };
     }
 
@@ -134,7 +136,13 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
             <div className="generator-config">
                 <label>Maximum Characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="maxChars" onChange={this.inputChanged} />
+                       type="text" name="maxChars" onChange={this.inputChanged} defaultValue={"10"} />
+                <label>Minimum Characters:</label>
+                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
+                       type="text" name="minChars" onChange={this.inputChanged} defaultValue={"10"} />
+                <label>Allowed Characters:</label>
+                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
+                       type="text" name="characters" onChange={this.inputChanged} defaultValue={"abcdefghijklmnopqrstuvwxyz"} />
             </div>
         );
     }
