@@ -244,8 +244,10 @@ function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
         case "RANDOM_STRING":
             frag.ele("gen_RandomString").ele("max").txt(genConfig.getAttribute("maxChars"));
             break;
-        case "E_MAIL":
-            frag.ele("gen_Email");
+        case "RANDOM_SENTENCE":
+            const gen = frag.ele("gen_RandomSentence");
+            gen.ele("max").txt(genConfig.getAttribute("max"));
+            gen.ele("min").txt(genConfig.getAttribute("min"));
             break;
         default:
             console.log(genConfig.getTypeString() + " unknown generator");

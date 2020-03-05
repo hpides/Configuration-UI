@@ -2,7 +2,7 @@ import React from "react";
 import "./GeneratorAdder.css";
 import { GeneratorConfig } from "./GeneratorConfig";
 import { RandomStringGeneratorConfig } from "./GeneratorConfig";
-import { EMailGeneratorConfig } from "./GeneratorConfig";
+import { RandomSentence } from "./GeneratorConfig";
 import { ExistingDataConfig } from "./GeneratorConfig";
 
 interface IProps {
@@ -48,8 +48,8 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                         this.setState({genConfig: new RandomStringGeneratorConfig(this.props.disableDeleteKey,
                                 this.props.enableDeleteKey)});
                         break;
-                    case "E_MAIL":
-                        this.setState({genConfig: new EMailGeneratorConfig(this.props.disableDeleteKey,
+                    case "RANDOM_SENTENCE":
+                        this.setState({genConfig: new RandomSentence(this.props.disableDeleteKey,
                                 this.props.enableDeleteKey)});
                         break;
                     case "EXISTING":
@@ -109,7 +109,7 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                                     onChange={this.inputChanged}
                                 >
                                     <option value="RANDOM_STRING">Random String</option>
-                                    <option value="E_MAIL">E-Mail</option>
+                                    <option value="RANDOM_SENTENCE">Random Sentence</option>
                                     <option value="EXISTING">Existing Data</option>
                                 </select>
                             </div>

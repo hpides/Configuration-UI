@@ -54,37 +54,37 @@ export abstract class GeneratorConfig {
     }
 }
 
-export class EMailGeneratorConfig extends GeneratorConfig {
-    public __type = "EMAIL";
+export class RandomSentence extends GeneratorConfig {
+    public __type = this.getTypeString();
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
 
         this.attributes = {
-            characters: "10",
-            domain: "example.com",
+            max: "10",
+            min: "5",
         };
     }
 
     public getTypeString() {
-        return "E_MAIL";
+        return "RANDOM_SENTENCE";
     }
 
     public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void) {
         return(
             <div className="generator-config">
-                <label>Domain:</label>
+                <label>Minimum characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="domain" onChange={inputChanged} value={this.getAttribute("domain")}/>
-                <label>Characters: </label>
+                       type="text" name="min" onChange={inputChanged} value={this.getAttribute("min")}/>
+                <label>Maximum characters: </label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="characters" onChange={inputChanged} value={this.getAttribute("characters")}/>
+                       type="text" name="max" onChange={inputChanged} value={this.getAttribute("max")}/>
             </div>
         );
     }
 }
 
 export class ExistingDataConfig extends GeneratorConfig {
-    public __type = "EXISTING";
+    public __type = this.getTypeString();
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
 
@@ -109,7 +109,7 @@ export class ExistingDataConfig extends GeneratorConfig {
 }
 
 export class RandomStringGeneratorConfig extends GeneratorConfig {
-    public __type = "RANDOM_STRING";
+    public __type = this.getTypeString();
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
 

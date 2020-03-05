@@ -3,7 +3,7 @@ import {classToPlain, Type} from "class-transformer";
 import "reflect-metadata";
 import {AtomType} from "../ConfigJson";
 import {
-    EMailGeneratorConfig,
+    RandomSentence,
     ExistingDataConfig,
     GeneratorConfig,
     RandomStringGeneratorConfig,
@@ -65,8 +65,8 @@ export class DataGenerationNode extends Node {
                 let conf: GeneratorConfig;
                 const current = parsed.value[key];
                 switch (current.__type) {
-                    case "EMAIL":
-                        conf = new EMailGeneratorConfig(this._keyhandler.disableDeleteKey,
+                    case "RANDOM_SENTENCE":
+                        conf = new RandomSentence(this._keyhandler.disableDeleteKey,
                             this._keyhandler.enableDeleteKey);
                         break;
                     case "EXISTING":
