@@ -37,7 +37,6 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
             xml = new DOMParser().parseFromString(reader.toString(), "text/xml");
             console.log(xml);
             if(xml.documentElement.nodeName === "parsererror"){
-                console.log("NOPE");
                 this.setState({lastError: xml.documentElement.textContent+""});
                 return
             }
