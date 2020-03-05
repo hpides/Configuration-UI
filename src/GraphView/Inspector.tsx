@@ -160,6 +160,11 @@ export class Inspector extends React.Component<IProps, IState> {
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
                     <button
                         className="delete-data-btn"
+                        onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            console.log("CLICKED");
+                        }}
                     >&times;</button>
                 </tr>,
             );
