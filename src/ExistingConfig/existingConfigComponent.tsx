@@ -1,52 +1,55 @@
 import React from "react";
 import Dropzone from 'react-dropzone'
-import {instanceOf} from "prop-types";
+
+export interface IUploadedFile {
+    existingTables: string[],
+    tableMapping: Map<string, string[]>,
+    fileContent: string
+}
 
 export interface IState {
-    existingTables: string[],
-    tableMapping: Map<string, string[]>
+    uploadedFiles: Map<string, IUploadedFile>
 }
 
 export class ExistingConfigComponent extends React.Component<{},IState> {
     public constructor(props:{}){
         super(props);
-        this.state={existingTables: [], tableMapping: new Map<string, string[]>()}
+        this.state={uploadedFiles: new Map<string, IUploadedFile>()}
     }
 
     public onDrop(files: File[]){
         for(let file of files){
             const reader = new FileReader();
             reader.onload = () => {
-                console.log("Read "+(reader.result || "").toString().length+"bytes");
                 if(reader.result && !(reader.result instanceof ArrayBuffer)){
-                    this.processFileContents(reader.result);
+                    this.processFileContents(reader.result, file.name);
                 }
             };
             reader.readAsText(file)
         }
     }
 
-    public processFileContents(reader:string) {
+    public processFileContents(reader:string, filename: string) {
         const xml = new DOMParser().parseFromString(reader.toString(), "text/xml");
         const tables = xml.evaluate("//table/@name", xml, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
         let node;
+        const uploadedFileRepr : IUploadedFile = {fileContent: reader, existingTables: [], tableMapping: new Map<string, string[]>()};
         while ((node = tables.iterateNext()) !== null) {
-            console.log(node.nodeValue)
             if (node.nodeValue) {
-                this.state.existingTables.push(node.nodeValue);
+               uploadedFileRepr.existingTables.push(node.nodeValue);
             }
-            this.setState({existingTables: this.state.existingTables});
             const fields = xml.evaluate("//table[@name=\""+node.nodeValue+"\"]/field/@name", xml, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
             let field;
             while ((field = fields.iterateNext()) !== null) {
-                console.log("Table "+node.nodeValue+" field "+field.nodeValue);
-                if(!this.state.tableMapping.has(node.nodeValue+"")){
-                    this.state.tableMapping.set(node.nodeValue+"", [])
+                if(!uploadedFileRepr.tableMapping.has(node.nodeValue+"")){
+                    uploadedFileRepr.tableMapping.set(node.nodeValue+"", [])
                 }
-
-                this.state.tableMapping.get(node.nodeValue+"")!.push(field.nodeValue+"");
+                uploadedFileRepr.tableMapping.get(node.nodeValue+"")!.push(field.nodeValue+"");
             }
         }
+        this.state.uploadedFiles.set(filename, uploadedFileRepr)
+        this.setState({uploadedFiles: this.state.uploadedFiles})
+
     }
 
     public render(){
@@ -61,7 +64,22 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
                     </section>
                 )}
             </Dropzone>
+        <label>Loaded configurations:</label>
+            <ul>
+            {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
+                return <li key={fileIndex}>{filename+" : "}{
+                    <ul>
+                        {Array.from(this.state.uploadedFiles.get(filename)!.tableMapping.keys()).map((tablename, tableIndex) => {
+                            return <li key={tableIndex}>{"Table: "+tablename+", Fields:"+this.state.uploadedFiles.get(filename)!.tableMapping.get(tablename)!.map((field) => {
+                                //react will separate them by commata
+                                return " "+field
+                            })}</li>
+                        })}
+                    </ul>
 
+                        }</li>
+            })}
+            </ul>
         </div>
     }
 }
