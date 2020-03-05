@@ -3,9 +3,9 @@ import {classToPlain, Type} from "class-transformer";
 import "reflect-metadata";
 import {AtomType} from "../ConfigJson";
 import {
-    RandomSentence,
     ExistingDataConfig,
     GeneratorConfig,
+    RandomSentence,
     RandomStringGeneratorConfig,
 } from "../Inspector/GeneratorConfig";
 import {Node} from "./Node";
