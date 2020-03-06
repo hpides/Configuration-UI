@@ -61,8 +61,9 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
                 uploadedFileRepr.tableMapping.get(node.nodeValue+"")!.push(field.nodeValue+"");
             }
         }
-        this.state.uploadedFiles.set(filename, uploadedFileRepr)
-        this.setState({uploadedFiles: this.state.uploadedFiles, allTables: new Set<string>(allTables)})
+        this.state.uploadedFiles.set(filename, uploadedFileRepr);
+        allTables.forEach(value => this.state.allTables.add(value));
+        this.setState({uploadedFiles: this.state.uploadedFiles, allTables: this.state.allTables})
 
     }
 

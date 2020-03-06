@@ -4,6 +4,7 @@ import  XMLFixtures from "./fixtures/xml_fixtures";
 
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import App, {IState as AppState} from "../App";
 
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -44,5 +45,16 @@ describe("The ExistingConfigComponent", () => {
         const wrapper = mount<ExistingConfigComponent, IState>(component, {});
         wrapper.instance().processFileContents("Nothing to see here", "customer.xml");
         expect(wrapper.instance().state.lastError).not.toBe("")
+    });
+
+    it("imports uploaded XMLs from test config", () => {
+        const component = <App/>;
+        const wrapper = mount<App, AppState>(component, {});
+        wrapper.instance().import(XMLFixtures.getTestConfigWithUploadedFiles());
+        const existingConfig = wrapper.instance().state.existingConfigComponent!.state;
+        expect(existingConfig.allTables).toEqual(new Set<String>(["Users","Posts","Search","Customer","Account"]));
+        expect(existingConfig.lastError).toEqual("");
+        expect(existingConfig.uploadedFiles.get("customer.xml")!.existingTables).toEqual(["Users","Posts","Search"]);
+        expect(existingConfig.uploadedFiles.get("customer.xml")!.tableMapping.get("Users")!).toEqual(["username","Passwort"]);
     });
 });

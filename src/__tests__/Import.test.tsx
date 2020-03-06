@@ -22,6 +22,7 @@ function getFixtureWithAssertions():any {
     return JSON.parse("{\"repeat\":\"1\",\"scaleFactor\":\"70\",\"activeInstancesPerSecond\":\"30\",\"maximumConcurrentRequests\":\"50\",\"stories\":[{\"atoms\":[{\"id\":1,\"name\":\"Start\",\"repeat\":1,\"successors\":[0],\"type\":\"START\",\"x\":10,\"y\":10},{\"id\":0,\"name\":\"Request\",\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":371,\"y\":118.30000305175781,\"addr\":\"http://google.com\",\"verb\":\"GET\",\"assertions\":[{\"type\":\"RESPONSE_CODE\",\"_keyhandler\":{},\"name\":\"returns 200\",\"responseCode\":\"200\"},{\"type\":\"CONTENT_NOT_EMPTY\",\"_keyhandler\":{},\"name\":\"Google has something to tell us\"},{\"type\":\"CONTENT_TYPE\",\"_keyhandler\":{},\"name\":\"Google returns html\",\"contentType\":\"text/html; charset=UTF-8\"}]}],\"name\":\"enter story name\",\"scalePercentage\":1}]}");
 }
 
+
 describe("importer", () => {
     test("should find nodes", async () => {
         const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
@@ -108,4 +109,5 @@ describe("importer", () => {
 
 
     })
+
     });

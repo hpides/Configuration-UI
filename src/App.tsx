@@ -1,5 +1,5 @@
 import axios, {AxiosRequestConfig} from "axios";
-import {classToPlain} from "class-transformer";
+import {classToPlain, plainToClassFromExist} from "class-transformer";
 import React from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 import "reflect-metadata";
@@ -14,9 +14,9 @@ import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
-import {ExistingConfigComponent} from "./ExistingConfig/existingConfigComponent";
+import {ExistingConfigComponent, IUploadedFile} from "./ExistingConfig/existingConfigComponent";
 
-interface IState {
+export interface IState {
     currentView: Views;
     currentStory: string | null;
     readonly stories: string[];
@@ -114,6 +114,9 @@ class App extends React.Component<{}, IState> {
             testConfigJSON.maximumConcurrentRequests = testConfigState.maximumConcurrentRequests;
         }
         testConfigJSON.stories  = stories;
+
+        testConfigJSON.existingXMLs = this.state.existingConfigComponent? this.state.existingConfigComponent.state: {};
+
         // make sure to remove excluded attributes before export
         // also, pretty-print
         console.log(JSON.stringify(classToPlain(testConfigJSON), null, 4));
@@ -153,6 +156,30 @@ class App extends React.Component<{}, IState> {
                 this.sidebar.addStory(story.name);
             }
 
+        }
+        if(this.state.existingConfigComponent && testConfig.existingXMLs) {
+            //class-transformer is too stupid to map this to an IState, si we do it manually...
+            const existing = testConfig.existingXMLs;
+            const allTables = new Set<string>();
+            for(let table of existing.allTables){
+                allTables.add(table);
+            }
+            const uploadedFiles = new Map<string, IUploadedFile>();
+
+            for(let member in existing.uploadedFiles){
+                const uploadedFile = existing.uploadedFiles[member];
+                const fileRepr = {} as IUploadedFile;
+                fileRepr.existingTables = uploadedFile.existingTables;
+                fileRepr.fileContent = uploadedFile.fileContent;
+                fileRepr.tableMapping = new Map<string, string[]>();
+                for(let innerMember in uploadedFile.tableMapping){
+                    const fields = uploadedFile.tableMapping[innerMember];
+                    fileRepr.tableMapping.set(innerMember, fields);
+                }
+                uploadedFiles.set(member, fileRepr);
+            }
+
+            this.state.existingConfigComponent.setState({ allTables, uploadedFiles})
         }
         // need to re-render to create respective views before we can call the update
         this.forceUpdate(() => {
