@@ -7,7 +7,7 @@ import { ExistingDataConfig } from "./GeneratorConfig";
 import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 
 interface IProps {
-    onAdd: (key: string, genConfig: GeneratorConfig) => void;
+    onAdd: (key: string[], genConfig: GeneratorConfig) => void;
     onCancel: () => void;
     disableDeleteKey: () => void;
     enableDeleteKey: () => void;
@@ -77,12 +77,11 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
 
     public doneButtonClicked = () => {
         if(this.state.genConfig.getTypeString()!=="EXISTING") {
-            this.props.onAdd(this.state.key, this.state.genConfig);
+            this.props.onAdd([this.state.key], this.state.genConfig);
             // left menu --> should be allowed to delete again
             this.props.enableDeleteKey();
         }
         else{
-            //class-transformer library gets confused about this
             const config = (this.state.genConfig as ExistingDataConfig);
             const wantedTable = config.getAttribute("table");
             let wantedFields:string[] = [];
@@ -95,9 +94,8 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                         }
                     })
                 });
-                for(let field of wantedFields) {
-                    this.props.onAdd(field, this.state.genConfig);
-                }
+                this.props.onAdd(wantedFields, this.state.genConfig);
+
                 // left menu --> should be allowed to delete again
                 this.props.enableDeleteKey();
             }
