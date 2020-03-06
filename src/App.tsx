@@ -237,7 +237,7 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.Existing ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            <ExistingConfigComponent ref={ref => {if(!this.state.existingConfigComponent){this.setState({existingConfigComponent: ref})}}}/>;
+                            <ExistingConfigComponent ref={ref => {if(!this.state.existingConfigComponent){this.setState({existingConfigComponent: ref})}}}/>
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
