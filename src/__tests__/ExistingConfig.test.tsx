@@ -1,25 +1,25 @@
-import React from 'react';
+import React from "react";
 import {ExistingConfigComponent, IState, IUploadedFile} from "../ExistingConfig/existingConfigComponent";
-import  XMLFixtures from "./fixtures/xml_fixtures";
+import XMLFixtures from "./fixtures/xml_fixtures";
 
-import Enzyme, { shallow, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Enzyme, { mount, shallow } from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
 import App, {IState as AppState} from "../App";
 
-
 Enzyme.configure({ adapter: new Adapter() });
+//tslint:disable
 describe("The ExistingConfigComponent", () => {
     it("starts with an empty array", () => {
         const component = <ExistingConfigComponent/>;
         const wrapper = shallow<ExistingConfigComponent, IState>(component, {});
-        expect(wrapper.instance().state.uploadedFiles).toEqual(new Map<string, IUploadedFile>())
+        expect(wrapper.instance().state.uploadedFiles).toEqual(new Map<string, IUploadedFile>());
     });
 
     it("reads the correct tables from the XML", () => {
         const component = <ExistingConfigComponent/>;
         const wrapper = shallow<ExistingConfigComponent, IState>(component, {});
         wrapper.instance().processFileContents(XMLFixtures.getCustomerXML(), "customer.xml");
-        expect(wrapper.instance().state.uploadedFiles.get("customer.xml")!.existingTables).toEqual(["Users", "Posts", "Search"])
+        expect(wrapper.instance().state.uploadedFiles.get("customer.xml")!.existingTables).toEqual(["Users", "Posts", "Search"]);
     });
 
     it("reads the correct fields from the XML", () => {
@@ -28,7 +28,7 @@ describe("The ExistingConfigComponent", () => {
         wrapper.instance().processFileContents(XMLFixtures.getCustomerXML(), "customer.xml");
         expect(wrapper.instance().state.uploadedFiles.get("customer.xml")!.tableMapping.get("Users")).toEqual(["username", "Passwort"]);
         expect(wrapper.instance().state.uploadedFiles.get("customer.xml")!.tableMapping.get("Posts")).toEqual(["title", "text"]);
-        expect(wrapper.instance().state.uploadedFiles.get("customer.xml")!.tableMapping.get("Search")).toEqual(["Benutzer"])
+        expect(wrapper.instance().state.uploadedFiles.get("customer.xml")!.tableMapping.get("Search")).toEqual(["Benutzer"]);
     });
 
     it("reports back to the user correctly", () => {
@@ -44,7 +44,7 @@ describe("The ExistingConfigComponent", () => {
         const component = <ExistingConfigComponent/>;
         const wrapper = mount<ExistingConfigComponent, IState>(component, {});
         wrapper.instance().processFileContents("Nothing to see here", "customer.xml");
-        expect(wrapper.instance().state.lastError).not.toBe("")
+        expect(wrapper.instance().state.lastError).not.toBe("");
     });
 
     it("imports uploaded XMLs from test config", () => {
@@ -52,9 +52,9 @@ describe("The ExistingConfigComponent", () => {
         const wrapper = mount<App, AppState>(component, {});
         wrapper.instance().import(XMLFixtures.getTestConfigWithUploadedFiles());
         const existingConfig = wrapper.instance().state.existingConfigComponent!.state;
-        expect(existingConfig.allTables).toEqual(new Set<String>(["Users","Posts","Search","Customer","Account"]));
+        expect(existingConfig.allTables).toEqual(new Set<String>(["Users", "Posts", "Search", "Customer", "Account"]));
         expect(existingConfig.lastError).toEqual("");
-        expect(existingConfig.uploadedFiles.get("customer.xml")!.existingTables).toEqual(["Users","Posts","Search"]);
-        expect(existingConfig.uploadedFiles.get("customer.xml")!.tableMapping.get("Users")!).toEqual(["username","Passwort"]);
+        expect(existingConfig.uploadedFiles.get("customer.xml")!.existingTables).toEqual(["Users", "Posts", "Search"]);
+        expect(existingConfig.uploadedFiles.get("customer.xml")!.tableMapping.get("Users")!).toEqual(["username", "Passwort"]);
     });
 });

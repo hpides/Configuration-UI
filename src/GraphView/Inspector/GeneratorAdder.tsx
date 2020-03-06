@@ -1,10 +1,10 @@
 import React from "react";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 import "./GeneratorAdder.css";
 import { GeneratorConfig } from "./GeneratorConfig";
 import { RandomStringGeneratorConfig } from "./GeneratorConfig";
 import { RandomSentence } from "./GeneratorConfig";
 import { ExistingDataConfig } from "./GeneratorConfig";
-import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 
 interface IProps {
     onAdd: (key: string[], genConfig: GeneratorConfig) => void;
@@ -12,7 +12,7 @@ interface IProps {
     disableDeleteKey: () => void;
     enableDeleteKey: () => void;
     generator: {key: string, genConfig: GeneratorConfig} | null;
-    existingConfig: ExistingConfigComponent
+    existingConfig: ExistingConfigComponent;
 }
 
 interface IState {
@@ -76,34 +76,31 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
     }
 
     public doneButtonClicked = () => {
-        if(this.state.genConfig.getTypeString()!=="EXISTING") {
+        if (this.state.genConfig.getTypeString() !== "EXISTING") {
             this.props.onAdd([this.state.key], this.state.genConfig);
             // left menu --> should be allowed to delete again
             this.props.enableDeleteKey();
-        }
-        else{
+        } else {
             const config = (this.state.genConfig as ExistingDataConfig);
             const wantedTable = config.getAttribute("table");
-            let wantedFields:string[] = [];
-            if(this.props.existingConfig.state.allTables.has(wantedTable)) {
-                this.props.existingConfig.state.uploadedFiles.forEach((file)=> {
+            let wantedFields: string[] = [];
+            if (this.props.existingConfig.state.allTables.has(wantedTable)) {
+                this.props.existingConfig.state.uploadedFiles.forEach((file) => {
                     file.tableMapping.forEach((fields, table) => {
-                        console.log(table);
-                        if(table === wantedTable){
-                            wantedFields = fields
+                        if (table === wantedTable) {
+                            wantedFields = fields;
                         }
-                    })
+                    });
                 });
                 this.props.onAdd(wantedFields, this.state.genConfig);
 
                 // left menu --> should be allowed to delete again
                 this.props.enableDeleteKey();
-            }
-            else{
-                alert("Table \""+wantedTable+"\" not known!");
+            } else {
+                alert("Table \"" + wantedTable + "\" not known!");
             }
         }
-    };
+    }
 
     public cancelButtonClicked = () => {
         // left menu --> should be allowed to delete again
@@ -113,7 +110,7 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
 
     public render() {
         let nameInput = <div/>;
-        if(this.state.genConfig.getTypeString() !== "EXISTING"){
+        if (this.state.genConfig.getTypeString() !== "EXISTING") {
             nameInput = <input
                 type="text"
                 name="key"

@@ -14,6 +14,7 @@ import {
     DeleteItemsAction,
 } from "@projectstorm/react-canvas-core";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
+import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
 import { Inspector } from "./Inspector";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
@@ -22,7 +23,6 @@ import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
-import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 
 interface IStory {
     nodes: Node[];
@@ -36,7 +36,7 @@ interface IState extends IStory {
 }
 
 interface IProps {
-    existingConfig: ExistingConfigComponent
+    existingConfig: ExistingConfigComponent;
 }
 
 /* tslint:disable:no-console ... */
@@ -103,7 +103,7 @@ export class GraphView extends React.Component<IProps, IState> {
                 node = new StartNode(nodeOptions);
                 break;
             case "DATA_GENERATION":
-                node = new DataGenerationNode( this.disableDeleteKey, this.enableDeleteKey,this.props.existingConfig, nodeOptions);
+                node = new DataGenerationNode( this.disableDeleteKey, this.enableDeleteKey, this.props.existingConfig, nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
@@ -181,8 +181,8 @@ export class GraphView extends React.Component<IProps, IState> {
             while (this.waitingForSetState) {
                 await new Promise((res) => setTimeout(res, 100));
             }
-            console.log(JSON.stringify(story,null,4));
-            const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(this.disableDeleteKey, this.enableDeleteKey,this.props.existingConfig, story);
+            console.log(JSON.stringify(story, null, 4));
+            const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(this.disableDeleteKey, this.enableDeleteKey, this.props.existingConfig, story);
             this.setState({nodes: [], scalePercentage: story.scalePercentage});
 
             for (const node of nodes.nodes) {

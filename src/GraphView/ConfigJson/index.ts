@@ -4,6 +4,7 @@ import { LinkModel} from "@projectstorm/react-diagrams-core";
 import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
 import { fragment } from "xmlbuilder2";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 import { GeneratorConfig } from "../Inspector/GeneratorConfig";
 import {DataGenerationNode} from "../Nodes/DataGenerationNode";
 import {DelayNode} from "../Nodes/DelayNode";
@@ -13,7 +14,6 @@ import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import { StartNode } from "./../Nodes/StartNode";
 import IDictionary from "./IDictionary";
-import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 
 export interface ITest {
     repeat: number;
@@ -168,7 +168,7 @@ export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKe
                 break;
             case "DATA_GENERATION":
                 // so existing properties can be edited
-                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, existinGConfigComponent ,nodeOptions);
+                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, existinGConfigComponent , nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);

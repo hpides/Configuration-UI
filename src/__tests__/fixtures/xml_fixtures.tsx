@@ -1,8 +1,8 @@
-import {ExistingConfigComponent, IState} from "../../ExistingConfig/existingConfigComponent";
 import {shallow} from "enzyme";
+import {ExistingConfigComponent, IState} from "../../ExistingConfig/existingConfigComponent";
 
-export default class XMLFixtures{
-    public static getCustomerXML():string{
+export default class XMLFixtures {
+    public static getCustomerXML(): string {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<!--  <!DOCTYPE schema SYSTEM \"structure/pdgfSchema.dtd\">-->\n" +
             "\n" +
@@ -83,7 +83,7 @@ export default class XMLFixtures{
             "</schema>";
 }
 
-public static getTestConfigWithUploadedFiles(){
+public static getTestConfigWithUploadedFiles() {
         return JSON.parse("{\n" +
             "    \"repeat\": \"1\",\n" +
             "    \"scaleFactor\": \"20000\",\n" +
@@ -153,5 +153,5 @@ public static getTestConfigWithUploadedFiles(){
 
 it("returns no empty string", () => {
 
-    expect(XMLFixtures.getCustomerXML()).not.toEqual("")
+    expect(XMLFixtures.getCustomerXML()).not.toEqual("");
 });

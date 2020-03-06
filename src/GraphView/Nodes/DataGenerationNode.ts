@@ -1,6 +1,7 @@
 import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
 import {classToPlain, Type} from "class-transformer";
 import "reflect-metadata";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 import {AtomType} from "../ConfigJson";
 import {
     ExistingDataConfig,
@@ -9,7 +10,6 @@ import {
     RandomStringGeneratorConfig,
 } from "../Inspector/GeneratorConfig";
 import {Node} from "./Node";
-import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 /*tslint:disable:max-classes-per-file*/
 /*tslint:disable:variable-name*/
 class DataToGenerate {
@@ -43,7 +43,8 @@ export class DataGenerationNode extends Node {
 
     private existingConfig: ExistingConfigComponent;
 
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void, existingConfig: ExistingConfigComponent, options?: DefaultNodeModelOptions) {
+    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void,
+                existingConfig: ExistingConfigComponent, options?: DefaultNodeModelOptions) {
         super(options);
 
         this.attributes.name = "Data Generation";
@@ -97,7 +98,6 @@ export class DataGenerationNode extends Node {
         // generator config has to have valid handlers
         this._keyhandler = genConfig.keyhandler;
         this._dataToGenerate.value.set(name, genConfig);
-        console.log(Object.keys(genConfig));
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 

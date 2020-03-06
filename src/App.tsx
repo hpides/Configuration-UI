@@ -9,12 +9,12 @@ import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ApisEditor} from "./ApisEditor/ApisEditor";
 import "./App.css";
 import {Evaluation} from "./evaluation/Evaluation";
+import {ExistingConfigComponent, IUploadedFile} from "./ExistingConfig/existingConfigComponent";
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
-import {ExistingConfigComponent, IUploadedFile} from "./ExistingConfig/existingConfigComponent";
 
 export interface IState {
     currentView: Views;
@@ -22,7 +22,7 @@ export interface IState {
     readonly stories: string[];
     pdgfRunning: boolean;
     currentTestId: string | undefined;
-    existingConfigComponent: ExistingConfigComponent | null
+    existingConfigComponent: ExistingConfigComponent | null;
 }
 
 /*tslint:disable:no-console*/
@@ -43,9 +43,9 @@ class App extends React.Component<{}, IState> {
             currentStory: null,
             currentTestId: undefined,
             currentView: Views.UserStories,
+            existingConfigComponent: null,
             pdgfRunning: false,
             stories: [],
-            existingConfigComponent: null
         };
         this.requestGeneratorHost = null;
     }
@@ -115,7 +115,7 @@ class App extends React.Component<{}, IState> {
         }
         testConfigJSON.stories  = stories;
 
-        testConfigJSON.existingXMLs = this.state.existingConfigComponent? this.state.existingConfigComponent.state: {};
+        testConfigJSON.existingXMLs = this.state.existingConfigComponent ? this.state.existingConfigComponent.state : {};
 
         // make sure to remove excluded attributes before export
         // also, pretty-print
@@ -157,29 +157,33 @@ class App extends React.Component<{}, IState> {
             }
 
         }
-        if(this.state.existingConfigComponent && testConfig.existingXMLs) {
-            //class-transformer is too stupid to map this to an IState, si we do it manually...
+        if (this.state.existingConfigComponent && testConfig.existingXMLs) {
+            // class-transformer is too stupid to map this to an IState, si we do it manually...
             const existing = testConfig.existingXMLs;
             const allTables = new Set<string>();
-            for(let table of existing.allTables){
+            for (const table of existing.allTables) {
                 allTables.add(table);
             }
             const uploadedFiles = new Map<string, IUploadedFile>();
 
-            for(let member in existing.uploadedFiles){
-                const uploadedFile = existing.uploadedFiles[member];
-                const fileRepr = {} as IUploadedFile;
-                fileRepr.existingTables = uploadedFile.existingTables;
-                fileRepr.fileContent = uploadedFile.fileContent;
-                fileRepr.tableMapping = new Map<string, string[]>();
-                for(let innerMember in uploadedFile.tableMapping){
-                    const fields = uploadedFile.tableMapping[innerMember];
-                    fileRepr.tableMapping.set(innerMember, fields);
+            for (const member in existing.uploadedFiles) {
+                if (member) {
+                    const uploadedFile = existing.uploadedFiles[member];
+                    const fileRepr = {} as IUploadedFile;
+                    fileRepr.existingTables = uploadedFile.existingTables;
+                    fileRepr.fileContent = uploadedFile.fileContent;
+                    fileRepr.tableMapping = new Map<string, string[]>();
+                    for (const innerMember in uploadedFile.tableMapping) {
+                        if (innerMember) {
+                            const fields = uploadedFile.tableMapping[innerMember];
+                            fileRepr.tableMapping.set(innerMember, fields);
+                        }
+                    }
+                    uploadedFiles.set(member, fileRepr);
                 }
-                uploadedFiles.set(member, fileRepr);
             }
 
-            this.state.existingConfigComponent.setState({ allTables, uploadedFiles})
+            this.state.existingConfigComponent.setState({ allTables, uploadedFiles});
         }
         // need to re-render to create respective views before we can call the update
         this.forceUpdate(() => {
@@ -264,7 +268,7 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.Existing ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            <ExistingConfigComponent ref={ref => {if(!this.state.existingConfigComponent){this.setState({existingConfigComponent: ref})}}}/>
+                            <ExistingConfigComponent ref={(ref) => {if (!this.state.existingConfigComponent) {this.setState({existingConfigComponent: ref}); }}}/>
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
