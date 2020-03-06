@@ -90,11 +90,11 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
             {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
                 return <li key={fileIndex}>{filename + " : "}{
                     <ul>
-                        {Array.from(this.state.uploadedFiles.get(filename)!.
-                        tableMapping.keys()).map((tablename, tableIndex) => {
+                        {Array.from(this.state.uploadedFiles.get(filename)!
+                            .tableMapping.keys()).map((tablename, tableIndex) => {
                             return <li key={tableIndex}>{"Table: " + tablename +
-                            ", Fields:" + this.state.uploadedFiles.get(filename)!.
-                            tableMapping.get(tablename)!.map((field) => {
+                            ", Fields:" + this.state.uploadedFiles.get(filename)!
+                                .tableMapping.get(tablename)!.map((field) => {
                                 // react will separate them by commata
                                 return " " + field;
                             })}</li>;
