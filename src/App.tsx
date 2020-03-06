@@ -22,6 +22,7 @@ interface IState {
     readonly stories: string[];
     pdgfRunning: boolean;
     currentTestId: string | undefined;
+    existingConfigComponent: ExistingConfigComponent | null
 }
 
 /*tslint:disable:no-console*/
@@ -44,6 +45,7 @@ class App extends React.Component<{}, IState> {
             currentView: Views.UserStories,
             pdgfRunning: false,
             stories: [],
+            existingConfigComponent: null
         };
         this.requestGeneratorHost = null;
     }
@@ -235,13 +237,13 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.Existing ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            <ExistingConfigComponent/>
+                            <ExistingConfigComponent ref={ref => {if(!this.state.existingConfigComponent){this.setState({existingConfigComponent: ref})}}}/>;
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             {[...Array(this.state.stories.length)].map((item, story) => <div key={story}
                                                                                 style={this.graphViews[story] && this.state.currentStory === this.graphViews[story].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
-                                <GraphView ref={(ref) => {
+                                <GraphView existingConfig={this.state.existingConfigComponent || new ExistingConfigComponent({})} ref={(ref) => {
                                     // story names can change at any time. Using them as props will destroy the graph view, so set it here instead
                                     if (ref) {
                                         ref.setStory(this.state.stories[story]);

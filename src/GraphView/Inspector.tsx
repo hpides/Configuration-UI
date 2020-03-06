@@ -10,6 +10,7 @@ import {GeneratorConfig} from "./Inspector/GeneratorConfig";
 import {DataGenerationNode} from "./Nodes/DataGenerationNode";
 import {Node} from "./Nodes/Node";
 import {RequestNode} from "./Nodes/RequestNode";
+import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
@@ -17,6 +18,7 @@ interface IProps {
     model: DiagramModel;
     disableDeleteKey: () => void;
     enableDeleteKey: () => void;
+    existingConfig: ExistingConfigComponent
 }
 
 interface IState {
@@ -274,6 +276,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 onAdd={this.handleAddGeneratorDialog}
                 onCancel={this.handleCancelGeneratorDialog}
                 generator={this.state.activeGenerator}
+                existingConfig={this.props.existingConfig}
             />;
         }
 

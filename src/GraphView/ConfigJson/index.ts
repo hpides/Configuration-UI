@@ -13,6 +13,7 @@ import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import { StartNode } from "./../Nodes/StartNode";
 import IDictionary from "./IDictionary";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 
 export interface ITest {
     repeat: number;
@@ -146,7 +147,7 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
  * @returns {{nodes: Node[]; startNode: StartNode | null; links: LinkModel[]}} extracted nodes, the startNode if present, and links between nodes to be added to the model
  * @constructor
  */
-export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKey: () => void, deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
+export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKey: () => void, existinGConfigComponent: ExistingConfigComponent, deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
     const ret: Node[] = [];
     const links: LinkModel[] = [];
     let startNode: StartNode|null = null;
@@ -167,7 +168,7 @@ export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKe
                 break;
             case "DATA_GENERATION":
                 // so existing properties can be edited
-                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, nodeOptions);
+                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, existinGConfigComponent ,nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);

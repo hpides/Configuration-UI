@@ -9,6 +9,7 @@ import {
     RandomStringGeneratorConfig,
 } from "../Inspector/GeneratorConfig";
 import {Node} from "./Node";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 /*tslint:disable:max-classes-per-file*/
 /*tslint:disable:variable-name*/
 class DataToGenerate {
@@ -40,7 +41,9 @@ export class DataGenerationNode extends Node {
         enableDeleteKey: () => void,
     };
 
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void, options?: DefaultNodeModelOptions) {
+    private existingConfig: ExistingConfigComponent;
+
+    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void, existingConfig: ExistingConfigComponent, options?: DefaultNodeModelOptions) {
         super(options);
 
         this.attributes.name = "Data Generation";
@@ -49,6 +52,7 @@ export class DataGenerationNode extends Node {
             disableDeleteKey,
             enableDeleteKey,
         };
+        this.existingConfig = existingConfig;
 
     }
 
@@ -93,6 +97,7 @@ export class DataGenerationNode extends Node {
         // generator config has to have valid handlers
         this._keyhandler = genConfig.keyhandler;
         this._dataToGenerate.value.set(name, genConfig);
+        console.log(Object.keys(genConfig));
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 

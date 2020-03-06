@@ -10,13 +10,15 @@ export interface IUploadedFile {
 
 export interface IState {
     uploadedFiles: Map<string, IUploadedFile>,
+    //redundant, but handy in other components
+    allTables: Set<string>,
     lastError: string
 }
 
 export class ExistingConfigComponent extends React.Component<{},IState> {
     public constructor(props:{}){
         super(props);
-        this.state={uploadedFiles: new Map<string, IUploadedFile>(), lastError: ""}
+        this.state={uploadedFiles: new Map<string, IUploadedFile>(), lastError: "", allTables: new Set<string>()}
     }
 
     public onDrop(files: File[]){
@@ -32,6 +34,7 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
     }
 
     public processFileContents(reader:string, filename: string) {
+        const allTables = [];
         this.setState({lastError: ""});
         let tables, xml;
             xml = new DOMParser().parseFromString(reader.toString(), "text/xml");
@@ -47,6 +50,7 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
         while ((node = tables.iterateNext()) !== null) {
             if (node.nodeValue) {
                uploadedFileRepr.existingTables.push(node.nodeValue);
+               allTables.push(node.nodeValue)
             }
             const fields = xml.evaluate("//table[@name=\""+node.nodeValue+"\"]/field/@name", xml, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
             let field;
@@ -58,7 +62,7 @@ export class ExistingConfigComponent extends React.Component<{},IState> {
             }
         }
         this.state.uploadedFiles.set(filename, uploadedFileRepr)
-        this.setState({uploadedFiles: this.state.uploadedFiles})
+        this.setState({uploadedFiles: this.state.uploadedFiles, allTables: new Set<string>(allTables)})
 
     }
 
