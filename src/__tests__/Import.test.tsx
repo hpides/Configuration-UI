@@ -1,6 +1,7 @@
 import {LinkModel} from "@projectstorm/react-diagrams-core";
 import {expect} from "chai";
 import React from "react";
+import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import {ConvertStoryToGraph} from "../GraphView/ConfigJson";
 import {ResponseCodeAssertion} from "../GraphView/Inspector/AssertionConfig";
 import {DataGenerationNode} from "../GraphView/Nodes/DataGenerationNode";
@@ -21,41 +22,42 @@ function getFixtureWithAssertions():any {
     return JSON.parse("{\"repeat\":\"1\",\"scaleFactor\":\"70\",\"activeInstancesPerSecond\":\"30\",\"maximumConcurrentRequests\":\"50\",\"stories\":[{\"atoms\":[{\"id\":1,\"name\":\"Start\",\"repeat\":1,\"successors\":[0],\"type\":\"START\",\"x\":10,\"y\":10},{\"id\":0,\"name\":\"Request\",\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":371,\"y\":118.30000305175781,\"addr\":\"http://google.com\",\"verb\":\"GET\",\"assertions\":[{\"type\":\"RESPONSE_CODE\",\"_keyhandler\":{},\"name\":\"returns 200\",\"responseCode\":\"200\"},{\"type\":\"CONTENT_NOT_EMPTY\",\"_keyhandler\":{},\"name\":\"Google has something to tell us\"},{\"type\":\"CONTENT_TYPE\",\"_keyhandler\":{},\"name\":\"Google returns html\",\"contentType\":\"text/html; charset=UTF-8\"}]}],\"name\":\"enter story name\",\"scalePercentage\":1}]}");
 }
 
+
 describe("importer", () => {
     test("should find nodes", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
         expect(nodes.nodes).to.not.be.empty;
     });
     test("should find exactly 7 nodes", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
         expect(nodes.nodes.length).to.be.eq(7);
     });
     test("should find exactly 6 links", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
         expect(nodes.links.length).to.be.eq(6);
     });
     test("should find start node", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
         expect(nodes.startNode).to.not.be.null;
     });
     test("should find links", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
         expect(nodes.startNode).to.not.be.empty;
     });
     test("should preserve Delay attributes", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
         const delay: Node = nodes.nodes[2];
         expect(delay.getAttribute("delay")).to.be.eq("100");
     });
     test("should preserve DATA_GENERATION attributes", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
         const gen: DataGenerationNode = nodes.nodes[3] as DataGenerationNode;
         expect(gen.dataToGenerate.value.get("username")!.getAttribute("maxChars")).to.eq("10");
         expect(gen.dataToGenerate.value.get("password")!.getAttribute("maxChars")).to.eq("20");
     });
 
     test("should preserve Request attributes", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixture());
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixture());
         const req: RequestNode = nodes.nodes[4] as RequestNode;
         expect(req.getAttribute("verb")).to.eq("GET");
         expect(req.getAttribute("addr")).to.eq("http://test.host");
@@ -63,7 +65,7 @@ describe("importer", () => {
     });
 
     test("should preserve Request params", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixtureWithRequestParams().stories[0]);
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixtureWithRequestParams().stories[0]);
         const req: RequestNode = nodes.nodes[6] as RequestNode;
         console.log(req)
         expect(req.getAttribute("verb")).to.eq("GET");
@@ -72,7 +74,7 @@ describe("importer", () => {
     });
 
     test("should preserve responseJSONObject", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixtureWithRequestParams().stories[0]);
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixtureWithRequestParams().stories[0]);
         const req: RequestNode = nodes.nodes[6] as RequestNode;
         expect(req.getAttribute("verb")).to.eq("GET");
         expect(req.getAttribute("addr")).to.eq("http://test.host");
@@ -80,7 +82,7 @@ describe("importer", () => {
     });
 
     test("should preserve assertions", async () => {
-        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(getFixtureWithAssertions().stories[0]);
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {},new ExistingConfigComponent({}),getFixtureWithAssertions().stories[0]);
         const req: RequestNode = nodes.nodes[1] as RequestNode;
         console.log(req.getAttribute("assertions"))
         expect(req.getAttribute("assertions")[0].name).to.eq("returns 200");
@@ -91,4 +93,21 @@ describe("importer", () => {
         expect(req.getAttribute("assertions")[2].name).to.eq("Google returns html");
         expect(req.getAttribute("assertions")[2].contentType).to.eq("text/html; charset=UTF-8");
     });
-});
+
+    test("should give dataGeneration correct methods", async () => {
+        let disable = false, enable = false;
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {
+            disable = true
+        }, () => {
+            enable = true
+        }, new ExistingConfigComponent({}), getFixture());
+        const gen: DataGenerationNode = nodes.nodes[3] as DataGenerationNode;
+        gen.keyhandler.disableDeleteKey();
+        gen.keyhandler.enableDeleteKey();
+        expect(disable).to.be.true;
+        expect(enable).to.be.true
+
+
+    })
+
+    });

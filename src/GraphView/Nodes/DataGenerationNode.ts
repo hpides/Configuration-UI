@@ -1,11 +1,12 @@
 import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
 import {classToPlain, Type} from "class-transformer";
 import "reflect-metadata";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 import {AtomType} from "../ConfigJson";
 import {
-    EMailGeneratorConfig,
     ExistingDataConfig,
     GeneratorConfig,
+    RandomSentence,
     RandomStringGeneratorConfig,
 } from "../Inspector/GeneratorConfig";
 import {Node} from "./Node";
@@ -22,27 +23,40 @@ class DataToGenerate {
 }
 
 export class DataGenerationNode extends Node {
+    get keyhandler(): { disableDeleteKey: () => void; enableDeleteKey: () => void } {
+        return this._keyhandler;
+    }
+
+    set keyhandler(value: { disableDeleteKey: () => void; enableDeleteKey: () => void }) {
+        this._keyhandler = value;
+    }
     public get dataToGenerate(): DataToGenerate {
         return this._dataToGenerate;
     }
 
     private _dataToGenerate: DataToGenerate = new DataToGenerate(new Map<string, GeneratorConfig>());
 
-    private keyhandler: {
+    private _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
-    } = {disableDeleteKey: () => {
-            // do nothing because there is not view which can disable the delete key
-        },
-        enableDeleteKey: () => {
-            // do nothing because there is not view which can enable the delete key
-        } };
+    };
 
-    constructor(options?: DefaultNodeModelOptions) {
+    private existingConfig: ExistingConfigComponent;
+
+    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void,
+                existingConfig: ExistingConfigComponent, options?: DefaultNodeModelOptions) {
         super(options);
 
         this.attributes.name = "Data Generation";
         this.attributes.dataToGenerate = JSON.stringify(classToPlain(this._dataToGenerate));
+        this.attributes.data = [];
+
+        this.attributes.table = null;
+        this._keyhandler = {
+            disableDeleteKey,
+            enableDeleteKey,
+        };
+        this.existingConfig = existingConfig;
     }
 
     public getAtomType(): AtomType {
@@ -58,17 +72,17 @@ export class DataGenerationNode extends Node {
                 let conf: GeneratorConfig;
                 const current = parsed.value[key];
                 switch (current.__type) {
-                    case "EMAIL":
-                        conf = new EMailGeneratorConfig(this.keyhandler.disableDeleteKey,
-                            this.keyhandler.enableDeleteKey);
+                    case "RANDOM_SENTENCE":
+                        conf = new RandomSentence(this._keyhandler.disableDeleteKey,
+                            this._keyhandler.enableDeleteKey);
                         break;
                     case "EXISTING":
-                        conf = new ExistingDataConfig(this.keyhandler.disableDeleteKey,
-                            this.keyhandler.enableDeleteKey);
+                        conf = new ExistingDataConfig(this._keyhandler.disableDeleteKey,
+                            this._keyhandler.enableDeleteKey);
                         break;
                     case "RANDOM_STRING":
-                        conf = new RandomStringGeneratorConfig(this.keyhandler.disableDeleteKey,
-                            this.keyhandler.enableDeleteKey);
+                        conf = new RandomStringGeneratorConfig(this._keyhandler.disableDeleteKey,
+                            this._keyhandler.enableDeleteKey);
                         break;
                     default:
                         alert("Can not deserialize a " + current.__type);
@@ -84,13 +98,21 @@ export class DataGenerationNode extends Node {
 
     public addData(name: string, genConfig: GeneratorConfig) {
         // generator config has to have valid handlers
-        this.keyhandler = genConfig.keyhandler;
+        this._keyhandler = genConfig.keyhandler;
         this._dataToGenerate.value.set(name, genConfig);
+        this.getAttribute("data").push(name);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 
     public removeData(key: string) {
         this._dataToGenerate.value.delete(key);
+        const newData = [];
+        for (const attribute of this.getAttribute("data") ) {
+            if (attribute !== key) {
+                newData.push(attribute);
+            }
+        }
+        this.setAttribute("data", newData);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 }

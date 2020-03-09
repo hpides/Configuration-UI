@@ -5,9 +5,11 @@ Set the following environment variables to define hosts for the other components
 
 - **REACT_APP_PDS_HOST** Host of performance data storage, e.g. example.com:8080, defaults to *localhost*
 - **REACT_APP_REQGEN_HOST** Host of request generator, e.g. example.com:8080, defaults to *localhost*
-- **REACT_APP_MQTT_HOST** Host of mqtt broker, e.g. example.com, defaults to *localhost*
+- **REACT_APP_MQTT_HOST** Host of mqtt broker, e.g. mqtt://example.com:9001, defaults to *localhost*
 
-Note: if using docker, override environment variables when executing docker run, see e.g. [https://docs.docker.com/engine/reference/run/#env-environment-variables](https://docs.docker.com/engine/reference/run/#env-environment-variables)
+Note: if using docker, environment variables have to be overwritten during **BUILD** time. E.g. build an own Dockerfile based on the existing (or the compiled image) and set the environment variables as necessary using the ENV statement.  
+The default config in this Dockerfile makes these environment variables empty, which means that the app will rely on apache reverse-proxying the other services (also configured in this Dockerfile). For this config, apache expects a correctly configured at "ws://mosquitto:9001", a performance data storage at "http://performancedatastorage:6080" and a request generator at "http://requestgenerator:8080".  
+If your networking setup differs, you can use Docker links or Kubernetes services. Or you use the BP-TDGT [docker-compose.yml](https://gitlab.hpi.de/bp-tdgt/whole-system-config).
 ## Available Scripts
 
 In the project directory, you can run:

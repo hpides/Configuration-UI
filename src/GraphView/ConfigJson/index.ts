@@ -4,6 +4,7 @@ import { LinkModel} from "@projectstorm/react-diagrams-core";
 import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
 import { fragment } from "xmlbuilder2";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 import { GeneratorConfig } from "../Inspector/GeneratorConfig";
 import {DataGenerationNode} from "../Nodes/DataGenerationNode";
 import {DelayNode} from "../Nodes/DelayNode";
@@ -75,12 +76,13 @@ interface IBasicAuth {
 }
 /* tslint:disable:no-console ... */
 function doDepthFirstSearch(node: Node | undefined, idMap: IdMap, atoms: IBaseAtom[],
-                            pdgfTables: XMLBuilder[], closedNodeIds: Set<string>) {
+                            pdgfTables: XMLBuilder[], closedNodeIds: Set<string>,
+                            existinGConfig: ExistingConfigComponent) {
     const nodesToProcess: BaseNode[] = [];
     while (node) {
         // do not export again
         node.visited = true;
-        const baseAtoms = ConvertNode(idMap, node);
+        const baseAtoms = ConvertNode(idMap, node, existinGConfig);
         for (const atom of baseAtoms.atoms) {
             atoms.push(atom);
         }
@@ -107,7 +109,7 @@ function doDepthFirstSearch(node: Node | undefined, idMap: IdMap, atoms: IBaseAt
 }
 
 /* tslint:disable:max-line-length ... */
-export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes: Node[]): {pdgfTables: XMLBuilder[], story: IStory} {
+export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes: Node[], existingConfig: ExistingConfigComponent): {pdgfTables: XMLBuilder[], story: IStory} {
     const atoms: IBaseAtom[] = [];
     const closedNodeIds: Set<string> = new Set();
     const idMap = new IdMap();
@@ -116,11 +118,11 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
 
     const node: BaseNode | undefined = startNode;
     closedNodeIds.add(startNode.getID());
-    doDepthFirstSearch(node, idMap, atoms, pdgfTables, closedNodeIds);
+    doDepthFirstSearch(node, idMap, atoms, pdgfTables, closedNodeIds, existingConfig);
     // catch all nodes that are isolated from the start node, i.e. not connected
     for (const currentNode of nodes) {
         if (!currentNode.visited) {
-            doDepthFirstSearch(currentNode, idMap, atoms, pdgfTables, closedNodeIds);
+            doDepthFirstSearch(currentNode, idMap, atoms, pdgfTables, closedNodeIds, existingConfig);
         }
     }
 
@@ -138,7 +140,15 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
     };
 }
 
-export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
+/**
+ * Convert given deserialized JSON to nodes
+ * @param {() => void} disableDeleteKey method for datageneration that disables the delete key
+ * @param {() => void} enableDeleteKey method for datageneration that enables the delete key
+ * @param deserializedStory story representation as plain JS object
+ * @returns {{nodes: Node[]; startNode: StartNode | null; links: LinkModel[]}} extracted nodes, the startNode if present, and links between nodes to be added to the model
+ * @constructor
+ */
+export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKey: () => void, existingConfigComponent: ExistingConfigComponent, deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
     const ret: Node[] = [];
     const links: LinkModel[] = [];
     let startNode: StartNode|null = null;
@@ -158,7 +168,8 @@ export function ConvertStoryToGraph(deserializedStory: any): {nodes: Node[], sta
                 startNode = node;
                 break;
             case "DATA_GENERATION":
-                node = new DataGenerationNode(nodeOptions);
+                // so existing properties can be edited
+                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, existingConfigComponent , nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
@@ -235,8 +246,10 @@ function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
         case "RANDOM_STRING":
             frag.ele("gen_RandomString").ele("max").txt(genConfig.getAttribute("maxChars"));
             break;
-        case "E_MAIL":
-            frag.ele("gen_Email");
+        case "RANDOM_SENTENCE":
+            const gen = frag.ele("gen_RandomSentence");
+            gen.ele("max").txt(genConfig.getAttribute("max"));
+            gen.ele("min").txt(genConfig.getAttribute("min"));
             break;
         default:
             console.log(genConfig.getTypeString() + " unknown generator");
@@ -245,13 +258,13 @@ function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
     return frag;
 }
 
-function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): {atoms: IDataGenerationAtom[], pdgfTable?: XMLBuilder} {
+function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode, existingConfig: ExistingConfigComponent): {atoms: IDataGenerationAtom[], pdgfTable?: XMLBuilder} {
     const atoms: IDataGenerationAtom[] = [];
 
     const pdgfFields: XMLBuilder[] = [];
 
     const dataToGenerate = node.dataToGenerate;
-    if (Array.from(node.dataToGenerate.value.keys()).length === 0) {
+    if (node.getAttribute("data").length === 0) {
         return {atoms: [{
             ...baseAtomObj,
             data: [],
@@ -265,7 +278,8 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
      * Create Atom for new data
      */
     const keys: string[] = [];
-    for (const key of Array.from(node.dataToGenerate.value.keys())) {
+    // need to preserve order, since some generators rely on it
+    for (const key of node.getAttribute("data")) {
         const genConfig = dataToGenerate.value.get(key)!;
 
         if (genConfig.getTypeString() === "EXISTING") {
@@ -277,58 +291,51 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         field.import(generatorToXml(genConfig));
         pdgfFields.push(field);
     }
+
+    let tableName: string;
+
+    tableName = "_" + Math.random().toString(36).substr(2, 9);
+
     // Generate a pseudo random unique tablename
     // https://gist.github.com/gordonbrander/2230317
-    const tableName: string = "_" + Math.random().toString(36).substr(2, 9);
-    if (keys.length > 0) {
+    // also, we do not want to generate the same table name twice
+    while (existingConfig.state.allTables.has(tableName)) {
+        tableName = "_" + Math.random().toString(36).substr(2, 9);
+
+    }
+
+    // existing data generators have to use the existing CSVs
+    if (node.getAttribute("table")) {
+        tableName = node.getAttribute("table");
+    }
+
+    if (node.getAttribute("data").length > 0) {
         atoms.push({
             ...baseAtomObj,
-            data: keys,
+            // node itself stores data ordered
+            data: node.getAttribute("data"),
             dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: tableName,
         });
     }
 
-    const pdgfTable = fragment().ele("table", {name: tableName});
-    for (const field of pdgfFields) {
-        pdgfTable.import(field);
-    }
-
-    /*
-     * Create Atoms for data
-     * to be read from existing XML
-     */
-    for (const key of Array.from(node.dataToGenerate.value.keys())) {
-        const genConfig = dataToGenerate.value.get(key)!;
-        if (genConfig.getTypeString() !== "EXISTING") {
-            continue;
-        }
-
-        const newAtom = {
-            ...baseAtomObj,
-            data: [key],
-            dataToGenerate: node.getAttribute("dataToGenerate"),
-            name: node.getAttribute("name"),
-            table: genConfig.getAttribute("table"),
-        };
-
-        if (atoms.length > 0) {
-            const id = idMap.mapId(node.getID() + key);
-            atoms[atoms.length - 1].successors = [id];
-
-            newAtom.id = id;
-        }
-        atoms.push(newAtom);
-    }
     // in case there are no data yet, this will throw exception
     if (atoms.length > 1) {
         atoms[atoms.length - 1].successors = baseAtomObj.successors;
     }
-    return {atoms, pdgfTable};
+    // only return non-empty tables, PDGF does not appreciate empty tables
+    if (pdgfFields.length > 0) {
+        const pdgfTable = fragment().ele("table", {name: tableName});
+        for (const field of pdgfFields) {
+            pdgfTable.import(field);
+        }
+        return {atoms, pdgfTable};
+    }
+    return {atoms};
 }
 
-function ConvertNode(idMap: IdMap, node: BaseNode): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
+function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfigComponent): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
     const type = node.getAtomType();
 
     const successors: number[] = [];
@@ -359,7 +366,7 @@ function ConvertNode(idMap: IdMap, node: BaseNode): {atoms: IBaseAtom[], pdgfTab
     // insert additional data
     switch (type) {
         case "DATA_GENERATION":
-            const ret = ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
+            const ret = ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode, existingConfig);
             return ret;
         case "DELAY":
             return {atoms: [{
@@ -380,10 +387,14 @@ function ConvertNode(idMap: IdMap, node: BaseNode): {atoms: IBaseAtom[], pdgfTab
             }
             attr = node.getAttribute("responseJSONObject");
             if ((typeof attr === "string" || attr instanceof String) && attr.trim() !== "") {
+                // remove whitespaces around comma since they would alter the names the backend looks out for
+                attr = attr.replace(/\s*,\s*/, ",");
                 request.responseJSONObject = attr.split(",");
             }
             attr = node.getAttribute("requestParams");
             if ((typeof attr === "string" || attr instanceof String) && attr.trim() !== "") {
+                // remove whitespaces around comma since they would alter the names the backend looks out for
+                attr = attr.replace(/\s*,\s*/, ",");
                 request.requestParams = attr.split(",");
             }
             attr = node.getAttribute("basicAuth");

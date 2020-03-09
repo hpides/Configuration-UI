@@ -114,6 +114,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             </div>
                         </div>
                     </div>
+                    <br/>
                     {this.state.assertionConfig.render()}
                     <button
                         onClick={this.doneButtonClicked}

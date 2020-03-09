@@ -46,14 +46,6 @@ export abstract class GeneratorConfig {
         return Object.keys(this.attributes);
     }
 
-    public inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
-        // called during deserialization for some reason with undefined event. Do not perform operation in this case
-        if (event) {
-            this.setAttribute(event.currentTarget.name, event.currentTarget.value);
-
-        }
-    }
-
     public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void) {
         return(
             <div className="generator-config">
@@ -62,37 +54,37 @@ export abstract class GeneratorConfig {
     }
 }
 
-export class EMailGeneratorConfig extends GeneratorConfig {
-    public __type = "EMAIL";
+export class RandomSentence extends GeneratorConfig {
+    public __type = this.getTypeString();
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
 
         this.attributes = {
-            characters: "10",
-            domain: "example.com",
+            max: "10",
+            min: "5",
         };
     }
 
     public getTypeString() {
-        return "E_MAIL";
+        return "RANDOM_SENTENCE";
     }
 
     public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void) {
         return(
             <div className="generator-config">
-                <label>Domain:</label>
+                <label>Minimum characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="domain" onChange={inputChanged} value={this.getAttribute("domain")}/>
-                <label>Characters: </label>
+                       type="text" name="min" onChange={inputChanged} value={this.getAttribute("min")}/>
+                <label>Maximum characters: </label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="characters" onChange={inputChanged} value={this.getAttribute("characters")}/>
+                       type="text" name="max" onChange={inputChanged} value={this.getAttribute("max")}/>
             </div>
         );
     }
 }
 
 export class ExistingDataConfig extends GeneratorConfig {
-    public __type = "EXISTING";
+    public __type = this.getTypeString();
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
 
@@ -117,12 +109,14 @@ export class ExistingDataConfig extends GeneratorConfig {
 }
 
 export class RandomStringGeneratorConfig extends GeneratorConfig {
-    public __type = "RANDOM_STRING";
+    public __type = this.getTypeString();
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
         super(disableDeleteKey, enableDeleteKey);
 
         this.attributes = {
+            characters: "abcdefghijklmnopqrstuvwxyz",
             maxChars: "10",
+            minChars: "10",
         };
     }
 
@@ -136,6 +130,12 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
                 <label>Maximum Characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
                        type="text" name="maxChars" onChange={inputChanged} value={this.getAttribute("maxChars")}/>
+                <label>Minimum Characters:</label>
+                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
+                       type="text" name="minChars" onChange={inputChanged} value={this.getAttribute("minChars")}/>
+                <label>Allowed Characters:</label>
+                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
+                       type="text" name="characters" onChange={inputChanged} value={this.getAttribute("characters")} />
             </div>
         );
     }
