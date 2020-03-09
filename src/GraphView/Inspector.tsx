@@ -136,7 +136,6 @@ export class Inspector extends React.Component<IProps, IState> {
 
         const node: RequestNode = this.props.node;
 
-        // node.dataToGenerate[name] = assertionConfig;
         node.addAssertion(config);
 
         this.setState({addingAssertion: false});
@@ -177,7 +176,8 @@ export class Inspector extends React.Component<IProps, IState> {
 
         const rows: JSX.Element[] = [];
 
-        const keys = Array.from(node.dataToGenerate.value.keys());
+        //show in order that is determined by data attribute
+        const keys = node.getAttribute("data");
 
         for (let i = 0; i < keys.length; i++) {
             // react needs a key element for every tr

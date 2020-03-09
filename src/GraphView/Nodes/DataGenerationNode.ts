@@ -49,6 +49,7 @@ export class DataGenerationNode extends Node {
 
         this.attributes.name = "Data Generation";
         this.attributes.dataToGenerate = JSON.stringify(classToPlain(this._dataToGenerate));
+        this.attributes.data = [];
         this._keyhandler = {
             disableDeleteKey,
             enableDeleteKey,
@@ -98,11 +99,19 @@ export class DataGenerationNode extends Node {
         // generator config has to have valid handlers
         this._keyhandler = genConfig.keyhandler;
         this._dataToGenerate.value.set(name, genConfig);
+        this.getAttribute("data").push(name);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 
     public removeData(key: string) {
         this._dataToGenerate.value.delete(key);
+        const newData = [];
+        for(let attribute of this.getAttribute("data") ){
+            if(attribute !== key){
+                newData.push(attribute)
+            }
+        }
+        this.setAttribute("data", newData);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 }

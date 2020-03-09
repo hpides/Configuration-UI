@@ -263,7 +263,7 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     const pdgfFields: XMLBuilder[] = [];
 
     const dataToGenerate = node.dataToGenerate;
-    if (Array.from(node.dataToGenerate.value.keys()).length === 0) {
+    if (node.getAttribute("data").length === 0) {
         return {atoms: [{
             ...baseAtomObj,
             data: [],
@@ -277,7 +277,8 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
      * Create Atom for new data
      */
     const keys: string[] = [];
-    for (const key of Array.from(node.dataToGenerate.value.keys())) {
+    //need to preserve order, since some generators rely on it
+    for (const key of node.getAttribute("data")){
         const genConfig = dataToGenerate.value.get(key)!;
 
         if (genConfig.getTypeString() === "EXISTING") {
@@ -292,10 +293,11 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     // Generate a pseudo random unique tablename
     // https://gist.github.com/gordonbrander/2230317
     const tableName: string = "_" + Math.random().toString(36).substr(2, 9);
-    if (keys.length > 0) {
+    if (node.getAttribute("data").length > 0) {
         atoms.push({
             ...baseAtomObj,
-            data: keys,
+            // node itself stores data ordered
+            data: node.getAttribute("data"),
             dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: tableName,
@@ -307,32 +309,6 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         pdgfTable.import(field);
     }
 
-    /*
-     * Create Atoms for data
-     * to be read from existing XML
-     */
-    for (const key of Array.from(node.dataToGenerate.value.keys())) {
-        const genConfig = dataToGenerate.value.get(key)!;
-        if (genConfig.getTypeString() !== "EXISTING") {
-            continue;
-        }
-
-        const newAtom = {
-            ...baseAtomObj,
-            data: [key],
-            dataToGenerate: node.getAttribute("dataToGenerate"),
-            name: node.getAttribute("name"),
-            table: genConfig.getAttribute("table"),
-        };
-
-        if (atoms.length > 0) {
-            const id = idMap.mapId(node.getID() + key);
-            atoms[atoms.length - 1].successors = [id];
-
-            newAtom.id = id;
-        }
-        atoms.push(newAtom);
-    }
     // in case there are no data yet, this will throw exception
     if (atoms.length > 1) {
         atoms[atoms.length - 1].successors = baseAtomObj.successors;

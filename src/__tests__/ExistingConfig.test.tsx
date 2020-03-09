@@ -5,6 +5,10 @@ import XMLFixtures from "./fixtures/xml_fixtures";
 import Enzyme, { mount, shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import App, {IState as AppState} from "../App";
+import {ConvertStoryToGraph} from "../GraphView/ConfigJson";
+import {Node} from "../GraphView/Nodes/Node";
+import {StartNode} from "../GraphView/Nodes/StartNode";
+import {LinkModel} from "@projectstorm/react-diagrams";
 
 Enzyme.configure({ adapter: new Adapter() });
 //tslint:disable
@@ -56,5 +60,10 @@ describe("The ExistingConfigComponent", () => {
         expect(existingConfig.lastError).toEqual("");
         expect(existingConfig.uploadedFiles.get("customer.xml")!.existingTables).toEqual(["Users", "Posts", "Search"]);
         expect(existingConfig.uploadedFiles.get("customer.xml")!.tableMapping.get("Users")!).toEqual(["username", "Passwort"]);
+    });
+
+    it("preserves order", () => {
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {}, new ExistingConfigComponent({}), XMLFixtures.getTestConfigWithExistingData().stories[0]);
+        expect(nodes.nodes[2].getAttribute("data")).toEqual(["title", "text"])
     });
 });
