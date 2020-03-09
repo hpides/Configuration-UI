@@ -66,4 +66,9 @@ describe("The ExistingConfigComponent", () => {
         const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {}, new ExistingConfigComponent({}), XMLFixtures.getTestConfigWithExistingData().stories[0]);
         expect(nodes.nodes[2].getAttribute("data")).toEqual(["title", "text"])
     });
+
+    it("uses the correct table name", () => {
+        const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {}, new ExistingConfigComponent({}), XMLFixtures.getTestConfigWithExistingData().stories[0]);
+        expect(nodes.nodes[2].getAttribute("table")).toEqual("Users")
+    });
 });
