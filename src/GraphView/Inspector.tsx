@@ -7,7 +7,7 @@ import {ContentNotEmptyAssertion, ContentTypeAssertion, ResponseCodeAssertion} f
 import {AssertionConfig} from "./Inspector/AssertionConfig";
 import {AuthAdder} from "./Inspector/AuthAdder";
 import {GeneratorAdder} from "./Inspector/GeneratorAdder";
-import {GeneratorConfig} from "./Inspector/GeneratorConfig";
+import {ExistingDataConfig, GeneratorConfig} from "./Inspector/GeneratorConfig";
 import {DataGenerationNode} from "./Nodes/DataGenerationNode";
 import {Node} from "./Nodes/Node";
 import {RequestNode} from "./Nodes/RequestNode";
@@ -85,7 +85,6 @@ export class Inspector extends React.Component<IProps, IState> {
         if (!(this.props.node instanceof DataGenerationNode)) {
             return;
         }
-
         const node: DataGenerationNode = this.props.node;
         if (genConfig.getTypeString() === "EXISTING") {
             if (node.dataToGenerate.value.size !== 0) {
@@ -94,12 +93,16 @@ export class Inspector extends React.Component<IProps, IState> {
                 for (const key of keys) {
                     node.addData(key, genConfig);
                 }
+                // so the correct table name is used by the backend instead of a random one generated later on
+                node.setAttribute("table", (genConfig as ExistingDataConfig).getAttribute("table"));
             }
         } else {
             if (!this.hasExistingGeneratorConfig()) {
                 for (const key of keys) {
                     node.addData(key, genConfig);
                 }
+                // there might have been an ExistingDataConfig here before
+                node.setAttribute("table", null);
             } else {
                 alert("A Data Generation node can ONLY have ONE existing data generator and no other generator!");
             }
@@ -243,8 +246,8 @@ export class Inspector extends React.Component<IProps, IState> {
                 >{buttonString}</button>;
                 inputs.push(label);
                 inputs.push(authButton);
-                // users should not enter IDs or dataToGenerate, this is handled in the background
-            } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions")) {
+                // users should not enter IDs or dataToGenerate or the table name, this is handled in the background
+            } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "table" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
                                      name={key}

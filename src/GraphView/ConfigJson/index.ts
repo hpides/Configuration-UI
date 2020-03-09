@@ -303,6 +303,12 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         tableName = "_" + Math.random().toString(36).substr(2, 9);
 
     }
+
+    // existing data generators have to use the existing CSVs
+    if (node.getAttribute("table")) {
+        tableName = node.getAttribute("table");
+    }
+
     if (node.getAttribute("data").length > 0) {
         atoms.push({
             ...baseAtomObj,

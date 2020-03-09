@@ -194,7 +194,7 @@ public static getTestConfigWithExistingData() {
             "                        \"text\"\n" +
             "                    ],\n" +
             "                    \"dataToGenerate\": \"{\\\"value\\\":{\\\"title\\\":{\\\"__type\\\":\\\"EXISTING\\\",\\\"attributes\\\":{\\\"table\\\":\\\"Posts\\\"},\\\"_keyhandler\\\":{}},\\\"text\\\":{\\\"__type\\\":\\\"EXISTING\\\",\\\"attributes\\\":{\\\"table\\\":\\\"Posts\\\"},\\\"_keyhandler\\\":{}}}}\",\n" +
-            "                    \"table\": \"_byi98tatw\"\n" +
+            "                    \"table\": \"Users\"\n" +
             "                },\n" +
             "                {\n" +
             "                    \"id\": 3,\n" +
