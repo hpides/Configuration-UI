@@ -176,7 +176,7 @@ export class Inspector extends React.Component<IProps, IState> {
 
         const rows: JSX.Element[] = [];
 
-        //show in order that is determined by data attribute
+        // show in order that is determined by data attribute
         const keys = node.getAttribute("data");
 
         for (let i = 0; i < keys.length; i++) {

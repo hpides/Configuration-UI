@@ -149,7 +149,7 @@ public static getTestConfigWithUploadedFiles() {
             "}");
 }
 
-public static getTestConfigWithExistingData(){
+public static getTestConfigWithExistingData() {
         return JSON.parse("{\n" +
             "    \"repeat\": \"1\",\n" +
             "    \"scaleFactor\": \"1000\",\n" +

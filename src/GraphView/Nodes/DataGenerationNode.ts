@@ -106,9 +106,9 @@ export class DataGenerationNode extends Node {
     public removeData(key: string) {
         this._dataToGenerate.value.delete(key);
         const newData = [];
-        for(let attribute of this.getAttribute("data") ){
-            if(attribute !== key){
-                newData.push(attribute)
+        for (const attribute of this.getAttribute("data") ) {
+            if (attribute !== key) {
+                newData.push(attribute);
             }
         }
         this.setAttribute("data", newData);

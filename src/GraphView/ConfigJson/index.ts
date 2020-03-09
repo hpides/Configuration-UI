@@ -277,8 +277,8 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
      * Create Atom for new data
      */
     const keys: string[] = [];
-    //need to preserve order, since some generators rely on it
-    for (const key of node.getAttribute("data")){
+    // need to preserve order, since some generators rely on it
+    for (const key of node.getAttribute("data")) {
         const genConfig = dataToGenerate.value.get(key)!;
 
         if (genConfig.getTypeString() === "EXISTING") {

@@ -2,13 +2,13 @@ import React from "react";
 import {ExistingConfigComponent, IState, IUploadedFile} from "../ExistingConfig/existingConfigComponent";
 import XMLFixtures from "./fixtures/xml_fixtures";
 
+import {LinkModel} from "@projectstorm/react-diagrams";
 import Enzyme, { mount, shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import App, {IState as AppState} from "../App";
 import {ConvertStoryToGraph} from "../GraphView/ConfigJson";
 import {Node} from "../GraphView/Nodes/Node";
 import {StartNode} from "../GraphView/Nodes/StartNode";
-import {LinkModel} from "@projectstorm/react-diagrams";
 
 Enzyme.configure({ adapter: new Adapter() });
 //tslint:disable
