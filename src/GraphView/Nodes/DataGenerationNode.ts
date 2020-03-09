@@ -1,6 +1,7 @@
 import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
 import {classToPlain, Type} from "class-transformer";
 import "reflect-metadata";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 import {AtomType} from "../ConfigJson";
 import {
     ExistingDataConfig,
@@ -40,16 +41,20 @@ export class DataGenerationNode extends Node {
         enableDeleteKey: () => void,
     };
 
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void, options?: DefaultNodeModelOptions) {
+    private existingConfig: ExistingConfigComponent;
+
+    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void,
+                existingConfig: ExistingConfigComponent, options?: DefaultNodeModelOptions) {
         super(options);
 
         this.attributes.name = "Data Generation";
         this.attributes.dataToGenerate = JSON.stringify(classToPlain(this._dataToGenerate));
+        this.attributes.data = [];
         this._keyhandler = {
             disableDeleteKey,
             enableDeleteKey,
         };
-
+        this.existingConfig = existingConfig;
     }
 
     public getAtomType(): AtomType {
@@ -93,11 +98,19 @@ export class DataGenerationNode extends Node {
         // generator config has to have valid handlers
         this._keyhandler = genConfig.keyhandler;
         this._dataToGenerate.value.set(name, genConfig);
+        this.getAttribute("data").push(name);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 
     public removeData(key: string) {
         this._dataToGenerate.value.delete(key);
+        const newData = [];
+        for (const attribute of this.getAttribute("data") ) {
+            if (attribute !== key) {
+                newData.push(attribute);
+            }
+        }
+        this.setAttribute("data", newData);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
 }

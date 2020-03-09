@@ -14,6 +14,7 @@ import {
     DeleteItemsAction,
 } from "@projectstorm/react-canvas-core";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
+import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
 import { Inspector } from "./Inspector";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
@@ -34,16 +35,20 @@ interface IState extends IStory {
     scalePercentage: number;
 }
 
+interface IProps {
+    existingConfig: ExistingConfigComponent;
+}
+
 /* tslint:disable:no-console ... */
 /* tslint:disable:max-line-length ... */
-export class GraphView extends React.Component<{}, IState> {
+export class GraphView extends React.Component<IProps, IState> {
     public engine: DiagramEngine;
     public model: DiagramModel;
     private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
     private storyName: string;
 
     private waitingForSetState = false;
-    constructor(props: {}) {
+    constructor(props: IProps) {
         super(props);
 
         this.state = {
@@ -98,7 +103,7 @@ export class GraphView extends React.Component<{}, IState> {
                 node = new StartNode(nodeOptions);
                 break;
             case "DATA_GENERATION":
-                node = new DataGenerationNode( this.disableDeleteKey, this.enableDeleteKey, nodeOptions);
+                node = new DataGenerationNode( this.disableDeleteKey, this.enableDeleteKey, this.props.existingConfig, nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
@@ -152,7 +157,7 @@ export class GraphView extends React.Component<{}, IState> {
     public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null): any => {
         const startNode = this.state.startNode;
         if (startNode) {
-            const story = ConvertGraphToStory("Rail", 1, startNode, this.state.nodes);
+            const story = ConvertGraphToStory("Rail", 1, startNode, this.state.nodes, this.props.existingConfig);
             story.story.name = this.storyName;
             story.story.scalePercentage = this.state.scalePercentage;
 
@@ -176,7 +181,8 @@ export class GraphView extends React.Component<{}, IState> {
             while (this.waitingForSetState) {
                 await new Promise((res) => setTimeout(res, 100));
             }
-            const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(this.disableDeleteKey, this.enableDeleteKey, story);
+            console.log(JSON.stringify(story, null, 4));
+            const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(this.disableDeleteKey, this.enableDeleteKey, this.props.existingConfig, story);
             this.setState({nodes: [], scalePercentage: story.scalePercentage});
 
             for (const node of nodes.nodes) {
@@ -229,6 +235,7 @@ export class GraphView extends React.Component<{}, IState> {
                 model={this.model}
                 onValueChanged={this.handleInspectorValueChanged}
                 node={this.state.selectedNode}
+                existingConfig={this.props.existingConfig}
             />;
         }
         return (
