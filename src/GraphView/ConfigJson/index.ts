@@ -76,7 +76,8 @@ interface IBasicAuth {
 }
 /* tslint:disable:no-console ... */
 function doDepthFirstSearch(node: Node | undefined, idMap: IdMap, atoms: IBaseAtom[],
-                            pdgfTables: XMLBuilder[], closedNodeIds: Set<string>, existinGConfig:ExistingConfigComponent) {
+                            pdgfTables: XMLBuilder[], closedNodeIds: Set<string>,
+                            existinGConfig: ExistingConfigComponent) {
     const nodesToProcess: BaseNode[] = [];
     while (node) {
         // do not export again
@@ -108,7 +109,7 @@ function doDepthFirstSearch(node: Node | undefined, idMap: IdMap, atoms: IBaseAt
 }
 
 /* tslint:disable:max-line-length ... */
-export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes: Node[], existingConfig:ExistingConfigComponent): {pdgfTables: XMLBuilder[], story: IStory} {
+export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes: Node[], existingConfig: ExistingConfigComponent): {pdgfTables: XMLBuilder[], story: IStory} {
     const atoms: IBaseAtom[] = [];
     const closedNodeIds: Set<string> = new Set();
     const idMap = new IdMap();
@@ -257,7 +258,6 @@ function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
     return frag;
 }
 
-
 function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode, existingConfig: ExistingConfigComponent): {atoms: IDataGenerationAtom[], pdgfTable?: XMLBuilder} {
     const atoms: IDataGenerationAtom[] = [];
 
@@ -294,16 +294,16 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
 
     let tableName: string;
 
-
     tableName = "_" + Math.random().toString(36).substr(2, 9);
 
     // Generate a pseudo random unique tablename
     // https://gist.github.com/gordonbrander/2230317
     // also, we do not want to generate the same table name twice
-    while(existingConfig.state.allTables.has(tableName)) {
+    while (existingConfig.state.allTables.has(tableName)) {
         tableName = "_" + Math.random().toString(36).substr(2, 9);
 
-    }if (node.getAttribute("data").length > 0) {
+    }
+    if (node.getAttribute("data").length > 0) {
         atoms.push({
             ...baseAtomObj,
             // node itself stores data ordered

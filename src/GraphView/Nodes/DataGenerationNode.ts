@@ -55,7 +55,6 @@ export class DataGenerationNode extends Node {
             enableDeleteKey,
         };
         this.existingConfig = existingConfig;
-
     }
 
     public getAtomType(): AtomType {

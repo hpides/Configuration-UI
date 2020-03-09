@@ -48,8 +48,8 @@ class App extends React.Component<{}, IState> {
             stories: [],
         };
         this.requestGeneratorHost = null;
-        //since this is an async function, we can not use the typical lambda way
-        this.startTest = this.startTest.bind(this)
+        // since this is an async function, we can not use the typical lambda way
+        this.startTest = this.startTest.bind(this);
     }
 
     public componentDidMount() {
@@ -199,7 +199,7 @@ class App extends React.Component<{}, IState> {
         });
     }
 
-    public async startTest(){
+    public async startTest() {
         // user might not have prefixed host with http://
         if (this.requestGeneratorHost && !this.requestGeneratorHost.startsWith("http://")) {
             this.requestGeneratorHost = "http://" + this.requestGeneratorHost;
@@ -211,20 +211,20 @@ class App extends React.Component<{}, IState> {
             }} as AxiosRequestConfig;
 
         // they all need to be re-generated since they might be new or PDGF data have been deleted
-        if(this.state.existingConfigComponent) {
-            for (let fileName of Array.from(this.state.existingConfigComponent.state.uploadedFiles.keys())){
-                let file = this.state.existingConfigComponent.state.uploadedFiles.get(fileName)!;
-                const response = await axios.post(this.requestGeneratorHost + "/uploadPDGF", file.fileContent, axiosParams);
-                //do not start test if PDGF failed
-                if (response.status !== 200){
-                    alert("PDGF return status: "+response.status);
+        if (this.state.existingConfigComponent) {
+            for (const fileName of Array.from(this.state.existingConfigComponent.state.uploadedFiles.keys())) {
+                const file = this.state.existingConfigComponent.state.uploadedFiles.get(fileName)!;
+                const existingConfigResponse = await axios.post(this.requestGeneratorHost + "/uploadPDGF", file.fileContent, axiosParams);
+                // do not start test if PDGF failed
+                if (existingConfigResponse.status !== 200) {
+                    alert("PDGF return status: " + existingConfigResponse.status);
                     this.setState({pdgfRunning: false});
-                    return
+                    return;
                 }
             }
         }
         const response = await axios.post(this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams);
-            //).catch((e) => {alert(e); this.setState({pdgfRunning: false}); });
+            // ).catch((e) => {alert(e); this.setState({pdgfRunning: false}); });
         if (response.status === 200) {
             const date = new Date(0);
             date.setUTCMilliseconds(+config.id);
@@ -234,10 +234,10 @@ class App extends React.Component<{}, IState> {
             axiosParams.headers = {
                 "Content-Type": "application/json",
             };
-            axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + dateString + " finished!")).catch((e) => alert(e));
+            axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " finished with response code " + r.status)).catch((e) => alert(e));
             this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
-        }else{
-            alert("PDGF return status: "+response.status);
+        } else {
+            alert("PDGF return status: " + response.status);
             this.setState({pdgfRunning: false});
         }
     }
