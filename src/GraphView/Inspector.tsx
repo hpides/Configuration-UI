@@ -1,5 +1,6 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import React from "react";
+import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import "./Inspector.css";
 import {AssertionAdder} from "./Inspector/AssertionAdder";
 import {ContentNotEmptyAssertion, ContentTypeAssertion, ResponseCodeAssertion} from "./Inspector/AssertionConfig";
@@ -17,6 +18,7 @@ interface IProps {
     model: DiagramModel;
     disableDeleteKey: () => void;
     enableDeleteKey: () => void;
+    existingConfig: ExistingConfigComponent;
 }
 
 interface IState {
@@ -70,18 +72,43 @@ export class Inspector extends React.Component<IProps, IState> {
         });
     }
 
-    public handleAddGeneratorDialog = (key: string, genConfig: GeneratorConfig) => {
+    /**
+     * Add the given generator to the generators for the specified node.
+     * The current backend implementation allows only one table per Data Generation,
+     * so this method makes sure that only one existing data generator and no
+     * other data generators or only generators other than existing data generators are contained by this node.
+     * Also, the ordering of the keys is preserved.
+     * @param {string[]} keys keys to be associated with this generator
+     * @param {GeneratorConfig} genConfig config that represents this generator
+     */
+    public handleAddGeneratorDialog = (keys: string[], genConfig: GeneratorConfig) => {
         if (!(this.props.node instanceof DataGenerationNode)) {
             return;
         }
 
         const node: DataGenerationNode = this.props.node;
-
-        node.addData(key, genConfig);
-
+        if (genConfig.getTypeString() === "EXISTING") {
+            if (node.dataToGenerate.value.size !== 0) {
+                alert("A Data Generation node can ONLY have ONE existing data generator and no other generator!");
+            } else {
+                for (const key of keys) {
+                    node.addData(key, genConfig);
+                }
+            }
+        } else {
+            if (!this.hasExistingGeneratorConfig()) {
+                for (const key of keys) {
+                    node.addData(key, genConfig);
+                }
+            } else {
+                alert("A Data Generation node can ONLY have ONE existing data generator and no other generator!");
+            }
+        }
         if (this.state.activeGenerator) {
-            if (this.state.activeGenerator.key !== key) {
-                node.removeData(this.state.activeGenerator.key);
+            for (const key of keys) {
+                if (this.state.activeGenerator.key !== key) {
+                    node.removeData(this.state.activeGenerator.key);
+                }
             }
         }
 
@@ -109,7 +136,6 @@ export class Inspector extends React.Component<IProps, IState> {
 
         const node: RequestNode = this.props.node;
 
-        // node.dataToGenerate[name] = assertionConfig;
         node.addAssertion(config);
 
         this.setState({addingAssertion: false});
@@ -150,7 +176,8 @@ export class Inspector extends React.Component<IProps, IState> {
 
         const rows: JSX.Element[] = [];
 
-        const keys = Array.from(node.dataToGenerate.value.keys());
+        // show in order that is determined by data attribute
+        const keys = node.getAttribute("data");
 
         for (let i = 0; i < keys.length; i++) {
             // react needs a key element for every tr
@@ -274,6 +301,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 onAdd={this.handleAddGeneratorDialog}
                 onCancel={this.handleCancelGeneratorDialog}
                 generator={this.state.activeGenerator}
+                existingConfig={this.props.existingConfig}
             />;
         }
 
@@ -310,5 +338,15 @@ export class Inspector extends React.Component<IProps, IState> {
                 {assertionAdder}
             </div>
         );
+    }
+
+    private hasExistingGeneratorConfig(): boolean {
+        let ret = false;
+        (this.props.node as DataGenerationNode).dataToGenerate.value.forEach((value) => {
+            if (value.getTypeString() === "EXISTING") {
+                ret = true;
+            }
+        });
+        return ret;
     }
 }

@@ -4,6 +4,7 @@ import { LinkModel} from "@projectstorm/react-diagrams-core";
 import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
 import { fragment } from "xmlbuilder2";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
+import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 import { GeneratorConfig } from "../Inspector/GeneratorConfig";
 import {DataGenerationNode} from "../Nodes/DataGenerationNode";
 import {DelayNode} from "../Nodes/DelayNode";
@@ -75,12 +76,13 @@ interface IBasicAuth {
 }
 /* tslint:disable:no-console ... */
 function doDepthFirstSearch(node: Node | undefined, idMap: IdMap, atoms: IBaseAtom[],
-                            pdgfTables: XMLBuilder[], closedNodeIds: Set<string>) {
+                            pdgfTables: XMLBuilder[], closedNodeIds: Set<string>,
+                            existinGConfig: ExistingConfigComponent) {
     const nodesToProcess: BaseNode[] = [];
     while (node) {
         // do not export again
         node.visited = true;
-        const baseAtoms = ConvertNode(idMap, node);
+        const baseAtoms = ConvertNode(idMap, node, existinGConfig);
         for (const atom of baseAtoms.atoms) {
             atoms.push(atom);
         }
@@ -107,7 +109,7 @@ function doDepthFirstSearch(node: Node | undefined, idMap: IdMap, atoms: IBaseAt
 }
 
 /* tslint:disable:max-line-length ... */
-export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes: Node[]): {pdgfTables: XMLBuilder[], story: IStory} {
+export function ConvertGraphToStory(name: string, scalePercentage: number, startNode: StartNode, nodes: Node[], existingConfig: ExistingConfigComponent): {pdgfTables: XMLBuilder[], story: IStory} {
     const atoms: IBaseAtom[] = [];
     const closedNodeIds: Set<string> = new Set();
     const idMap = new IdMap();
@@ -116,11 +118,11 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
 
     const node: BaseNode | undefined = startNode;
     closedNodeIds.add(startNode.getID());
-    doDepthFirstSearch(node, idMap, atoms, pdgfTables, closedNodeIds);
+    doDepthFirstSearch(node, idMap, atoms, pdgfTables, closedNodeIds, existingConfig);
     // catch all nodes that are isolated from the start node, i.e. not connected
     for (const currentNode of nodes) {
         if (!currentNode.visited) {
-            doDepthFirstSearch(currentNode, idMap, atoms, pdgfTables, closedNodeIds);
+            doDepthFirstSearch(currentNode, idMap, atoms, pdgfTables, closedNodeIds, existingConfig);
         }
     }
 
@@ -146,7 +148,7 @@ export function ConvertGraphToStory(name: string, scalePercentage: number, start
  * @returns {{nodes: Node[]; startNode: StartNode | null; links: LinkModel[]}} extracted nodes, the startNode if present, and links between nodes to be added to the model
  * @constructor
  */
-export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKey: () => void, deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
+export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKey: () => void, existingConfigComponent: ExistingConfigComponent, deserializedStory: any): {nodes: Node[], startNode: StartNode | null, links: LinkModel[]} {
     const ret: Node[] = [];
     const links: LinkModel[] = [];
     let startNode: StartNode|null = null;
@@ -167,7 +169,7 @@ export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKe
                 break;
             case "DATA_GENERATION":
                 // so existing properties can be edited
-                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, nodeOptions);
+                node = new DataGenerationNode(disableDeleteKey, enableDeleteKey, existingConfigComponent , nodeOptions);
                 break;
             case "REQUEST":
                 node = new RequestNode(nodeOptions);
@@ -256,13 +258,13 @@ function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
     return frag;
 }
 
-function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode): {atoms: IDataGenerationAtom[], pdgfTable?: XMLBuilder} {
+function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: DataGenerationNode, existingConfig: ExistingConfigComponent): {atoms: IDataGenerationAtom[], pdgfTable?: XMLBuilder} {
     const atoms: IDataGenerationAtom[] = [];
 
     const pdgfFields: XMLBuilder[] = [];
 
     const dataToGenerate = node.dataToGenerate;
-    if (Array.from(node.dataToGenerate.value.keys()).length === 0) {
+    if (node.getAttribute("data").length === 0) {
         return {atoms: [{
             ...baseAtomObj,
             data: [],
@@ -276,7 +278,8 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
      * Create Atom for new data
      */
     const keys: string[] = [];
-    for (const key of Array.from(node.dataToGenerate.value.keys())) {
+    // need to preserve order, since some generators rely on it
+    for (const key of node.getAttribute("data")) {
         const genConfig = dataToGenerate.value.get(key)!;
 
         if (genConfig.getTypeString() === "EXISTING") {
@@ -288,13 +291,23 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         field.import(generatorToXml(genConfig));
         pdgfFields.push(field);
     }
+
+    let tableName: string;
+
+    tableName = "_" + Math.random().toString(36).substr(2, 9);
+
     // Generate a pseudo random unique tablename
     // https://gist.github.com/gordonbrander/2230317
-    const tableName: string = "_" + Math.random().toString(36).substr(2, 9);
-    if (keys.length > 0) {
+    // also, we do not want to generate the same table name twice
+    while (existingConfig.state.allTables.has(tableName)) {
+        tableName = "_" + Math.random().toString(36).substr(2, 9);
+
+    }
+    if (node.getAttribute("data").length > 0) {
         atoms.push({
             ...baseAtomObj,
-            data: keys,
+            // node itself stores data ordered
+            data: node.getAttribute("data"),
             dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: tableName,
@@ -306,32 +319,6 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         pdgfTable.import(field);
     }
 
-    /*
-     * Create Atoms for data
-     * to be read from existing XML
-     */
-    for (const key of Array.from(node.dataToGenerate.value.keys())) {
-        const genConfig = dataToGenerate.value.get(key)!;
-        if (genConfig.getTypeString() !== "EXISTING") {
-            continue;
-        }
-
-        const newAtom = {
-            ...baseAtomObj,
-            data: [key],
-            dataToGenerate: node.getAttribute("dataToGenerate"),
-            name: node.getAttribute("name"),
-            table: genConfig.getAttribute("table"),
-        };
-
-        if (atoms.length > 0) {
-            const id = idMap.mapId(node.getID() + key);
-            atoms[atoms.length - 1].successors = [id];
-
-            newAtom.id = id;
-        }
-        atoms.push(newAtom);
-    }
     // in case there are no data yet, this will throw exception
     if (atoms.length > 1) {
         atoms[atoms.length - 1].successors = baseAtomObj.successors;
@@ -339,7 +326,7 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     return {atoms, pdgfTable};
 }
 
-function ConvertNode(idMap: IdMap, node: BaseNode): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
+function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfigComponent): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
     const type = node.getAtomType();
 
     const successors: number[] = [];
@@ -370,7 +357,7 @@ function ConvertNode(idMap: IdMap, node: BaseNode): {atoms: IBaseAtom[], pdgfTab
     // insert additional data
     switch (type) {
         case "DATA_GENERATION":
-            const ret = ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode);
+            const ret = ConvertDataGenerationNode(idMap, baseAtomObj, node as DataGenerationNode, existingConfig);
             return ret;
         case "DELAY":
             return {atoms: [{

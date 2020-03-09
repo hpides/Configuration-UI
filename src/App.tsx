@@ -9,18 +9,20 @@ import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ApisEditor} from "./ApisEditor/ApisEditor";
 import "./App.css";
 import {Evaluation} from "./evaluation/Evaluation";
+import {ExistingConfigComponent, IUploadedFile} from "./ExistingConfig/existingConfigComponent";
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
 
-interface IState {
+export interface IState {
     currentView: Views;
     currentStory: string | null;
     readonly stories: string[];
     pdgfRunning: boolean;
     currentTestId: string | undefined;
+    existingConfigComponent: ExistingConfigComponent | null;
 }
 
 /*tslint:disable:no-console*/
@@ -41,10 +43,13 @@ class App extends React.Component<{}, IState> {
             currentStory: null,
             currentTestId: undefined,
             currentView: Views.UserStories,
+            existingConfigComponent: null,
             pdgfRunning: false,
             stories: [],
         };
         this.requestGeneratorHost = null;
+        // since this is an async function, we can not use the typical lambda way
+        this.startTest = this.startTest.bind(this);
     }
 
     public componentDidMount() {
@@ -111,6 +116,9 @@ class App extends React.Component<{}, IState> {
             testConfigJSON.maximumConcurrentRequests = testConfigState.maximumConcurrentRequests;
         }
         testConfigJSON.stories  = stories;
+
+        testConfigJSON.existingXMLs = this.state.existingConfigComponent ? this.state.existingConfigComponent.state : {};
+
         // make sure to remove excluded attributes before export
         // also, pretty-print
         console.log(JSON.stringify(classToPlain(testConfigJSON), null, 4));
@@ -151,6 +159,34 @@ class App extends React.Component<{}, IState> {
             }
 
         }
+        if (this.state.existingConfigComponent && testConfig.existingXMLs) {
+            // class-transformer is too stupid to map this to an IState, si we do it manually...
+            const existing = testConfig.existingXMLs;
+            const allTables = new Set<string>();
+            for (const table of existing.allTables) {
+                allTables.add(table);
+            }
+            const uploadedFiles = new Map<string, IUploadedFile>();
+
+            for (const member in existing.uploadedFiles) {
+                if (member) {
+                    const uploadedFile = existing.uploadedFiles[member];
+                    const fileRepr = {} as IUploadedFile;
+                    fileRepr.existingTables = uploadedFile.existingTables;
+                    fileRepr.fileContent = uploadedFile.fileContent;
+                    fileRepr.tableMapping = new Map<string, string[]>();
+                    for (const innerMember in uploadedFile.tableMapping) {
+                        if (innerMember) {
+                            const fields = uploadedFile.tableMapping[innerMember];
+                            fileRepr.tableMapping.set(innerMember, fields);
+                        }
+                    }
+                    uploadedFiles.set(member, fileRepr);
+                }
+            }
+
+            this.state.existingConfigComponent.setState({ allTables, uploadedFiles});
+        }
         // need to re-render to create respective views before we can call the update
         this.forceUpdate(() => {
             // enough graph views have been created
@@ -163,7 +199,7 @@ class App extends React.Component<{}, IState> {
         });
     }
 
-    public startTest = (): void => {
+    public async startTest() {
         // user might not have prefixed host with http://
         if (this.requestGeneratorHost && !this.requestGeneratorHost.startsWith("http://")) {
             this.requestGeneratorHost = "http://" + this.requestGeneratorHost;
@@ -173,22 +209,37 @@ class App extends React.Component<{}, IState> {
         const axiosParams = {headers: {
             "Content-Type": "application/xml",
             }} as AxiosRequestConfig;
-        axios.post(this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams).then((r) => {
-                console.log(r.status);
-                if (r.status === 200) {
-                    const date = new Date(0);
-                    date.setUTCMilliseconds(+config.id);
-                    const dateString = date.toLocaleString();
-                    alert("PDGF finished, press \"OK\" to start actual test!");
+
+        // they all need to be re-generated since they might be new or PDGF data have been deleted
+        if (this.state.existingConfigComponent) {
+            for (const fileName of Array.from(this.state.existingConfigComponent.state.uploadedFiles.keys())) {
+                const file = this.state.existingConfigComponent.state.uploadedFiles.get(fileName)!;
+                const existingConfigResponse = await axios.post(this.requestGeneratorHost + "/uploadPDGF", file.fileContent, axiosParams);
+                // do not start test if PDGF failed
+                if (existingConfigResponse.status !== 200) {
+                    alert("PDGF return status: " + existingConfigResponse.status);
                     this.setState({pdgfRunning: false});
-                    axiosParams.headers = {
-                        "Content-Type": "application/json",
-                    };
-                    axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((response) => alert("Test " + dateString + " finished!")).catch((e) => alert(e));
-                    this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
+                    return;
                 }
-        },
-            ).catch((e) => {alert(e); this.setState({pdgfRunning: false}); });
+            }
+        }
+        const response = await axios.post(this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams);
+            // ).catch((e) => {alert(e); this.setState({pdgfRunning: false}); });
+        if (response.status === 200) {
+            const date = new Date(0);
+            date.setUTCMilliseconds(+config.id);
+            const dateString = date.toLocaleString();
+            alert("PDGF finished, press \"OK\" to start actual test!");
+            this.setState({pdgfRunning: false});
+            axiosParams.headers = {
+                "Content-Type": "application/json",
+            };
+            axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " finished with response code " + r.status)).catch((e) => alert(e));
+            this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
+        } else {
+            alert("PDGF return status: " + response.status);
+            this.setState({pdgfRunning: false});
+        }
     }
 
     public render() {
@@ -233,10 +284,14 @@ class App extends React.Component<{}, IState> {
                             <Testconfig ref={(ref) => this.testConfig = ref}/>
                         </div>
                         <div
+                            style={this.state.currentView === Views.Existing ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
+                            <ExistingConfigComponent ref={(ref) => {if (!this.state.existingConfigComponent) {this.setState({existingConfigComponent: ref}); }}}/>
+                        </div>
+                        <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             {[...Array(this.state.stories.length)].map((item, story) => <div key={story}
                                                                                 style={this.graphViews[story] && this.state.currentStory === this.graphViews[story].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
-                                <GraphView ref={(ref) => {
+                                <GraphView existingConfig={this.state.existingConfigComponent || new ExistingConfigComponent({})} ref={(ref) => {
                                     // story names can change at any time. Using them as props will destroy the graph view, so set it here instead
                                     if (ref) {
                                         ref.setStory(this.state.stories[story]);
@@ -244,7 +299,7 @@ class App extends React.Component<{}, IState> {
                                         // we do not want the same reference twice
                                         for (const view of this.graphViews) {
                                             if (view === ref) {
-                                                exists = false;
+                                                exists = true;
                                             }
                                         }
                                         if (!exists) {

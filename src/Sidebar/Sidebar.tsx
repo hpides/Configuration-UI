@@ -38,6 +38,9 @@ export class Sidebar extends React.Component<IProps, IState> {
             case "evaluation":
                 nextView = Views.Evaluation;
                 break;
+            case "existing":
+                nextView = Views.Existing;
+                break;
             default:
                 nextView = Views.Apis;
                 break;
@@ -104,7 +107,11 @@ export class Sidebar extends React.Component<IProps, IState> {
                     name="apis"
                     className={cv === Views.Apis ? "active" : ""}
                     onClick={this.changeView}
-                >Apis</button>
+                >Apis</button><button
+                    name="existing"
+                    className={cv === Views.Existing ? "active" : ""}
+                    onClick={this.changeView}
+                >Upload existing PDGF config</button>
                 <button
                     name="testconfig"
                     className={cv === Views.Testconfig ? "active" : ""}
