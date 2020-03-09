@@ -40,7 +40,8 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
         let xml;
         xml = new DOMParser().parseFromString(reader.toString(), "text/xml");
 
-        //some browsers, e.g. MS Edge, output a whole html document here. Select respective element with error and render it if html if applicable.
+        // some browsers, e.g. MS Edge, output a whole html document here.
+        // Select respective element with error and render it if html if applicable.
         if (xml.getElementsByTagName("parsererror").length > 0) {
                 this.setState({lastError: xml.getElementsByTagName("parsererror")[0].innerHTML + ""});
                 return;
@@ -75,7 +76,7 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
         return <div>
             <div>
                 {this.state.lastError === "" ? <div/> : <Alert color="danger">
-                    Import error: <div dangerouslySetInnerHTML={{__html:this.state.lastError}}/></Alert>}
+                    Import error: <div dangerouslySetInnerHTML={{__html: this.state.lastError}}/></Alert>}
             </div>
             <Dropzone onDrop={ (files) => this.onDrop(files)}>
                 {({getRootProps, getInputProps}) => (
