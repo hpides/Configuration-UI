@@ -314,16 +314,19 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
         });
     }
 
-    const pdgfTable = fragment().ele("table", {name: tableName});
-    for (const field of pdgfFields) {
-        pdgfTable.import(field);
-    }
-
     // in case there are no data yet, this will throw exception
     if (atoms.length > 1) {
         atoms[atoms.length - 1].successors = baseAtomObj.successors;
     }
-    return {atoms, pdgfTable};
+    // only return non-empty tables, PDGF does not appreciate empty tables
+    if (pdgfFields.length > 0) {
+        const pdgfTable = fragment().ele("table", {name: tableName});
+        for (const field of pdgfFields) {
+            pdgfTable.import(field);
+        }
+        return {atoms, pdgfTable};
+    }
+    return {atoms};
 }
 
 function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfigComponent): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
