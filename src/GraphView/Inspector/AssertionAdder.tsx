@@ -78,6 +78,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                         <select
                             name="generator"
                             value={this.state.assertionConfig.type}
+                            className={"generator-adder-select"}
                             onChange={this.inputChanged}
                         >
                             <option value="RESPONSE_CODE">Response Code</option>
@@ -85,6 +86,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             <option value="CONTENT_TYPE">Content type</option>
                         </select>
                     </div>
+                    <br/>
                     {this.state.assertionConfig.render()}
                     <button
                         onClick={this.doneButtonClicked}
