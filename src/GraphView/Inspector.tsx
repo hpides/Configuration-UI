@@ -188,9 +188,8 @@ export class Inspector extends React.Component<IProps, IState> {
         });
     }
 
-    public deleteAssertion = (event: React.MouseEvent<HTMLButtonElement>) => {
-
-    }
+    // tslint:disable-next-line
+    public deleteAssertion = (event: React.MouseEvent<HTMLButtonElement>) => {};
 
     public handleAddAuthDialog = (user: string, password: string) => {
         if (!(this.props.node instanceof RequestNode)) {
