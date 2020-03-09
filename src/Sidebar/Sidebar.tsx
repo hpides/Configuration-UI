@@ -14,7 +14,7 @@ interface IProps {
     _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
-    }
+    };
 }
 
 export class Sidebar extends React.Component<IProps, IState> {

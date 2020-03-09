@@ -37,6 +37,11 @@ class App extends React.Component<{}, IState> {
     private testConfig: Testconfig | null = null;
     private  requestGeneratorHost: string | null;
 
+    private readonly keyhandler: {
+        readonly disableDeleteKey: () => void,
+        readonly enableDeleteKey: () => void,
+    };
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -50,21 +55,16 @@ class App extends React.Component<{}, IState> {
         this.requestGeneratorHost = null;
         // since this is an async function, we can not use the typical lambda way
         this.startTest = this.startTest.bind(this);
-        //disable and re-enable delete keys for all graph views makes updating these methods unnecessary (which would be complicated)
-        this._keyhandler = {disableDeleteKey: () => {
-            this.graphViews.forEach(view => {
-                view.disableDeleteKey()
-            })
-            }, enableDeleteKey: () => {this.graphViews.forEach(view => {
-                view.enableDeleteKey()
-            })}}
+        // disable and re-enable delete keys for all graph views makes updating these methods unnecessary (which would be complicated)
+        this.keyhandler = {disableDeleteKey: () => {
+            this.graphViews.forEach((view) => {
+                view.disableDeleteKey();
+            });
+            }, enableDeleteKey: () => {this.graphViews.forEach((view) => {
+                view.enableDeleteKey();
+            });
+        }};
     }
-
-
-    private readonly _keyhandler: {
-        readonly disableDeleteKey: () => void,
-        readonly enableDeleteKey: () => void,
-    };
 
     public componentDidMount() {
         this.requestGeneratorHost = process.env.REACT_APP_REQGEN_HOST || window.location + "/reqgen";
@@ -281,7 +281,7 @@ class App extends React.Component<{}, IState> {
                     <Sidebar currentView={this.state.currentView}
                              changeView={this.changeView}
                              renameStory={this.renameStory}
-                             _keyhandler={this._keyhandler}
+                             _keyhandler={this.keyhandler}
                              ref={(ref) => this.sidebar = ref}
                     />
 
