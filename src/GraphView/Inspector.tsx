@@ -39,8 +39,8 @@ export class Inspector extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            activeGenerator: null,
             activeAssertion: null,
+            activeGenerator: null,
             addingAssertion: false,
             addingAuth: false,
             addingGenerator: false,
@@ -164,7 +164,7 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({
             activeAssertion: null,
             addingAssertion: false,
-        })
+        });
     }
 
     public addAssertion = () => {
@@ -181,7 +181,7 @@ export class Inspector extends React.Component<IProps, IState> {
         const index = event.currentTarget.getAttribute("data-index");
         if (!index) { return; }
 
-        const assertion = node.getAttribute("assertions")[Number(index)]
+        const assertion = node.getAttribute("assertions")[Number(index)];
         this.setState({
             activeAssertion: assertion,
             addingAssertion: true,
@@ -272,7 +272,7 @@ export class Inspector extends React.Component<IProps, IState> {
             if (assertion instanceof ResponseCodeAssertion) {
                 assertionText = "Response Code is " + assertion.responseCode.toString();
             } else if (assertion instanceof ContentTypeAssertion) {
-                assertionText = "Response Conent Type is " + assertion.contentType
+                assertionText = "Response Conent Type is " + assertion.contentType;
             } else if (assertion instanceof ContentNotEmptyAssertion) {
                 assertionText = "Response is not empty";
             }
@@ -304,7 +304,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     onClick={this.addAssertion}
                 >Add Assertion</button>
             </div>
-        )
+        );
     }
 
     public render() {

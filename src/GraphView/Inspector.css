@@ -37,6 +37,7 @@
     border-collapse: collapse;
     margin-left: 10px;
     margin-right: 10px;
+    width: calc(100% - 20px);
 }
 
 .inspector .data-generation-table table th {

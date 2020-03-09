@@ -23,7 +23,12 @@ export abstract class AssertionConfig {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
     };
-    constructor(updateParent: (assertion: AssertionConfig) => void, disableDeleteKey: () => void, enableDeleteKey: () => void, name: string = "") {
+    constructor(
+        updateParent: (assertion: AssertionConfig) => void,
+        disableDeleteKey: () => void,
+        enableDeleteKey: () => void,
+        name: string = "",
+    ) {
         this._keyhandler = {
             disableDeleteKey,
             enableDeleteKey,

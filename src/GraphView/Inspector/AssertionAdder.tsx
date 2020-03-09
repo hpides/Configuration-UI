@@ -24,8 +24,11 @@ export class AssertionAdder extends React.Component<IProps, IState> {
     constructor(props: any) {
         super(props);
 
-        let assertionConfig: AssertionConfig = new ResponseCodeAssertion(this.assertionChanged, this.props.disableDeleteKey,
-            this.props.enableDeleteKey);
+        let assertionConfig: AssertionConfig = new ResponseCodeAssertion(
+            this.assertionChanged,
+            this.props.disableDeleteKey,
+            this.props.enableDeleteKey,
+        );
         let name = "";
 
         if (this.props.assertion) {
@@ -34,8 +37,8 @@ export class AssertionAdder extends React.Component<IProps, IState> {
         }
 
         this.state = {
-            assertionConfig: assertionConfig,
-            name: name,
+            assertionConfig,
+            name,
         };
     }
 
@@ -48,23 +51,35 @@ export class AssertionAdder extends React.Component<IProps, IState> {
         switch (event.currentTarget.name) {
             case "name":
                 this.setState({name: event.currentTarget.value});
-                let assertionConfig = this.state.assertionConfig;
+                const assertionConfig = this.state.assertionConfig;
                 assertionConfig.setAttribute(event.currentTarget.name, event.currentTarget.value);
                 this.setState({assertionConfig});
                 break;
             case "generator":
                 switch (event.currentTarget.value) {
                     case "RESPONSE_CODE":
-                        this.setState({assertionConfig: new ResponseCodeAssertion(this.assertionChanged, this.props.disableDeleteKey,
-                                this.props.enableDeleteKey, this.state.name)});
+                        this.setState({assertionConfig: new ResponseCodeAssertion(
+                            this.assertionChanged,
+                            this.props.disableDeleteKey,
+                            this.props.enableDeleteKey,
+                            this.state.name,
+                        )});
                         break;
                     case "CONTENT_NOT_EMPTY":
-                        this.setState({assertionConfig: new ContentNotEmptyAssertion(this.assertionChanged, this.props.disableDeleteKey,
-                                this.props.enableDeleteKey, this.state.name)});
+                        this.setState({assertionConfig: new ContentNotEmptyAssertion(
+                            this.assertionChanged,
+                            this.props.disableDeleteKey,
+                            this.props.enableDeleteKey,
+                            this.state.name,
+                        )});
                         break;
                     case "CONTENT_TYPE":
-                        this.setState({assertionConfig: new ContentTypeAssertion(this.assertionChanged, this.props.disableDeleteKey,
-                                this.props.enableDeleteKey, this.state.name)});
+                        this.setState({assertionConfig: new ContentTypeAssertion(
+                            this.assertionChanged,
+                            this.props.disableDeleteKey,
+                            this.props.enableDeleteKey,
+                            this.state.name,
+                        )});
                         break;
                 }
                 break;
