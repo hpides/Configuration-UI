@@ -171,6 +171,10 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({addingAuth: false});
     }
 
+    public handleCancelAssertionDialog = () => {
+        this.setState({addingAssertion: false});
+    }
+
     public renderTable() {
         if (!(this.props.node instanceof DataGenerationNode)) {
             return;
@@ -325,7 +329,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 enableDeleteKey={this.props.enableDeleteKey}
                 disableDeleteKey={this.props.disableDeleteKey}
                 onAdd={this.handleAddAssertionDialog}
-                onCancel={this.handleCancelAuthDialog}
+                onCancel={this.handleCancelAssertionDialog}
             />;
         }
 
