@@ -37,6 +37,11 @@ class App extends React.Component<{}, IState> {
     private testConfig: Testconfig | null = null;
     private  requestGeneratorHost: string | null;
 
+    private readonly keyhandler: {
+        readonly disableDeleteKey: () => void,
+        readonly enableDeleteKey: () => void,
+    };
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -50,6 +55,15 @@ class App extends React.Component<{}, IState> {
         this.requestGeneratorHost = null;
         // since this is an async function, we can not use the typical lambda way
         this.startTest = this.startTest.bind(this);
+        // disable and re-enable delete keys for all graph views makes updating these methods unnecessary (which would be complicated)
+        this.keyhandler = {disableDeleteKey: () => {
+            this.graphViews.forEach((view) => {
+                view.disableDeleteKey();
+            });
+            }, enableDeleteKey: () => {this.graphViews.forEach((view) => {
+                view.enableDeleteKey();
+            });
+        }};
     }
 
     public componentDidMount() {
@@ -244,7 +258,8 @@ class App extends React.Component<{}, IState> {
 
     public render() {
         this.graphViews.forEach((view) => {
-            view.setVisibility(this.state.currentView === Views.UserStories && this.state.currentStory !== null && view.getStory() === this.state.currentStory);
+            const active = this.state.currentView === Views.UserStories && this.state.currentStory !== null && view.getStory() === this.state.currentStory;
+            view.setVisibility(active);
         });
         return (
             <div className="App">
@@ -264,9 +279,10 @@ class App extends React.Component<{}, IState> {
                 </header>
                 <div className="content">
                     <Sidebar currentView={this.state.currentView}
-                        changeView={this.changeView}
-                        renameStory={this.renameStory}
-                        ref={(ref) => this.sidebar = ref}
+                             changeView={this.changeView}
+                             renameStory={this.renameStory}
+                             _keyhandler={this.keyhandler}
+                             ref={(ref) => this.sidebar = ref}
                     />
 
                     {// We need to render all elements at all time so their state does not get recycled
