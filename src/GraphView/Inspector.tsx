@@ -94,15 +94,15 @@ export class Inspector extends React.Component<IProps, IState> {
                     node.addData(key, genConfig);
                 }
                 // so the correct table name is used by the backend instead of a random one generated later on
-                node.setAttribute("table", (genConfig as ExistingDataConfig).getAttribute("table"))
+                node.setAttribute("table", (genConfig as ExistingDataConfig).getAttribute("table"));
             }
         } else {
             if (!this.hasExistingGeneratorConfig()) {
                 for (const key of keys) {
                     node.addData(key, genConfig);
                 }
-                //there might have been an ExistingDataConfig here before
-                node.setAttribute("table", null)
+                // there might have been an ExistingDataConfig here before
+                node.setAttribute("table", null);
             } else {
                 alert("A Data Generation node can ONLY have ONE existing data generator and no other generator!");
             }
