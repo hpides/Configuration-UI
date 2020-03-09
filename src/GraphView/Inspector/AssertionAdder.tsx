@@ -35,25 +35,27 @@ export class AssertionAdder extends React.Component<IProps, IState> {
         switch (event.currentTarget.name) {
             case "name":
                 this.setState({name: event.currentTarget.value});
+                let assertionConfig = this.state.assertionConfig;
+                assertionConfig.setAttribute(event.currentTarget.name, event.currentTarget.value);
+                this.setState({assertionConfig});
                 break;
             case "generator":
                 switch (event.currentTarget.value) {
                     case "RESPONSE_CODE":
                         this.setState({assertionConfig: new ResponseCodeAssertion(this.props.disableDeleteKey,
-                                this.props.enableDeleteKey)});
+                                this.props.enableDeleteKey, this.state.name)});
                         break;
                     case "CONTENT_NOT_EMPTY":
                         this.setState({assertionConfig: new ContentNotEmptyAssertion(this.props.disableDeleteKey,
-                                this.props.enableDeleteKey)});
+                                this.props.enableDeleteKey, this.state.name)});
                         break;
                     case "CONTENT_TYPE":
                         this.setState({assertionConfig: new ContentTypeAssertion(this.props.disableDeleteKey,
-                                this.props.enableDeleteKey)});
+                                this.props.enableDeleteKey, this.state.name)});
                         break;
                 }
                 break;
         }
-
     }
 
     public doneButtonClicked = () => {
@@ -74,16 +76,29 @@ export class AssertionAdder extends React.Component<IProps, IState> {
             <div className="generator-adder-container">
                 <div className="generator-adder-background"/>
                 <div className="generator-adder">
-                    <div className="select-wrapper">
-                        <select
-                            name="generator"
-                            value={this.state.assertionConfig.type}
-                            onChange={this.inputChanged}
-                        >
-                            <option value="RESPONSE_CODE">Response Code</option>
-                            <option value="CONTENT_NOT_EMPTY">Content not empty</option>
-                            <option value="CONTENT_TYPE">Content type</option>
-                        </select>
+                    <div className="generator-meta">
+                        <div>
+                            <label>Name</label>
+                            <input
+                                onFocus={this.props.disableDeleteKey}
+                                onBlur={this.props.enableDeleteKey}
+                                type="text"
+                                name="name"
+                                onChange={this.inputChanged} />
+                        </div>
+                        <div>
+                            <div className="select-wrapper">
+                                <select
+                                    name="generator"
+                                    value={this.state.assertionConfig.type}
+                                    onChange={this.inputChanged}
+                                >
+                                    <option value="RESPONSE_CODE">Response Code</option>
+                                    <option value="CONTENT_NOT_EMPTY">Content not empty</option>
+                                    <option value="CONTENT_TYPE">Content type</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     {this.state.assertionConfig.render()}
                     <button
