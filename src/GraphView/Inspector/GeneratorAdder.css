@@ -42,6 +42,7 @@
 }
 
 .generator-adder .select-wrapper {
+    position: absolute;
     width: 50%;
     height: 80px;
 }
