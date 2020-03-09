@@ -37,6 +37,7 @@
     border-collapse: collapse;
     margin-left: 10px;
     margin-right: 10px;
+    width: calc(100% - 20px);
 }
 
 .inspector .data-generation-table table th {
@@ -69,12 +70,19 @@
     right: 0;
     margin: 0;
     padding: 0;
+    transition: all 0.3s ease 0s;
+}
+
+.inspector .data-generation-table table tr:hover .delete-data-btn:before {
+    opacity: 1.0;
+    right: 15px;
 }
 
 .inspector .delete-data-btn:before {
     content: "\00d7";
     position: absolute;
     border-radius: 50px;
+    top: 3px;
     background-color:#d3584b;
 	border:1px solid #b04c41;
 	cursor:pointer;
@@ -84,11 +92,12 @@
     padding:0px 7px;
 	text-decoration:none;
     margin: 0;
-    right: 5vw;
-    top: -0.9vw;
+    right: -15px;
     height: 30px;
     width: 15px;
+    transition: all 0.3s ease 0s;
+    opacity: 0;
 }
-.inspector .delete-data-btn:hover {
-	background-color:#5cbf2a;
+.inspector .delete-data-btn:hover:before {
+	background-color:#b04c41;
 }

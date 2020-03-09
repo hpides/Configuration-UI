@@ -243,8 +243,6 @@ export class GraphView extends React.Component<IProps, IState> {
         }
         return (
             <div style={this.state.visible[0] ? {visibility: "visible"} : {visibility: "hidden"}}>
-                <div className="scalePercentageText">Scale percentage: </div>
-                <input type="number" value={this.state.scalePercentage} onChange={this.handleScalePercentageChanged} className="scalePercentageTextField"/>
                 <div>
                 <div id="graphview">
 
@@ -257,6 +255,15 @@ export class GraphView extends React.Component<IProps, IState> {
                         <CanvasWidget engine={this.engine}/>
                     </div>
                     <NodeAdder onAddNode={this.addNode}/>
+                    <div className="scale-percentage-container">
+                        <label>Scale Percentage:</label>
+                        <input
+                            type="number"
+                            value={this.state.scalePercentage}
+                            onChange={this.handleScalePercentageChanged}
+                            onFocus={this.disableDeleteKey}
+                            onBlur={this.enableDeleteKey}/>
+                    </div>
                     {inspector}
                 </div>
                 </div>

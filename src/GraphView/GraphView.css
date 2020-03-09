@@ -41,31 +41,19 @@
     border-radius: 10px;
 }
 
-.scalePercentageText {
+.scale-percentage-container {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    width: 20%;
-    height: 5%;
-    text-align: left;
-    margin-left: 10px;
-    font-size: 20px;
-    color: #e3e3e3;
-    background-color: transparent;
+    margin-left: 240px;
+    margin-bottom: 20px;
+    width: 100px;
+    bottom: 20px;
+    background-color: #282c34;
+    color: white;
+    border: 3px solid #565d6a;
+    border-radius: 10px;
+    padding: 10px;
 }
-.scalePercentageTextField {
-    position: absolute;
-    left: 12%;
-    right: 0;
-    top: 0;
-    width: 10%;
-    height: 3%;
-    text-align: left;
-    margin-left: 10px;
-    font-size: 20px;
-    color: #e3e3e3;
-    background-color: transparent;
-    border: solid 1px white;
-    display: block;
+
+.scale-percentage-container input {
+    width: calc(100% - 22px);
 }

@@ -17,16 +17,24 @@ export abstract class AssertionConfig {
     public abstract type: string;
 
     public name: string = "";
+    public updateParent?: (assertion: AssertionConfig) => void;
     @Exclude()
     private readonly _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
     };
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void) {
+    constructor(
+        disableDeleteKey: () => void,
+        enableDeleteKey: () => void,
+        name: string = "",
+        updateParent?: (assertion: AssertionConfig) => void,
+    ) {
         this._keyhandler = {
             disableDeleteKey,
             enableDeleteKey,
         };
+        this.name = name;
+        this.updateParent = updateParent;
     }
 
     public setAttribute(key: string, value: any) {
@@ -45,6 +53,7 @@ export abstract class AssertionConfig {
         // called during deserialization for some reason with undefined event. Do not perform operation in this case
         if (event) {
             this.setAttribute(event.currentTarget.name, event.currentTarget.value);
+            if (this.updateParent) { this.updateParent(this); }
         }
     }
 
@@ -67,14 +76,16 @@ export class ResponseCodeAssertion extends AssertionConfig {
     public render() {
         return(
             <div className="generator-config">
-                <label>Name:</label>
-        <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-        type="text" name="name" onChange={this.inputChanged} />
-        <label>Response Code: </label>
-        <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-        type="number" name="responseCode" onChange={this.inputChanged} />
-        </div>
-    );
+                <label>Response Code: </label>
+                <input
+                    onFocus={this.keyhandler.disableDeleteKey}
+                    onBlur={this.keyhandler.enableDeleteKey}
+                    type="number"
+                    name="responseCode"
+                    onChange={this.inputChanged}
+                    value={this.responseCode}/>
+            </div>
+        );
     }
 }
 
@@ -89,13 +100,15 @@ export class ContentTypeAssertion extends AssertionConfig {
     public render() {
         return(
             <div className="generator-config">
-                <label>Name:</label>
-        <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-        type="text" name="name" onChange={this.inputChanged} />
-        <label>Content Type: </label>
-        <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-        type="text" name="contentType" onChange={this.inputChanged} />
-        </div>
+                <label>Content Type: </label>
+                <input
+                    onFocus={this.keyhandler.disableDeleteKey}
+                    onBlur={this.keyhandler.enableDeleteKey}
+                    type="text"
+                    name="contentType"
+                    onChange={this.inputChanged}
+                    value={this.contentType}/>
+            </div>
     );
     }
 }
@@ -106,14 +119,4 @@ export class ContentNotEmptyAssertion extends AssertionConfig {
         return "CONTENT_NOT_EMPTY";
     }
     public type = ContentNotEmptyAssertion.getTypeString();
-
-    public render() {
-        return(
-            <div className="generator-config">
-                <label>Name:</label>
-                <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="name" onChange={this.inputChanged} />
-            </div>
-        );
-    }
 }

@@ -8,8 +8,9 @@
 }
 
 .testconfig label {
-    padding: 12px 12px 12px 0;
+    padding: 24px 15px 17px 0;
     display: inline-block;
+    font-size: 20px;
 }
 
 .testconfig {
@@ -29,6 +30,10 @@
     margin-top: 6px;
 }
 
+.testconfig .col-25 {
+    text-align: right;
+}
+
 .row:after {
     content: "";
     display: table;
@@ -39,5 +44,8 @@
     .col-25, .col-75 {
         width: 100%;
         margin-top: 0;
+    }
+    .testconfig .col-25 {
+        text-align: left;
     }
 }
