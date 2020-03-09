@@ -12,9 +12,6 @@ import {
     BaseEvent,
     CanvasWidget,
     DeleteItemsAction,
-    BaseEntityEvent,
-    BaseModel,
-    BaseModelGenerics
 } from "@projectstorm/react-canvas-core";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
@@ -123,8 +120,8 @@ export class GraphView extends React.Component<IProps, IState> {
         }
 
         node.registerListener({
+            entityRemoved: this.handleEntityRemoved,
             selectionChanged: this.handleSelectionChanged,
-            entityRemoved: this.handleEntityRemoved
         });
 
         if (point) {
@@ -191,8 +188,8 @@ export class GraphView extends React.Component<IProps, IState> {
 
             for (const node of nodes.nodes) {
                 node.registerListener({
+                    entityRemoved: this.handleEntityRemoved,
                     selectionChanged: this.handleSelectionChanged,
-                    entityRemoved: this.handleEntityRemoved
                 });
                 this.model.addNode(node);
                 this.state.nodes.push(node);
@@ -270,17 +267,17 @@ export class GraphView extends React.Component<IProps, IState> {
         this.setState({scalePercentage: +event.currentTarget.value});
     }
 
-    private handleEntityRemoved = (event: BaseEvent):void => {
-        if("entity" in (event as any)) {
-            //event is an unknown subclass of BaseEvent with field entity, so we need to go this route
+    private handleEntityRemoved = (event: BaseEvent): void => {
+        if ("entity" in (event as any)) {
+            // event is an unknown subclass of BaseEvent with field entity, so we need to go this route
             const nodes = [];
             const nodeToDelete = (event as any).entity as Node;
-            for (let node of this.state.nodes) {
+            for (const node of this.state.nodes) {
                 if (node !== nodeToDelete) {
-                    nodes.push(node)
+                    nodes.push(node);
                 }
             }
-            this.setState({nodes: nodes})
+            this.setState({nodes});
         }
     }
 }
