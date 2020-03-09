@@ -11,6 +11,10 @@ interface IProps {
     currentView: Views;
     changeView: (view: Views, story: string | null) => void;
     renameStory: (oldName: string, newName: string) => void;
+    _keyhandler: {
+        disableDeleteKey: () => void,
+        enableDeleteKey: () => void,
+    };
 }
 
 export class Sidebar extends React.Component<IProps, IState> {
@@ -75,11 +79,14 @@ export class Sidebar extends React.Component<IProps, IState> {
         >{story}</button>;
 
         if (story === this.state.activeStory) {
+            // do not delete any selected node if backspace is pressed by disabling delete key during editing
             content = <input
                 name={this.state.stories.indexOf(story).toString()}
                 type="text"
                 value={story}
                 onChange={this.renameStory}
+                onBlur={this.props._keyhandler.enableDeleteKey}
+                onFocus={this.props._keyhandler.disableDeleteKey}
                 ref={(reference) => {
                     if (reference) {
                         reference.focus();
@@ -129,11 +136,6 @@ export class Sidebar extends React.Component<IProps, IState> {
                 <ul className="stories-list" >
                     { this.state.stories.map((story) => this.renderStoryListItem(story)) }
                 </ul>
-                {/*<input
-                    type="text"
-                    value={this.state.currentlyAddStory}
-                    onChange={this.handleInput}
-                    className="newStoryTextField"/>*/}
             </div>
         );
     }
