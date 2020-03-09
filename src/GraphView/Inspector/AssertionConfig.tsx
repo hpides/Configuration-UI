@@ -17,17 +17,19 @@ export abstract class AssertionConfig {
     public abstract type: string;
 
     public name: string = "";
+    public updateParent: (assertion: AssertionConfig) => void;
     @Exclude()
     private readonly _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
     };
-    constructor(disableDeleteKey: () => void, enableDeleteKey: () => void, name: string = "") {
+    constructor(updateParent: (assertion: AssertionConfig) => void, disableDeleteKey: () => void, enableDeleteKey: () => void, name: string = "") {
         this._keyhandler = {
             disableDeleteKey,
             enableDeleteKey,
         };
         this.name = name;
+        this.updateParent = updateParent;
     }
 
     public setAttribute(key: string, value: any) {
@@ -46,6 +48,7 @@ export abstract class AssertionConfig {
         // called during deserialization for some reason with undefined event. Do not perform operation in this case
         if (event) {
             this.setAttribute(event.currentTarget.name, event.currentTarget.value);
+            this.updateParent(this);
         }
     }
 
@@ -74,7 +77,8 @@ export class ResponseCodeAssertion extends AssertionConfig {
                     onBlur={this.keyhandler.enableDeleteKey}
                     type="number"
                     name="responseCode"
-                    onChange={this.inputChanged} />
+                    onChange={this.inputChanged}
+                    value={this.responseCode}/>
             </div>
         );
     }
@@ -97,7 +101,8 @@ export class ContentTypeAssertion extends AssertionConfig {
                     onBlur={this.keyhandler.enableDeleteKey}
                     type="text"
                     name="contentType"
-                    onChange={this.inputChanged} />
+                    onChange={this.inputChanged}
+                    value={this.contentType}/>
             </div>
     );
     }

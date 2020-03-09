@@ -59,15 +59,15 @@ export class RequestNode extends Node {
                 let conf;
                 switch (current.type) {
                     case ResponseCodeAssertion.getTypeString():
-                        conf = new ResponseCodeAssertion(this.keyhandler.disableDeleteKey,
+                        conf = new ResponseCodeAssertion(() => {}, this.keyhandler.disableDeleteKey,
                             this.keyhandler.enableDeleteKey);
                         break;
                     case ContentNotEmptyAssertion.getTypeString():
-                        conf = new ContentNotEmptyAssertion(this.keyhandler.disableDeleteKey,
+                        conf = new ContentNotEmptyAssertion(() => {}, this.keyhandler.disableDeleteKey,
                             this.keyhandler.enableDeleteKey);
                         break;
                     case ContentTypeAssertion.getTypeString():
-                        conf = new ContentTypeAssertion(this.keyhandler.disableDeleteKey,
+                        conf = new ContentTypeAssertion(() => {}, this.keyhandler.disableDeleteKey,
                             this.keyhandler.enableDeleteKey);
                         break;
                     default:

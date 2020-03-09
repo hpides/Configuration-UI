@@ -12,6 +12,7 @@ interface IProps {
     onCancel: () => void;
     disableDeleteKey: () => void;
     enableDeleteKey: () => void;
+    assertion: AssertionConfig | null;
 }
 
 interface IState {
@@ -23,11 +24,23 @@ export class AssertionAdder extends React.Component<IProps, IState> {
     constructor(props: any) {
         super(props);
 
+        let assertionConfig: AssertionConfig = new ResponseCodeAssertion(this.assertionChanged, this.props.disableDeleteKey,
+            this.props.enableDeleteKey);
+        let name = "";
+
+        if (this.props.assertion) {
+            assertionConfig = this.props.assertion;
+            name = this.props.assertion.name;
+        }
+
         this.state = {
-            assertionConfig: new ResponseCodeAssertion(this.props.disableDeleteKey,
-                this.props.enableDeleteKey),
-            name: "",
+            assertionConfig: assertionConfig,
+            name: name,
         };
+    }
+
+    public assertionChanged = (assertion: AssertionConfig) => {
+        this.setState({assertionConfig: assertion});
     }
 
     public inputChanged = (event: any) => {
@@ -42,15 +55,15 @@ export class AssertionAdder extends React.Component<IProps, IState> {
             case "generator":
                 switch (event.currentTarget.value) {
                     case "RESPONSE_CODE":
-                        this.setState({assertionConfig: new ResponseCodeAssertion(this.props.disableDeleteKey,
+                        this.setState({assertionConfig: new ResponseCodeAssertion(this.assertionChanged, this.props.disableDeleteKey,
                                 this.props.enableDeleteKey, this.state.name)});
                         break;
                     case "CONTENT_NOT_EMPTY":
-                        this.setState({assertionConfig: new ContentNotEmptyAssertion(this.props.disableDeleteKey,
+                        this.setState({assertionConfig: new ContentNotEmptyAssertion(this.assertionChanged, this.props.disableDeleteKey,
                                 this.props.enableDeleteKey, this.state.name)});
                         break;
                     case "CONTENT_TYPE":
-                        this.setState({assertionConfig: new ContentTypeAssertion(this.props.disableDeleteKey,
+                        this.setState({assertionConfig: new ContentTypeAssertion(this.assertionChanged, this.props.disableDeleteKey,
                                 this.props.enableDeleteKey, this.state.name)});
                         break;
                 }
@@ -84,7 +97,8 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                                 onBlur={this.props.enableDeleteKey}
                                 type="text"
                                 name="name"
-                                onChange={this.inputChanged} />
+                                onChange={this.inputChanged}
+                                value={this.state.name}/>
                         </div>
                         <div>
                             <div className="select-wrapper">

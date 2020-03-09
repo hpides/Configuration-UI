@@ -24,6 +24,7 @@ interface IState {
     addingAuth: boolean;
     addingAssertion: boolean;
     activeGenerator: {key: string, genConfig: GeneratorConfig} | null;
+    activeAssertion: AssertionConfig | null;
 }
 
 interface IBasicAuth {
@@ -37,6 +38,7 @@ export class Inspector extends React.Component<IProps, IState> {
 
         this.state = {
             activeGenerator: null,
+            activeAssertion: null,
             addingAssertion: false,
             addingAuth: false,
             addingGenerator: false,
@@ -129,12 +131,40 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({addingAssertion: false});
     }
 
+    public handleCancelAssertionDialog = () => {
+        this.setState({
+            activeAssertion: null,
+            addingAssertion: false,
+        })
+    }
+
     public handleCancelAddAssertionDialogf = () => {
         this.setState({addingAssertion: false});
     }
 
     public addAssertion = () => {
         this.setState({addingAssertion: true});
+    }
+
+    public editAssertion = (event: React.MouseEvent<HTMLTableRowElement>) => {
+        if (!(this.props.node instanceof RequestNode)) {
+            return;
+        }
+
+        const node: RequestNode = this.props.node;
+
+        const index = event.currentTarget.getAttribute("data-index");
+        if (!index) { return; }
+
+        const assertion = node.getAttribute("assertions")[Number(index)]
+        this.setState({
+            activeAssertion: assertion,
+            addingAssertion: true,
+        });
+    }
+
+    public deleteAssertion = (event: React.MouseEvent<HTMLButtonElement>) => {
+
     }
 
     public handleAddAuthDialog = (user: string, password: string) => {
@@ -200,6 +230,57 @@ export class Inspector extends React.Component<IProps, IState> {
         );
     }
 
+    public renderAssertions() {
+        if (!(this.props.node instanceof RequestNode)) {
+            return;
+        }
+        const node: RequestNode = this.props.node;
+
+        const rows: JSX.Element[] = [];
+
+        const assertions = node.getAttribute("assertions");
+
+        for (let i = 0; i < assertions.length; i++) {
+            const assertion = assertions[i];
+            let assertionText = "";
+            if (assertion instanceof ResponseCodeAssertion) {
+                assertionText = "Response Code is " + assertion.responseCode.toString();
+            } else if (assertion instanceof ContentTypeAssertion) {
+                assertionText = "Response Conent Type is " + assertion.contentType
+            } else if (assertion instanceof ContentNotEmptyAssertion) {
+                assertionText = "Response is not empty";
+            }
+            rows.push(
+                <tr key={i} data-index={i} onClick={this.editAssertion}>
+                    <td>{assertion.name}</td>
+                    <td>{assertionText}</td>
+                    <button
+                        className="delete-data-btn"
+                        data-index={i}
+                        onClick={this.deleteAssertion}
+                    >&times;</button>
+                </tr>,
+            );
+        }
+
+        return(
+            <div className="data-generation-table">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <th colSpan={2}>Assertion</th>
+                        </tr>
+                        {rows}
+                    </tbody>
+                </table>
+                <button
+                    onClick={this.addAssertion}
+                >Add Assertion</button>
+            </div>
+        )
+    }
+
     public render() {
         const node = this.props.node;
         const inputs: JSX.Element[] = [];
@@ -237,44 +318,11 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(label);
                 inputs.push(input);
 
-            } else if (key === "assertions") {
-                const buttonString = "Add Assertion";
-                const assertionButton = <button key={i}
-                                                onClick={this.addAssertion}
-                >{buttonString}</button>;
-                inputs.push(<div key={i + " label"}>{label} <br/></div>);
-                if (node instanceof RequestNode) {
-                    const request: RequestNode = node;
-                    for (const assertion of request.getAttribute("assertions")) {
-                        // one can assume assertion names are unique for a request
-                        if (assertion instanceof ResponseCodeAssertion) {
-                            inputs.push(
-                                <div key={assertion.name}>
-                                    <br/>
-                                    <div>Response Code is {assertion.responseCode} ({assertion.name})</div>
-                                </div>);
-                        }
-                        if (assertion instanceof ContentTypeAssertion) {
-                            inputs.push(
-                                <div key={assertion.name}>
-                                    <br/>
-                                    <div>Response Content Type is {assertion.contentType} ({assertion.name})</div>
-                                </div>);
-                        }
-                        if (assertion instanceof ContentNotEmptyAssertion) {
-                            inputs.push(
-                                <div key={assertion.name}>
-                                    <br/>
-                                    <div>Response is not empty ({assertion.name})</div>
-                                </div>);
-                        }
-                    }
-                }
-                inputs.push(assertionButton);
             }
         }
 
         const table = this.renderTable();
+        const assertionsTable = this.renderAssertions();
 
         let generatorAdder;
         if (this.state.addingGenerator) {
@@ -304,7 +352,8 @@ export class Inspector extends React.Component<IProps, IState> {
                 enableDeleteKey={this.props.enableDeleteKey}
                 disableDeleteKey={this.props.disableDeleteKey}
                 onAdd={this.handleAddAssertionDialog}
-                onCancel={this.handleCancelAuthDialog}
+                onCancel={this.handleCancelAssertionDialog}
+                assertion={this.state.activeAssertion}
             />;
         }
 
@@ -315,6 +364,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     {inputs}
                 </div>
                 {table}
+                {assertionsTable}
                 {generatorAdder}
                 {authAdder}
                 {assertionAdder}
