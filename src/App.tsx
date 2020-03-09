@@ -282,7 +282,7 @@ class App extends React.Component<{}, IState> {
                                         // we do not want the same reference twice
                                         for (const view of this.graphViews) {
                                             if (view === ref) {
-                                                exists = false;
+                                                exists = true;
                                             }
                                         }
                                         if (!exists) {
