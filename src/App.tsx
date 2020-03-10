@@ -2,6 +2,7 @@ import axios, {AxiosRequestConfig} from "axios";
 import {classToPlain} from "class-transformer";
 import React from "react";
 import ClipLoader from "react-spinners/ClipLoader";
+import {Alert} from "reactstrap";
 import "reflect-metadata";
 import { create } from "xmlbuilder2";
 import {fragment} from "xmlbuilder2/lib";
@@ -9,13 +10,14 @@ import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ApisEditor} from "./ApisEditor/ApisEditor";
 import "./App.css";
 import {Evaluation} from "./evaluation/Evaluation";
+// has classes for alerts
+import "./evaluation/Evaluation.css";
 import {ExistingConfigComponent, IUploadedFile} from "./ExistingConfig/existingConfigComponent";
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
-
 export interface IState {
     currentView: Views;
     currentStory: string | null;
@@ -23,6 +25,7 @@ export interface IState {
     pdgfRunning: boolean;
     currentTestId: string | undefined;
     existingConfigComponent: ExistingConfigComponent | null;
+    pdgfOutput: string[]| null;
 }
 
 /*tslint:disable:no-console*/
@@ -49,6 +52,7 @@ class App extends React.Component<{}, IState> {
             currentTestId: undefined,
             currentView: Views.UserStories,
             existingConfigComponent: null,
+            pdgfOutput: null,
             pdgfRunning: false,
             stories: [],
         };
@@ -221,7 +225,7 @@ class App extends React.Component<{}, IState> {
         const config = this.export();
         this.setState({pdgfRunning: true});
         const axiosParams = {headers: {
-            "Content-Type": "application/xml",
+                "Content-Type": "application/xml",
             }} as AxiosRequestConfig;
 
         // they all need to be re-generated since they might be new or PDGF data have been deleted
@@ -238,18 +242,8 @@ class App extends React.Component<{}, IState> {
             }
         }
         const response = await axios.post(this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams);
-            // ).catch((e) => {alert(e); this.setState({pdgfRunning: false}); });
         if (response.status === 200) {
-            const date = new Date(0);
-            date.setUTCMilliseconds(+config.id);
-            const dateString = date.toLocaleString();
-            alert("PDGF finished, press \"OK\" to start actual test!");
-            this.setState({pdgfRunning: false});
-            axiosParams.headers = {
-                "Content-Type": "application/json",
-            };
-            axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " finished with response code " + r.status)).catch((e) => alert(e));
-            this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
+            this.setState({pdgfOutput: response.data.replace(/</g, "&lt;").replace(/>/g, "&gt;").split("\n"), currentView: Views.PDGFOutput, pdgfRunning: false});
         } else {
             alert("PDGF return status: " + response.status);
             this.setState({pdgfRunning: false});
@@ -261,6 +255,10 @@ class App extends React.Component<{}, IState> {
             const active = this.state.currentView === Views.UserStories && this.state.currentStory !== null && view.getStory() === this.state.currentStory;
             view.setVisibility(active);
         });
+        let pdgfOutput = <div/>;
+        if (this.state.pdgfOutput) {
+            pdgfOutput = <Alert> <h2>PDGF finished: </h2><br/>{this.state.pdgfOutput.map((value, index) => <div key={index} style={{textAlign: "left"}} dangerouslySetInnerHTML={{__html: value}}/>)}<br/><button onClick={this.startTestInBackend}>Start test</button></Alert>;
+        }
         return (
             <div className="App">
                 <header className="App-header">
@@ -284,10 +282,11 @@ class App extends React.Component<{}, IState> {
                              _keyhandler={this.keyhandler}
                              ref={(ref) => this.sidebar = ref}
                     />
-
                     {// We need to render all elements at all time so their state does not get recycled
                     }
                     <div className="main">
+
+                        {pdgfOutput}
                         <div
                             style={this.state.currentView === Views.Evaluation ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <Evaluation id={this.state.currentTestId} importTestConfig={this.import}/>
@@ -330,6 +329,18 @@ class App extends React.Component<{}, IState> {
             </div>
         );
     }
-}
 
+    private startTestInBackend = () => {
+        const config = this.export();
+        const date = new Date(0);
+        date.setUTCMilliseconds(+config.id);
+        const dateString = date.toLocaleString();
+        this.setState({pdgfOutput: null});
+        const axiosParams = {headers: {
+                "Content-Type": "application/json",
+            }} as AxiosRequestConfig;
+        axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " finished with response code " + r.status)).catch((e) => alert(e));
+        this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
+    }
+}
 export default App;
