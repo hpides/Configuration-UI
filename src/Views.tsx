@@ -4,4 +4,5 @@ export enum Views {
     UserStories,
     Evaluation,
     Existing,
+    PDGFOutput,
 }
