@@ -2,6 +2,7 @@ import axios, {AxiosRequestConfig} from "axios";
 import {classToPlain} from "class-transformer";
 import React from "react";
 import ClipLoader from "react-spinners/ClipLoader";
+import {Alert} from "reactstrap";
 import "reflect-metadata";
 import { create } from "xmlbuilder2";
 import {fragment} from "xmlbuilder2/lib";
@@ -9,15 +10,14 @@ import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ApisEditor} from "./ApisEditor/ApisEditor";
 import "./App.css";
 import {Evaluation} from "./evaluation/Evaluation";
+// has classes for alerts
+import "./evaluation/Evaluation.css";
 import {ExistingConfigComponent, IUploadedFile} from "./ExistingConfig/existingConfigComponent";
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
-// has classes for alerts
-import "./evaluation/Evaluation.css"
-import {Alert} from "reactstrap";
 export interface IState {
     currentView: Views;
     currentStory: string | null;
@@ -25,7 +25,7 @@ export interface IState {
     pdgfRunning: boolean;
     currentTestId: string | undefined;
     existingConfigComponent: ExistingConfigComponent | null;
-    pdgfOutput:string[]| null
+    pdgfOutput: string[]| null;
 }
 
 /*tslint:disable:no-console*/
@@ -52,8 +52,8 @@ class App extends React.Component<{}, IState> {
             currentTestId: undefined,
             currentView: Views.UserStories,
             existingConfigComponent: null,
-            pdgfRunning: false,
             pdgfOutput: null,
+            pdgfRunning: false,
             stories: [],
         };
         this.requestGeneratorHost = null;
@@ -243,34 +243,21 @@ class App extends React.Component<{}, IState> {
         }
         const response = await axios.post(this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams);
         if (response.status === 200) {
-            this.setState({pdgfOutput: response.data.replace(/</g,"&lt;").replace(/>/g,"&gt;").split("\n"),currentView: Views.PDGFOutput, pdgfRunning: false})
+            this.setState({pdgfOutput: response.data.replace(/</g, "&lt;").replace(/>/g, "&gt;").split("\n"), currentView: Views.PDGFOutput, pdgfRunning: false});
         } else {
             alert("PDGF return status: " + response.status);
             this.setState({pdgfRunning: false});
         }
     }
 
-    private startTestInBackend = () => {
-        const config = this.export();
-        const date = new Date(0);
-        date.setUTCMilliseconds(+config.id);
-        const dateString = date.toLocaleString();
-        this.setState({pdgfOutput: null});
-        const axiosParams = {headers: {
-                "Content-Type": "application/json",
-            }} as AxiosRequestConfig;
-        axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " finished with response code " + r.status)).catch((e) => alert(e));
-        this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
-    };
-
     public render() {
         this.graphViews.forEach((view) => {
             const active = this.state.currentView === Views.UserStories && this.state.currentStory !== null && view.getStory() === this.state.currentStory;
             view.setVisibility(active);
         });
-        let pdgfOutput = <div/>
-        if(this.state.pdgfOutput){
-            pdgfOutput = <Alert> <h2>PDGF finished: </h2><br/>{this.state.pdgfOutput.map(value => <div style={{textAlign: "left"}} dangerouslySetInnerHTML={{__html:value}}/>)}<br/><button onClick={this.startTestInBackend}>Start test</button></Alert>
+        let pdgfOutput = <div/>;
+        if (this.state.pdgfOutput) {
+            pdgfOutput = <Alert> <h2>PDGF finished: </h2><br/>{this.state.pdgfOutput.map((value, index) => <div key={index} style={{textAlign: "left"}} dangerouslySetInnerHTML={{__html: value}}/>)}<br/><button onClick={this.startTestInBackend}>Start test</button></Alert>;
         }
         return (
             <div className="App">
@@ -341,6 +328,19 @@ class App extends React.Component<{}, IState> {
 
             </div>
         );
+    }
+
+    private startTestInBackend = () => {
+        const config = this.export();
+        const date = new Date(0);
+        date.setUTCMilliseconds(+config.id);
+        const dateString = date.toLocaleString();
+        this.setState({pdgfOutput: null});
+        const axiosParams = {headers: {
+                "Content-Type": "application/json",
+            }} as AxiosRequestConfig;
+        axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " finished with response code " + r.status)).catch((e) => alert(e));
+        this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
     }
 }
 export default App;
