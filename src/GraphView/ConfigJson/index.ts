@@ -95,10 +95,13 @@ function doDepthFirstSearch(node: Node | undefined, idMap: IdMap, atoms: IBaseAt
                     if (linkID) {
                         const link = port.getLinks()[linkID];
                         const targetPort = link.getTargetPort();
-                        const otherNode = targetPort.getNode() as BaseNode;
-                        if (otherNode && !closedNodeIds.has(otherNode.getID())) {
-                            nodesToProcess.push(otherNode);
-                            closedNodeIds.add(otherNode.getID());
+                        //there might be "dangling" links that point to no other node; this check detects them and saves us from error
+                        if(targetPort) {
+                            const otherNode = targetPort.getNode() as BaseNode;
+                            if (otherNode && !closedNodeIds.has(otherNode.getID())) {
+                                nodesToProcess.push(otherNode);
+                                closedNodeIds.add(otherNode.getID());
+                            }
                         }
                     }
                 }
@@ -345,9 +348,12 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
                 if (linkID) {
                     const link = port.getLinks()[linkID];
                     const targetPort = link.getTargetPort();
-                    const otherNode = targetPort.getNode();
+                    //there might be "dangling" links. This prevents an error, but of course the link is lost after import
+                    if(targetPort) {
+                        const otherNode = targetPort.getNode();
 
-                    successors.push(idMap.mapId(otherNode.getID()));
+                        successors.push(idMap.mapId(otherNode.getID()));
+                    }
                 }
             }
         }
