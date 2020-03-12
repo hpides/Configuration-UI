@@ -2,7 +2,7 @@
 FROM node:13.8.0-alpine as build
 
 #needed by npm
-RUN apk add git
+RUN apk add git python g++ make
 
 WORKDIR /app
 
