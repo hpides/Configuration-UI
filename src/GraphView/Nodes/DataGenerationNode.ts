@@ -50,6 +50,7 @@ export class DataGenerationNode extends Node {
         this.attributes.name = "Data Generation";
         this.attributes.dataToGenerate = JSON.stringify(classToPlain(this._dataToGenerate));
         this.attributes.data = [];
+        this.attributes.usesExistingData = false;
 
         this.attributes.table = null;
         this._keyhandler = {

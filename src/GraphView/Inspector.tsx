@@ -148,6 +148,10 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({addingAuth: true});
     }
 
+    public tableSelectionChanged = () => {
+
+    }
+
     public handleAddAssertionDialog = (config: AssertionConfig) => {
         if (!(this.props.node instanceof RequestNode)) {
             return;
@@ -332,8 +336,34 @@ export class Inspector extends React.Component<IProps, IState> {
                 >{buttonString}</button>;
                 inputs.push(label);
                 inputs.push(authButton);
-                // users should not enter IDs or dataToGenerate or the table name, this is handled in the background
-            } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "table" || key === "data")) {
+                
+            } else if (key === "table") {
+                // tablename has to be a selection box
+
+                if (this.props.existingConfig.state.allTables.size === 0) {
+                    continue;
+                }
+
+                const activeTable: string = node.getAttribute("table");
+
+                let tables: JSX.Element[] = []
+                this.props.existingConfig.state.allTables.forEach((table) => {
+                    tables.push(<option value={table}>{table}</option>);
+                })
+
+                const input = <select
+                    name="table-select"
+                    value={activeTable}
+                    onChange={this.tableSelectionChanged}
+                >
+                    <option value="GENERATE_NEW">Generate New</option>
+                    {tables}
+                </select>
+
+                inputs.push(input);
+
+                // users should not enter IDs or dataToGenerate, this is handled in the background
+            } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
                                      name={key}
