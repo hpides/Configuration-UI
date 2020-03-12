@@ -50,7 +50,6 @@ export class DataGenerationNode extends Node {
         this.attributes.name = "Data Generation";
         this.attributes.dataToGenerate = JSON.stringify(classToPlain(this._dataToGenerate));
         this.attributes.data = [];
-        this.attributes.usesExistingData = false;
 
         this.attributes.table = null;
         this._keyhandler = {
@@ -115,5 +114,11 @@ export class DataGenerationNode extends Node {
         }
         this.setAttribute("data", newData);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
+    }
+
+    public clearData() {
+        for (const attribute of this.getAttribute("data")) {
+            this.removeData(attribute);
+        }
     }
 }

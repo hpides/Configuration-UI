@@ -148,8 +148,41 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({addingAuth: true});
     }
 
-    public tableSelectionChanged = () => {
+    public tableSelectionChanged = (event: React.FormEvent<HTMLSelectElement>) => {
+        if (!(this.props.node instanceof DataGenerationNode)) {
+            return;
+        }
+        const node: DataGenerationNode = this.props.node;
 
+        const oldTable = node.getAttribute("table");
+        const newTable: string = event.currentTarget.value;
+
+        if (newTable === (oldTable || "GENERATE_NEW")) {
+            return;
+        } else if (newTable === "GENERATE_NEW") {
+            node.clearData();
+            node.setAttribute("table", null);
+        } else {
+            node.clearData();
+            node.setAttribute("table", newTable)
+
+            let wantedFields: string[] = [];
+            this.props.existingConfig.state.uploadedFiles.forEach((file) => {
+                file.tableMapping.forEach((fields, table) => {
+                    if (table === newTable) {
+                        wantedFields = fields;
+                    }
+                });
+            });
+            const exGenConfig = new ExistingDataConfig(this.props.disableDeleteKey, this.props.enableDeleteKey);
+            exGenConfig.setAttribute("table", newTable);
+
+            for (const field of wantedFields) {
+                node.addData(field, exGenConfig);
+            }
+        }
+
+        this.forceUpdate();
     }
 
     public handleAddAssertionDialog = (config: AssertionConfig) => {
@@ -344,7 +377,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     continue;
                 }
 
-                const activeTable: string = node.getAttribute("table");
+                const activeTable: string = node.getAttribute("table") || "GENERATE_NEW";
 
                 let tables: JSX.Element[] = []
                 this.props.existingConfig.state.allTables.forEach((table) => {
