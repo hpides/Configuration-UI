@@ -148,6 +148,43 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({addingAuth: true});
     }
 
+    public tableSelectionChanged = (event: React.FormEvent<HTMLSelectElement>) => {
+        if (!(this.props.node instanceof DataGenerationNode)) {
+            return;
+        }
+        const node: DataGenerationNode = this.props.node;
+
+        const oldTable = node.getAttribute("table");
+        const newTable: string = event.currentTarget.value;
+
+        if (newTable === (oldTable || "GENERATE_NEW")) {
+            return;
+        } else if (newTable === "GENERATE_NEW") {
+            node.clearData();
+            node.setAttribute("table", null);
+        } else {
+            node.clearData();
+            node.setAttribute("table", newTable);
+
+            let wantedFields: string[] = [];
+            this.props.existingConfig.state.uploadedFiles.forEach((file) => {
+                file.tableMapping.forEach((fields, table) => {
+                    if (table === newTable) {
+                        wantedFields = fields;
+                    }
+                });
+            });
+            const exGenConfig = new ExistingDataConfig(this.props.disableDeleteKey, this.props.enableDeleteKey);
+            exGenConfig.setAttribute("table", newTable);
+
+            for (const field of wantedFields) {
+                node.addData(field, exGenConfig);
+            }
+        }
+
+        this.forceUpdate();
+    }
+
     public handleAddAssertionDialog = (config: AssertionConfig) => {
         if (!(this.props.node instanceof RequestNode)) {
             return;
@@ -236,8 +273,13 @@ export class Inspector extends React.Component<IProps, IState> {
             );
         }
 
+        let locked = "";
+        if (node.getAttribute("table") !== null) {
+            locked = " locked";
+        }
+
         return (
-            <div className="data-generation-table">
+            <div className={"data-generation-table" + locked}>
                 <table>
                     <tbody>
                     <tr>
@@ -332,8 +374,34 @@ export class Inspector extends React.Component<IProps, IState> {
                 >{buttonString}</button>;
                 inputs.push(label);
                 inputs.push(authButton);
-                // users should not enter IDs or dataToGenerate or the table name, this is handled in the background
-            } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "table" || key === "data")) {
+
+            } else if (key === "table") {
+                // tablename has to be a selection box
+
+                if (this.props.existingConfig.state.allTables.size === 0) {
+                    continue;
+                }
+
+                const activeTable: string = node.getAttribute("table") || "GENERATE_NEW";
+
+                const tables: JSX.Element[] = [];
+                this.props.existingConfig.state.allTables.forEach((tableName) => {
+                    tables.push(<option value={tableName}>{tableName}</option>);
+                });
+
+                const input = <select
+                    name="table-select"
+                    value={activeTable}
+                    onChange={this.tableSelectionChanged}
+                >
+                    <option value="GENERATE_NEW">Generate New</option>
+                    {tables}
+                </select>;
+
+                inputs.push(input);
+
+                // users should not enter IDs or dataToGenerate, this is handled in the background
+            } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
                                      name={key}

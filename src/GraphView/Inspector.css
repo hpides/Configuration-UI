@@ -63,6 +63,10 @@
     background-color: rgba(58, 134, 175, 0.25);
 }
 
+.inspector .data-generation-table.locked {
+    pointer-events: none;
+}
+
 .inspector .delete-data-btn {
     width: 0px;
     height: 0px;

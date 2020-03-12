@@ -115,4 +115,10 @@ export class DataGenerationNode extends Node {
         this.setAttribute("data", newData);
         this.setAttribute("dataToGenerate", JSON.stringify(classToPlain(this._dataToGenerate)));
     }
+
+    public clearData() {
+        for (const attribute of this.getAttribute("data")) {
+            this.removeData(attribute);
+        }
+    }
 }
