@@ -164,7 +164,7 @@ export class Inspector extends React.Component<IProps, IState> {
             node.setAttribute("table", null);
         } else {
             node.clearData();
-            node.setAttribute("table", newTable)
+            node.setAttribute("table", newTable);
 
             let wantedFields: string[] = [];
             this.props.existingConfig.state.uploadedFiles.forEach((file) => {
@@ -275,11 +275,11 @@ export class Inspector extends React.Component<IProps, IState> {
 
         let locked = "";
         if (node.getAttribute("table") !== null) {
-            locked = " locked"
+            locked = " locked";
         }
 
         return (
-            <div className={"data-generation-table"+locked}>
+            <div className={"data-generation-table" + locked}>
                 <table>
                     <tbody>
                     <tr>
@@ -374,7 +374,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 >{buttonString}</button>;
                 inputs.push(label);
                 inputs.push(authButton);
-                
+
             } else if (key === "table") {
                 // tablename has to be a selection box
 
@@ -384,10 +384,10 @@ export class Inspector extends React.Component<IProps, IState> {
 
                 const activeTable: string = node.getAttribute("table") || "GENERATE_NEW";
 
-                let tables: JSX.Element[] = []
-                this.props.existingConfig.state.allTables.forEach((table) => {
-                    tables.push(<option value={table}>{table}</option>);
-                })
+                const tables: JSX.Element[] = [];
+                this.props.existingConfig.state.allTables.forEach((tableName) => {
+                    tables.push(<option value={tableName}>{tableName}</option>);
+                });
 
                 const input = <select
                     name="table-select"
@@ -396,7 +396,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 >
                     <option value="GENERATE_NEW">Generate New</option>
                     {tables}
-                </select>
+                </select>;
 
                 inputs.push(input);
 
