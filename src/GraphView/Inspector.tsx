@@ -273,8 +273,13 @@ export class Inspector extends React.Component<IProps, IState> {
             );
         }
 
+        let locked = "";
+        if (node.getAttribute("table") !== null) {
+            locked = " locked"
+        }
+
         return (
-            <div className="data-generation-table">
+            <div className={"data-generation-table"+locked}>
                 <table>
                     <tbody>
                     <tr>
