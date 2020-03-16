@@ -264,8 +264,9 @@ class App extends React.Component<{}, IState> {
             }
         });
         let pdgfOutput = <div/>;
-        if (this.state.pdgfOutput) {
-            pdgfOutput = <Alert> <h2>PDGF finished: </h2><br/>{this.state.pdgfOutput.map((value, index) => <div key={index} style={{textAlign: "left"}} dangerouslySetInnerHTML={{__html: value}}/>)}<br/><button onClick={this.startTestInBackend}>Start test</button></Alert>;
+        //allow switching away from PDGFOutput
+        if (this.state.currentView === Views.PDGFOutput) {
+            pdgfOutput = <Alert> <h2>PDGF output: </h2><br/>{(this.state.pdgfOutput || ["No PDGF output so far"]).map((value, index) => <div key={index} style={{textAlign: "left"}} dangerouslySetInnerHTML={{__html: value}}/>)}<br/><button style={this.state.pdgfOutput? {visibility: "visible"}:{visibility: "hidden"}} onClick={this.startTestInBackend}>Start test</button></Alert>;
         }
         return (
             <div className="App">
@@ -348,7 +349,7 @@ class App extends React.Component<{}, IState> {
         const axiosParams = {headers: {
                 "Content-Type": "application/json",
             }} as AxiosRequestConfig;
-        axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " finished with response code " + r.status)).catch((e) => alert(e));
+        axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " started with response code " + r.status)).catch((e) => alert(e));
         this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
         this.forceUpdate();
     }

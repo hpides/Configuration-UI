@@ -39,6 +39,9 @@ export class Sidebar extends React.Component<IProps, IState> {
             case "userstories":
                 nextView = Views.UserStories;
                 break;
+            case "pdgf":
+                nextView = Views.PDGFOutput;
+                break;
             case "evaluation":
                 nextView = Views.Evaluation;
                 break;
@@ -126,6 +129,11 @@ export class Sidebar extends React.Component<IProps, IState> {
                     className={cv === Views.Testconfig ? "active" : ""}
                     onClick={this.changeView}
                 >Testconfig</button>
+                <button
+                    name="pdgf"
+                    className={cv === Views.PDGFOutput ? "active" : ""}
+                    onClick={this.changeView}
+                >Last PDGF Output</button>
                 <button
                     name="userstories"
                     className={cv === Views.UserStories ? "active stories-btn" : "stories-btn"}
