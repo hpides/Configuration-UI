@@ -46,7 +46,8 @@ export abstract class GeneratorConfig {
         return Object.keys(this.attributes);
     }
 
-    public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void) {
+    public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void,
+                  keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
             </div>
@@ -69,15 +70,20 @@ export class RandomSentence extends GeneratorConfig {
         return "RANDOM_SENTENCE";
     }
 
-    public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void) {
+    public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void,
+                  keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 <label>Minimum characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="min" onChange={inputChanged} value={this.getAttribute("min")}/>
+                       type="text" name="min" onChange={inputChanged}
+                       onKeyPress={keyPressed}
+                       value={this.getAttribute("min")}/>
                 <label>Maximum characters: </label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="max" onChange={inputChanged} value={this.getAttribute("max")}/>
+                       type="text" name="max" onChange={inputChanged}
+                       onKeyPress={keyPressed}
+                       value={this.getAttribute("max")}/>
             </div>
         );
     }
@@ -97,12 +103,15 @@ export class ExistingDataConfig extends GeneratorConfig {
         return "EXISTING";
     }
 
-    public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void) {
+    public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void,
+                  keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 <label>Read from Table:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="table" onChange={inputChanged} value={this.getAttribute("table")}/>
+                       type="text" name="table" onChange={inputChanged}
+                       onKeyPress={keyPressed}
+                       value={this.getAttribute("table")}/>
             </div>
         );
     }
@@ -124,18 +133,25 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
         return "RANDOM_STRING";
     }
 
-    public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void) {
+    public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void,
+                  keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 <label>Maximum Characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="maxChars" onChange={inputChanged} value={this.getAttribute("maxChars")}/>
+                       type="text" name="maxChars" onChange={inputChanged}
+                       onKeyPress={keyPressed}
+                       value={this.getAttribute("maxChars")}/>
                 <label>Minimum Characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="minChars" onChange={inputChanged} value={this.getAttribute("minChars")}/>
+                       type="text" name="minChars" onChange={inputChanged}
+                       onKeyPress={keyPressed}
+                       value={this.getAttribute("minChars")}/>
                 <label>Allowed Characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="characters" onChange={inputChanged} value={this.getAttribute("characters")} />
+                       type="text" name="characters" onChange={inputChanged}
+                       onKeyPress={keyPressed}
+                       value={this.getAttribute("characters")} />
             </div>
         );
     }
