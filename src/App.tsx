@@ -45,6 +45,8 @@ class App extends React.Component<{}, IState> {
         readonly enableDeleteKey: () => void,
     };
 
+    private lastExport: any = {};
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -115,7 +117,7 @@ class App extends React.Component<{}, IState> {
 
     }
 
-    public export = (): {json: string, xml: string, id: number} => {
+    public export = (): void => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
         this.graphViews.forEach((graphView) => {
@@ -163,7 +165,7 @@ class App extends React.Component<{}, IState> {
         console.log(root.end({prettyPrint: true}));
 
         // make sure to remove excluded attributes before export
-        return {json: JSON.stringify(classToPlain(testConfigJSON)), xml: root.end({prettyPrint: true}).toString(), id: Date.now()};
+        this.lastExport = {json: JSON.stringify(classToPlain(testConfigJSON)), xml: root.end({prettyPrint: true}).toString(), id: Date.now()};
     }
 
     public import = (testConfig: any): void => {
@@ -222,7 +224,8 @@ class App extends React.Component<{}, IState> {
         if (this.requestGeneratorHost && !this.requestGeneratorHost.startsWith("http://")) {
             this.requestGeneratorHost = "http://" + this.requestGeneratorHost;
         }
-        const config = this.export();
+        this.export();
+        const config = this.lastExport;
         this.setState({pdgfRunning: true});
         const axiosParams = {headers: {
                 "Content-Type": "application/xml",
@@ -336,7 +339,8 @@ class App extends React.Component<{}, IState> {
     }
 
     private startTestInBackend = () => {
-        const config = this.export();
+        this.export();
+        const config = this.lastExport;
         const date = new Date(0);
         date.setUTCMilliseconds(+config.id);
         const dateString = date.toLocaleString();
