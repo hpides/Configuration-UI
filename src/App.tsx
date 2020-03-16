@@ -294,7 +294,7 @@ class App extends React.Component<{}, IState> {
                         {pdgfOutput}
                         <div
                             style={this.state.currentView === Views.Evaluation ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            <Evaluation id={this.state.currentTestId} importTestConfig={this.import}/>
+                            <Evaluation id={this.state.currentTestId} importTestConfig={this.import} ref={ (ref) => {if(ref){ref.update()}}}/>
                         </div>
                         <div
                             style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
@@ -340,12 +340,13 @@ class App extends React.Component<{}, IState> {
         const date = new Date(0);
         date.setUTCMilliseconds(+config.id);
         const dateString = date.toLocaleString();
-        this.setState({pdgfOutput: null});
+        this.setState({pdgfOutput: null, currentTestId: ""+config.id});
         const axiosParams = {headers: {
                 "Content-Type": "application/json",
             }} as AxiosRequestConfig;
         axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " finished with response code " + r.status)).catch((e) => alert(e));
         this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
+        this.forceUpdate()
     }
 }
 export default App;

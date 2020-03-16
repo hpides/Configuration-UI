@@ -29,7 +29,6 @@ export class Evaluation extends Component<IProps, IAppState> {
 
     public componentDidMount() {
         this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || window.location + "/pds";
-        this.setState({runningTests: [], finishedTests: []});
         this.loadTests();
         this.interval = setInterval(() => this.loadTests(), 2000);
     }
@@ -40,7 +39,17 @@ export class Evaluation extends Component<IProps, IAppState> {
         }
     }
 
+    public update(){
+        //if this component was started with this ID, we can assume that the corresponding test is still running
+        if(this.props.id) {
+            this.renderMqttWorker(this.props.id,true)
+        }else {
+            this.setState({runningTests: [], finishedTests: []});
+        }
+    }
+
     public render() {
+        console.log("Hallo ID: "+this.props.id);
         let ret: any;
         if (this.state && this.state.currentId) {
             // re-renders when key is changed
