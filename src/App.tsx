@@ -264,9 +264,9 @@ class App extends React.Component<{}, IState> {
             }
         });
         let pdgfOutput = <div/>;
-        //allow switching away from PDGFOutput
+        // allow switching away from PDGFOutput
         if (this.state.currentView === Views.PDGFOutput) {
-            pdgfOutput = <Alert> <h2>PDGF output: </h2><br/>{(this.state.pdgfOutput || ["No PDGF output so far"]).map((value, index) => <div key={index} style={{textAlign: "left"}} dangerouslySetInnerHTML={{__html: value}}/>)}<br/><button style={this.state.pdgfOutput? {visibility: "visible"}:{visibility: "hidden"}} onClick={this.startTestInBackend}>Start test</button></Alert>;
+            pdgfOutput = <Alert> <h2>PDGF output: </h2><br/>{(this.state.pdgfOutput || ["No PDGF output so far"]).map((value, index) => <div key={index} style={{textAlign: "left"}} dangerouslySetInnerHTML={{__html: value}}/>)}<br/><button style={this.state.pdgfOutput ? {visibility: "visible"} : {visibility: "hidden"}} onClick={this.startTestInBackend}>Start test</button></Alert>;
         }
         return (
             <div className="App">
