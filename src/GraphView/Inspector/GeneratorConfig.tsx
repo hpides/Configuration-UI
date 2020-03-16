@@ -47,7 +47,7 @@ export abstract class GeneratorConfig {
     }
 
     public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void,
-        keyPressed: (event: React.KeyboardEvent) => void) {
+                  keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
             </div>
@@ -71,7 +71,7 @@ export class RandomSentence extends GeneratorConfig {
     }
 
     public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void,
-        keyPressed: (event: React.KeyboardEvent) => void) {
+                  keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 <label>Minimum characters:</label>
@@ -104,7 +104,7 @@ export class ExistingDataConfig extends GeneratorConfig {
     }
 
     public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void,
-        keyPressed: (event: React.KeyboardEvent) => void) {
+                  keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 <label>Read from Table:</label>
@@ -134,7 +134,7 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
     }
 
     public render(inputChanged: (event: React.FormEvent<HTMLInputElement>) => void,
-        keyPressed: (event: React.KeyboardEvent) => void) {
+                  keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 <label>Maximum Characters:</label>
@@ -149,7 +149,7 @@ export class RandomStringGeneratorConfig extends GeneratorConfig {
                        value={this.getAttribute("minChars")}/>
                 <label>Allowed Characters:</label>
                 <input onFocus={this.keyhandler.disableDeleteKey} onBlur={this.keyhandler.enableDeleteKey}
-                       type="text" name="characters" onChange={inputChanged} 
+                       type="text" name="characters" onChange={inputChanged}
                        onKeyPress={keyPressed}
                        value={this.getAttribute("characters")} />
             </div>
