@@ -112,7 +112,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
     private readonly assertionsTopic = "de.hpi.tdgt.assertions";
     private readonly controlTopic = "de.hpi.tdgt.control";
     // Chart.js can only set its height to pixels, so set this relative to the windows height
-    private chartHeight = window.innerHeight / 3;
+    private chartHeight = window.innerHeight / 2.5;
     private readonly maxHistogram = new Histogram();
     private histogramLabelsInitialized = false;
     // we need to store this twice because using state.nines
