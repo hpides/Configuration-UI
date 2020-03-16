@@ -77,16 +77,18 @@ export class Sidebar extends React.Component<IProps, IState> {
             className={story === this.state.activeStory ? "active" : ""}
             onClick={(event) => this.changeActiveStory(story)}
         >{story}</button>;
-
         if (story === this.state.activeStory) {
             // do not delete any selected node if backspace is pressed by disabling delete key during editing
+            // also, this does not apply to other views like test config
             content = <input
                 name={this.state.stories.indexOf(story).toString()}
                 type="text"
                 value={story}
                 onChange={this.renameStory}
-                onBlur={this.props._keyhandler.enableDeleteKey}
-                onFocus={this.props._keyhandler.disableDeleteKey}
+                onBlur={this.props.currentView === Views.UserStories ?
+                    this.props._keyhandler.enableDeleteKey : () => {}}
+                onFocus={this.props.currentView === Views.UserStories ?
+                    this.props._keyhandler.disableDeleteKey : () => {}}
                 ref={(reference) => {
                     if (reference) {
                         reference.focus();
