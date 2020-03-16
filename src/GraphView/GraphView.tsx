@@ -31,12 +31,12 @@ interface IStory {
     selectedNode?: Node;
 }
 
-interface IState extends IStory {
+export interface IState extends IStory {
     visible: boolean[];
     scalePercentage: number;
 }
 
-interface IProps {
+export interface IProps {
     existingConfig: ExistingConfigComponent;
 }
 
@@ -47,6 +47,8 @@ export class GraphView extends React.Component<IProps, IState> {
     public model: DiagramModel;
     private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
     private storyName: string;
+
+    private allowDeletingStartNode = false;
 
     private waitingForSetState = false;
     constructor(props: IProps) {
@@ -178,6 +180,8 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public importNodes = (story: any): void => {
+        //import might delete start node
+        this.allowDeletingStartNode = true;
         // direct mutation of state in componentDidMount crashes export later on, state cannot be set in constructor because graph view is not initialized, so we have to wait for setState...
         const startAsync = async (callback: any) => {
             while (this.waitingForSetState) {
@@ -209,6 +213,8 @@ export class GraphView extends React.Component<IProps, IState> {
             }
             this.setState({nodes: this.state.nodes});
             this.forceUpdate();
+            //re-enable hook
+            this.allowDeletingStartNode = false;
         };
         startAsync({});
     }
@@ -222,10 +228,13 @@ export class GraphView extends React.Component<IProps, IState> {
     // used by inspector to disable and re-enable backspace key when typing
 
     public disableDeleteKey = (): void => {
+        console.log("AUS");
         this.engine.getActionEventBus().deregisterAction(this.deleteAction);
     }
 
     public enableDeleteKey = (): void => {
+
+        console.log("AN");
         this.engine.getActionEventBus().registerAction(this.deleteAction);
     }
 
@@ -281,7 +290,8 @@ export class GraphView extends React.Component<IProps, IState> {
             const nodes = [];
             const nodeToDelete = (event as any).entity as Node;
             // can not delete start nodes --> immediately re-add
-            if (nodeToDelete instanceof StartNode) {
+            // disable this if e.g. import
+            if (nodeToDelete instanceof StartNode && !this.allowDeletingStartNode) {
                 // can not add the same object again (there seems to be a hidden attribute that marks it as destroyed), so create a new start node and copy relevant attributes
                 const startNode = this.addNode("START", nodeToDelete.getPosition())!;
                 for (const port of nodeToDelete.getOutPorts()) {
