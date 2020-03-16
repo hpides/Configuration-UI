@@ -57,7 +57,7 @@ export abstract class AssertionConfig {
         }
     }
 
-    public render() {
+    public render(keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 </div>
@@ -73,7 +73,7 @@ export class ResponseCodeAssertion extends AssertionConfig {
     public type = ResponseCodeAssertion.getTypeString();
     public responseCode = 200;
 
-    public render() {
+    public render(keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 <label>Response Code: </label>
@@ -83,6 +83,7 @@ export class ResponseCodeAssertion extends AssertionConfig {
                     type="number"
                     name="responseCode"
                     onChange={this.inputChanged}
+                    onKeyPress={keyPressed}
                     value={this.responseCode}/>
             </div>
         );
@@ -97,7 +98,7 @@ export class ContentTypeAssertion extends AssertionConfig {
     public type = ContentTypeAssertion.getTypeString();
     public contentType = "application/JSON";
 
-    public render() {
+    public render(keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
                 <label>Content Type: </label>
@@ -107,6 +108,7 @@ export class ContentTypeAssertion extends AssertionConfig {
                     type="text"
                     name="contentType"
                     onChange={this.inputChanged}
+                    onKeyPress={keyPressed}
                     value={this.contentType}/>
             </div>
     );
