@@ -180,7 +180,7 @@ export class GraphView extends React.Component<IProps, IState> {
     }
 
     public importNodes = (story: any): void => {
-        //import might delete start node
+        // import might delete start node
         this.allowDeletingStartNode = true;
         // direct mutation of state in componentDidMount crashes export later on, state cannot be set in constructor because graph view is not initialized, so we have to wait for setState...
         const startAsync = async (callback: any) => {
@@ -213,7 +213,7 @@ export class GraphView extends React.Component<IProps, IState> {
             }
             this.setState({nodes: this.state.nodes});
             this.forceUpdate();
-            //re-enable hook
+            // re-enable hook
             this.allowDeletingStartNode = false;
         };
         startAsync({});

@@ -1,16 +1,16 @@
 import {LinkModel} from "@projectstorm/react-diagrams-core";
 import {expect} from "chai";
+import Enzyme, {mount, shallow} from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import {ConvertStoryToGraph} from "../GraphView/ConfigJson";
+import {GraphView, IProps as GraphProps, IState as GraphState} from "../GraphView/GraphView";
 import {DataGenerationNode} from "../GraphView/Nodes/DataGenerationNode";
 import {Node} from "../GraphView/Nodes/Node";
 import {RequestNode} from "../GraphView/Nodes/RequestNode";
 import {StartNode} from "../GraphView/Nodes/StartNode";
-import Enzyme, {mount, shallow} from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
 import XMLFixtures from "./fixtures/xml_fixtures";
-import {GraphView, IState as GraphState, IProps as GraphProps} from "../GraphView/GraphView";
 /*tslint:disable*/
 function getFixture(): any {
     return JSON.parse("{\"name\":\"Rail\",\"scalePercentage\":1,\"atoms\":[{\"name\":\"Start\",\"id\":1,\"repeat\":1,\"successors\":[0],\"type\":\"START\",\"x\":23.993003498250875,\"y\":108.95052473763118},{\"name\":\"Warmup End\",\"id\":0,\"repeat\":1,\"successors\":[2],\"type\":\"WARMUP_END\",\"x\":164.52023988005996,\"y\":109.02598700649675},{\"name\":\"Delay\",\"id\":2,\"repeat\":1,\"successors\":[3,4],\"type\":\"DELAY\",\"x\":330,\"y\":97,\"delay\":\"100\"},{\"name\":\"Data Generation\",\"id\":4,\"repeat\":1,\"successors\":[5],\"type\":\"DATA_GENERATION\",\"x\":477.7661169415293,\"y\":174.9175412293853,\"table\":\"abcdef\",\"data\":[\"username\",\"password\"],\"dataToGenerate\":\"{\\\"value\\\":{\\\"username\\\":{\\\"attributes\\\":{\\\"maxChars\\\":\\\"10\\\"},\\\"__type\\\":\\\"RANDOM_STRING\\\"},\\\"password\\\":{\\\"attributes\\\":{\\\"maxChars\\\":\\\"20\\\"},\\\"__type\\\":\\\"RANDOM_STRING\\\"}}}\"},{\"name\":\"Request\",\"id\":5,\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":760.6246876561719,\"y\":174.9175412293853,\"verb\":\"GET\",\"addr\":\"http://test.host\",\"requestJSONObject\":\"{\\\"user\\\":\\\"$username\\\"}\"},{\"name\":\"Delay\",\"id\":3,\"repeat\":1,\"successors\":[6],\"type\":\"DELAY\",\"x\":549.7301349325337,\"y\":51.97901049475263,\"delay\":\"1\"},{\"name\":\"Request\",\"id\":6,\"repeat\":1,\"successors\":[],\"type\":\"REQUEST\",\"x\":813.1959020489755,\"y\":61.04997501249374,\"verb\":\"GET\",\"addr\":\"http://test.host\"}]}");

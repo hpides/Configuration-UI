@@ -254,11 +254,10 @@ class App extends React.Component<{}, IState> {
         this.graphViews.forEach((view) => {
             const active = this.state.currentView === Views.UserStories && this.state.currentStory !== null && view.getStory() === this.state.currentStory;
             view.setVisibility(active);
-            if(active){
-                view.enableDeleteKey()
-            }
-            else{
-                view.disableDeleteKey()
+            if (active) {
+                view.enableDeleteKey();
+            } else {
+                view.disableDeleteKey();
             }
         });
         let pdgfOutput = <div/>;
