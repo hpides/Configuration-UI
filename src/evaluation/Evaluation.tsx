@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, {Component} from "react";
+import {Alert} from "reactstrap";
 import "./Evaluation.css";
 import {MqttWorker} from "./mqtt_worker";
 
@@ -13,6 +14,7 @@ interface IAppState {
     finishedTests: string[];
     currentId: string | null;
     currentIdIsRunning: boolean;
+    pdsIsUp: boolean;
 }
 /*tslint:disable:no-console*/
 export class Evaluation extends Component<IProps, IAppState> {
@@ -25,11 +27,11 @@ export class Evaluation extends Component<IProps, IAppState> {
     public constructor(props: IProps) {
         super(props);
         this.performanceDataStorageHost = null;
+        this.state = {currentId: null, currentIdIsRunning: false, finishedTests: [], runningTests: [], pdsIsUp: false};
     }
 
     public componentDidMount() {
         this.performanceDataStorageHost = process.env.REACT_APP_PDS_HOST || window.location + "/pds";
-        this.setState({runningTests: [], finishedTests: []});
         this.loadTests();
         this.interval = setInterval(() => this.loadTests(), 2000);
     }
@@ -40,11 +42,29 @@ export class Evaluation extends Component<IProps, IAppState> {
         }
     }
 
+    public update() {
+        // if this component was started with this ID, we can assume that the corresponding test is still running
+        if (this.props.id) {
+            this.renderMqttWorker(this.props.id, true);
+        } else {
+            this.setState({runningTests: [], finishedTests: []});
+        }
+    }
+
     public render() {
+        let pdsIsDown = <div/>;
+        if (!this.state.pdsIsUp) {
+            pdsIsDown = <Alert className={"alert alert-danger"}>
+                Warning: performance data storage is down.
+                Recorded times and configurations will be lost as soon as "Back to overview" is clicked,
+                make sure to download created reports.
+            </Alert>;
+        }
         let ret: any;
         if (this.state && this.state.currentId) {
             // re-renders when key is changed
             ret = <div className={"text-center"}>
+                {pdsIsDown}
                 <button style={{display: "inline"}} onClick={(event: any) => this.back()}>Back to overview</button>
                 <button style={{display: "inline"}} onClick={(event: any) => this.import()}
                 >Import config of test</button>
@@ -53,6 +73,7 @@ export class Evaluation extends Component<IProps, IAppState> {
             </div>;
         } else {
             ret = <div className="Evaluation multiColumnDiv">
+                {pdsIsDown}
                 <h2>Running tests</h2>
                 <ul className={"multiColumnDiv"}>
                     {this.state && this.state.runningTests && this.state.runningTests.map((id, index) => {
@@ -93,15 +114,16 @@ export class Evaluation extends Component<IProps, IAppState> {
         axios.request<string[]>({
             url: this.performanceDataStorageHost + "/tests/running",
         }).then((response) => {
-            this.setState({runningTests: response.data});
+            this.setState({runningTests: response.data, pdsIsUp: true});
         }).catch((error) => {
                 console.error("Error: " + error + " for url: " + this.performanceDataStorageHost + "/tests/running");
+                this.setState({pdsIsUp: false});
             },
         );
         axios.request<string[]>({
             url: this.performanceDataStorageHost + "/tests/finished",
         }).then((response) => {
-            this.setState({finishedTests: response.data});
+            this.setState({finishedTests: response.data, pdsIsUp: true});
             if (this.props.id) {
                 // make sure we do not keep loading the same ID
                 if (!this.currentId || this.currentId !== this.props.id) {
@@ -113,6 +135,7 @@ export class Evaluation extends Component<IProps, IAppState> {
             }
         }).catch((error) => {
                 console.error("Error: " + error + " for url: " + this.performanceDataStorageHost + "/tests/finished");
+                this.setState({pdsIsUp: false});
             },
         );
     }
