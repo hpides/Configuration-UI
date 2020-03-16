@@ -75,6 +75,12 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
 
     }
 
+    public keyPressed = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+            this.doneButtonClicked();
+        }
+    }
+
     public doneButtonClicked = () => {
         if (this.state.genConfig.getTypeString() !== "EXISTING") {
             this.props.onAdd([this.state.key], this.state.genConfig);
@@ -115,6 +121,7 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                 type="text"
                 name="key"
                 onChange={this.inputChanged}
+                onKeyPress={this.keyPressed}
                 onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
                 value={this.state.key}
             />;
@@ -142,7 +149,7 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                             </div>
                         </div>
                     </div>
-                    {this.state.genConfig.render(this.generatorChanged)}
+                    {this.state.genConfig.render(this.generatorChanged, this.keyPressed)}
                     <button
                         onClick={this.doneButtonClicked}
                     >Add</button>

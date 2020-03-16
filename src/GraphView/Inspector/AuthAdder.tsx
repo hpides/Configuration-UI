@@ -49,6 +49,12 @@ export class AuthAdder extends React.Component<IProps, IState> {
 
     }
 
+    public keyPressed = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+            this.doneButtonClicked();
+        }
+    }
+
     public doneButtonClicked = () => {
         this.props.onAdd(this.state.user, this.state.password);
     }
@@ -68,6 +74,7 @@ export class AuthAdder extends React.Component<IProps, IState> {
                         type="text"
                         name="user"
                         onChange={this.inputChanged}
+                        onKeyPress={this.keyPressed}
                         onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
                         value={this.state.user}
                     />
@@ -76,6 +83,7 @@ export class AuthAdder extends React.Component<IProps, IState> {
                         type="text"
                         name="password"
                         onChange={this.inputChanged}
+                        onKeyPress={this.keyPressed}
                         onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey}
                         value={this.state.password}
                     />

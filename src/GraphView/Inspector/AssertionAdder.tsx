@@ -87,6 +87,12 @@ export class AssertionAdder extends React.Component<IProps, IState> {
         }
     }
 
+    public keyPressed = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+            this.doneButtonClicked();
+        }
+    }
+
     public doneButtonClicked = () => {
         this.props.onAdd(this.state.assertionConfig);
         // left menu --> should be allowed to delete again
@@ -114,6 +120,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                                 type="text"
                                 name="name"
                                 onChange={this.inputChanged}
+                                onKeyPress={this.keyPressed}
                                 value={this.state.name}/>
                         </div>
                         <div>
@@ -131,7 +138,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                         </div>
                     </div>
                     <br/>
-                    {this.state.assertionConfig.render()}
+                    {this.state.assertionConfig.render(this.keyPressed)}
                     <button
                         onClick={this.doneButtonClicked}
                     >Add</button>
