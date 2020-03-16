@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, {Component} from "react";
+import {Alert} from "reactstrap";
 import "./Evaluation.css";
 import {MqttWorker} from "./mqtt_worker";
-import {Alert} from "reactstrap";
 
 interface IProps {
     id?: string;
@@ -14,7 +14,7 @@ interface IAppState {
     finishedTests: string[];
     currentId: string | null;
     currentIdIsRunning: boolean;
-    pdsIsUp: boolean
+    pdsIsUp: boolean;
 }
 /*tslint:disable:no-console*/
 export class Evaluation extends Component<IProps, IAppState> {
@@ -27,7 +27,7 @@ export class Evaluation extends Component<IProps, IAppState> {
     public constructor(props: IProps) {
         super(props);
         this.performanceDataStorageHost = null;
-        this.state = {currentId: null, currentIdIsRunning: false, finishedTests: [], runningTests: [], pdsIsUp: false}
+        this.state = {currentId: null, currentIdIsRunning: false, finishedTests: [], runningTests: [], pdsIsUp: false};
     }
 
     public componentDidMount() {
@@ -42,19 +42,23 @@ export class Evaluation extends Component<IProps, IAppState> {
         }
     }
 
-    public update(){
-        //if this component was started with this ID, we can assume that the corresponding test is still running
-        if(this.props.id) {
-            this.renderMqttWorker(this.props.id,true)
-        }else {
+    public update() {
+        // if this component was started with this ID, we can assume that the corresponding test is still running
+        if (this.props.id) {
+            this.renderMqttWorker(this.props.id, true);
+        } else {
             this.setState({runningTests: [], finishedTests: []});
         }
     }
 
     public render() {
         let pdsIsDown = <div/>;
-        if(!this.state.pdsIsUp){
-            pdsIsDown = <Alert className={"alert alert-danger"}>Warning: performance data storage is down. Recorded times and configurations will be lost as soon as "Back to overview" is clicked, make sure to download created reports.</Alert>
+        if (!this.state.pdsIsUp) {
+            pdsIsDown = <Alert className={"alert alert-danger"}>
+                Warning: performance data storage is down.
+                Recorded times and configurations will be lost as soon as "Back to overview" is clicked,
+                make sure to download created reports.
+            </Alert>;
         }
         let ret: any;
         if (this.state && this.state.currentId) {

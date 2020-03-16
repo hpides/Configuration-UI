@@ -228,13 +228,10 @@ export class GraphView extends React.Component<IProps, IState> {
     // used by inspector to disable and re-enable backspace key when typing
 
     public disableDeleteKey = (): void => {
-        console.log("AUS");
         this.engine.getActionEventBus().deregisterAction(this.deleteAction);
     }
 
     public enableDeleteKey = (): void => {
-
-        console.log("AN");
         this.engine.getActionEventBus().registerAction(this.deleteAction);
     }
 
