@@ -282,9 +282,9 @@ class App extends React.Component<{}, IState> {
                              _keyhandler={this.keyhandler}
                              ref={(ref) => this.sidebar = ref}
                     />
-                    {// We need to render all elements at all time so their state does not get recycled
+                    {// We need to render all elements at all time so their state does not get recycled; also, all views except UserStories profit from srolling
                     }
-                    <div className="main">
+                    <div className="main" style={this.state.currentView === Views.UserStories ? {overflow: "hidden"} : {overflow: "auto"}}>
 
                         {pdgfOutput}
                         <div
