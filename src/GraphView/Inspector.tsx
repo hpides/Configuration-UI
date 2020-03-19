@@ -27,6 +27,8 @@ interface IState {
     addingAssertion: boolean;
     activeGenerator: {key: string, genConfig: GeneratorConfig} | null;
     activeAssertion: AssertionConfig | null;
+    receiveCookies: any,
+    sendCookies: any
 }
 
 interface IBasicAuth {
@@ -44,6 +46,8 @@ export class Inspector extends React.Component<IProps, IState> {
             addingAssertion: false,
             addingAuth: false,
             addingGenerator: false,
+            receiveCookies: {},
+            sendCookies: {}
         };
     }
 
@@ -348,6 +352,29 @@ export class Inspector extends React.Component<IProps, IState> {
         );
     }
 
+    private receiveCookieKeys: HTMLInputElement[] = [];
+    private receiveCookieValues: HTMLInputElement[] = [];
+    private sendCookieKeys: HTMLInputElement[] = [];
+    private sendCookieValues: HTMLInputElement[] = [];
+
+    private updateReceiveCookies():void{
+        console.log("Hallo");
+        const cookies:any = {};
+        for(let i = 0; i < this.receiveCookieKeys.length; i++){
+            cookies[this.receiveCookieKeys[i].value as string] = this.receiveCookieValues[i].value
+        }
+        this.props.node.setAttribute("receiveCookies", cookies)
+    }
+
+    private updateSendCookies():void{
+        console.log("Hallo2");
+        const cookies:any = {};
+        for(let i = 0; i < this.sendCookieKeys.length; i++){
+            cookies[this.sendCookieKeys[i].value as string] = this.sendCookieValues[i].value
+        }
+        this.props.node.setAttribute("sendCookies", cookies)
+    }
+
     public render() {
         const node = this.props.node;
         const inputs: JSX.Element[] = [];
@@ -375,6 +402,47 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(label);
                 inputs.push(authButton);
 
+            } else if (key === "receiveCookies" || key === "sendCookies"){
+                const description = (key === "receiveCookies") ? "Cookies to extract": "Cookies to send";
+                inputs.push(<label>{description}</label>);
+                const cookies:any = node.getAttribute(key);
+
+                const cookieTable =
+                <table>
+                    <tbody>
+                    <tr><td>{(key === "receiveCookies") ? "Response Cookie":"Token key"}</td><td>{(key === "receiveCookies") ? "Token key":"Request Cookie"}</td></tr>
+                        {Object.keys(cookies).map(cookie =>
+                            <tr id={cookie}>
+                                <td>
+                                    <input type="text" ref={ref => {
+                                        if(ref){
+                                            if((key === "receiveCookies")){
+                                                this.receiveCookieKeys.push(ref)
+                                            }else{
+                                                this.sendCookieKeys.push(ref)
+                                            }
+                                            ref.value = cookie
+                                        }
+                                    }} onBlur={(e) => (key === "receiveCookies") ? this.updateReceiveCookies(): this.updateSendCookies()}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={ref => {
+                                        if(ref){
+                                            if((key === "receiveCookies")){
+                                                this.receiveCookieValues.push(ref)
+                                            }else{
+                                                this.sendCookieValues.push(ref)
+                                            }
+                                            ref.value = node.getAttribute(key)[cookie]
+                                        }
+                                    }} onBlur={(e) => (key === "receiveCookies") ? this.updateReceiveCookies(): this.updateSendCookies()}/>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(cookieTable)
+                inputs.push(<button onClick={() => {node.getAttribute(key)[""] = ""; this.forceUpdate()}}>Add Cookie</button>)
             } else if (key === "table") {
                 // tablename has to be a selection box
 

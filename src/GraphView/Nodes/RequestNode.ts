@@ -40,6 +40,8 @@ export class RequestNode extends Node {
         this.attributes.requestParams = "";
         this.attributes.basicAuth = null;
         this.attributes.assertions = [];
+        this.attributes.receiveCookies = {};
+        this.attributes.sendCookies = {};
     }
 
     public getAtomType(): AtomType {

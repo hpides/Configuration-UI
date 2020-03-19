@@ -56,6 +56,8 @@ interface IRequestAtom extends IBaseAtom {
     basicAuth?: IBasicAuth;
     responseParams?: string[];
     assertions?: IAssertion[];
+    receiveCookies?: any;
+    sendCookies?: any;
 }
 
 interface IDelayAtom extends IBaseAtom {
@@ -415,6 +417,14 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
             attr = node.getAttribute("assertions");
             if (attr) {
                 request.assertions = attr;
+            }
+            attr = node.getAttribute("receiveCookies");
+            if (attr) {
+                request.receiveCookies = attr;
+            }
+            attr = node.getAttribute("sendCookies");
+            if (attr) {
+                request.sendCookies = attr;
             }
             return {atoms: [request]};
     }
