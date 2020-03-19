@@ -58,6 +58,7 @@ interface IRequestAtom extends IBaseAtom {
     assertions?: IAssertion[];
     receiveCookies?: any;
     sendCookies?: any;
+    tokenNames?: any;
 }
 
 interface IDelayAtom extends IBaseAtom {

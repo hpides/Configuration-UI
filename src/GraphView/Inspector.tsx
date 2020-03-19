@@ -11,6 +11,7 @@ import {ExistingDataConfig, GeneratorConfig} from "./Inspector/GeneratorConfig";
 import {DataGenerationNode} from "./Nodes/DataGenerationNode";
 import {Node} from "./Nodes/Node";
 import {RequestNode} from "./Nodes/RequestNode";
+import {classToPlain} from "class-transformer";
 
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
@@ -357,8 +358,10 @@ export class Inspector extends React.Component<IProps, IState> {
     private sendCookieKeys: HTMLInputElement[] = [];
     private sendCookieValues: HTMLInputElement[] = [];
 
+    private tokenNames: HTMLInputElement[] = [];
+    private tokenTargets: HTMLInputElement[] = [];
+
     private updateReceiveCookies():void{
-        console.log("Hallo");
         const cookies:any = {};
         for(let i = 0; i < this.receiveCookieKeys.length; i++){
             cookies[this.receiveCookieKeys[i].value as string] = this.receiveCookieValues[i].value
@@ -367,13 +370,22 @@ export class Inspector extends React.Component<IProps, IState> {
     }
 
     private updateSendCookies():void{
-        console.log("Hallo2");
         const cookies:any = {};
         for(let i = 0; i < this.sendCookieKeys.length; i++){
             cookies[this.sendCookieKeys[i].value as string] = this.sendCookieValues[i].value
         }
         this.props.node.setAttribute("sendCookies", cookies)
     }
+
+    private updateTokens():void{
+        const tokens:any = {};
+        for(let i = 0; i < this.tokenNames.length; i++){
+            tokens[this.tokenNames[i].value] = this.tokenTargets[i].value
+        }
+        this.props.node.setAttribute("tokenNames", tokens)
+    }
+
+
 
     public render() {
         const node = this.props.node;
@@ -443,6 +455,38 @@ export class Inspector extends React.Component<IProps, IState> {
                 </table>;
                 inputs.push(cookieTable)
                 inputs.push(<button onClick={() => {node.getAttribute(key)[""] = ""; this.forceUpdate()}}>Add Cookie</button>)
+            } else if (key === "tokenNames"){
+                inputs.push(<label>Hidden fields to extract</label>);
+                const tokens:any = node.getAttribute(key);
+
+                const cookieTable =
+                <table>
+                    <tbody>
+                    <tr><td>Field name</td><td>Token key</td></tr>
+                        {Object.keys(tokens).map(token =>
+                            <tr id={token}>
+                                <td>
+                                    <input type="text" ref={ref => {
+                                        if(ref){
+                                            this.tokenNames.push(ref);
+                                            ref.value = token
+                                        }
+                                    }} onBlur={(e) => this.updateTokens()}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={ref => {
+                                        if(ref){
+                                            this.tokenTargets.push(ref);
+                                            ref.value = node.getAttribute(key)[token]
+                                        }
+                                    }} onBlur={(e) => this.updateTokens()}/>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(cookieTable)
+                inputs.push(<button onClick={() => {node.getAttribute(key)[""] = ""; this.forceUpdate()}}>Add hidden field</button>)
             } else if (key === "table") {
                 // tablename has to be a selection box
 
