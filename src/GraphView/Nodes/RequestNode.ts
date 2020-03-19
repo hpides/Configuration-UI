@@ -42,7 +42,7 @@ export class RequestNode extends Node {
         this.attributes.assertions = [];
         this.attributes.receiveCookies = {};
         this.attributes.sendCookies = {};
-        this.attributes.tokenNames = {}
+        this.attributes.tokenNames = {};
     }
 
     public getAtomType(): AtomType {
