@@ -59,6 +59,7 @@ interface IRequestAtom extends IBaseAtom {
     receiveCookies?: any;
     sendCookies?: any;
     tokenNames?: any;
+    xpaths?: any;
 }
 
 interface IDelayAtom extends IBaseAtom {
@@ -344,7 +345,7 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
 
 function clearEmptyValuesInDict(object: any) {
     for (const key of Object.keys(object)) {
-        if (object[key] === "") {
+        if (!object[key] || !key) {
             delete object[key];
         }
     }
@@ -439,6 +440,10 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
             attr = node.getAttribute("tokenNames");
             if (attr) {
                 request.tokenNames = clearEmptyValuesInDict(attr);
+            }
+            attr = node.getAttribute("xpaths");
+            if (attr) {
+                request.xpaths = clearEmptyValuesInDict(attr);
             }
             return {atoms: [request]};
     }

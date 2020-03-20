@@ -46,6 +46,8 @@ export class Inspector extends React.Component<IProps, IState> {
 
     private tokenNames: HTMLInputElement[] = [];
     private tokenTargets: HTMLInputElement[] = [];
+    private xpathStatements: HTMLInputElement[] = [];
+    private xpathTargets: HTMLInputElement[] = [];
     constructor(props: any) {
         super(props);
 
@@ -475,6 +477,44 @@ export class Inspector extends React.Component<IProps, IState> {
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add hidden field</button>);
+            } else if (key === "xpaths") {
+                inputs.push(<label>Custom values from the page (XPATH)</label>);
+                const xpaths: any = node.getAttribute(key);
+
+                const xpathTable =
+                <table>
+                    <tbody>
+                    <tr><td>XPATH statement</td><td>Token key</td></tr>
+                        {Object.keys(xpaths).map((xpath) =>
+                            <tr id={xpath}>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.xpathStatements.push(ref);
+                                            ref.value = xpath;
+                                        }
+                                    }} onBlur={(e) => this.updateXPaths()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.xpathTargets.push(ref);
+                                            ref.value = node.getAttribute(key)[xpath];
+                                        }
+                                    }} onBlur={(e) => this.updateXPaths()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                            </tr>,
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(xpathTable);
+                inputs.push(<button onClick={() => {
+                    node.getAttribute(key)[""] = "";
+                    // the above action does not trigger React to re-render although we need to here
+                    this.forceUpdate();
+                }}>Add XPath expression</button>);
             } else if (key === "table") {
                 // tablename has to be a selection box
 
@@ -592,6 +632,16 @@ export class Inspector extends React.Component<IProps, IState> {
             tokens[this.tokenNames[i].value] = this.tokenTargets[i].value;
         }
         this.props.node.setAttribute("tokenNames", tokens);
+        // called in onBlur
+        this.props.enableDeleteKey();
+    }
+
+    private updateXPaths(): void {
+        const xpaths: any = {};
+        for (let i = 0; i < this.xpathStatements.length; i++) {
+            xpaths[this.xpathStatements[i].value] = this.xpathTargets[i].value;
+        }
+        this.props.node.setAttribute("xpaths", xpaths);
         // called in onBlur
         this.props.enableDeleteKey();
     }

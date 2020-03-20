@@ -340,7 +340,6 @@ class App extends React.Component<{}, IState> {
     }
 
     private startTestInBackend = () => {
-        this.export();
         const config = this.lastExport;
         const date = new Date(0);
         date.setUTCMilliseconds(+config.id);
