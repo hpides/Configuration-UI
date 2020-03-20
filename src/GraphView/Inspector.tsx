@@ -410,7 +410,8 @@ export class Inspector extends React.Component<IProps, IState> {
                                             ref.value = cookie;
                                         }
                                     }} onBlur={(e) => (key === "receiveCookies") ?
-                                        this.updateReceiveCookies() : this.updateSendCookies()}/>
+                                        this.updateReceiveCookies() : this.updateSendCookies()}
+                                       onFocus={this.props.disableDeleteKey}/>
                                 </td>
                                 <td>
                                     <input type="text" ref={(ref) => {
@@ -423,7 +424,8 @@ export class Inspector extends React.Component<IProps, IState> {
                                             ref.value = node.getAttribute(key)[cookie];
                                         }
                                     }} onBlur={(e) => (key === "receiveCookies") ?
-                                        this.updateReceiveCookies() : this.updateSendCookies()}/>
+                                        this.updateReceiveCookies() : this.updateSendCookies()}
+                                    onFocus={this.props.disableDeleteKey}/>
                                 </td>
                             </tr>,
                         )}
@@ -451,7 +453,8 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.tokenNames.push(ref);
                                             ref.value = token;
                                         }
-                                    }} onBlur={(e) => this.updateTokens()}/>
+                                    }} onBlur={(e) => this.updateTokens()}
+                                       onFocus={this.props.disableDeleteKey}/>
                                 </td>
                                 <td>
                                     <input type="text" ref={(ref) => {
@@ -459,7 +462,8 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.tokenTargets.push(ref);
                                             ref.value = node.getAttribute(key)[token];
                                         }
-                                    }} onBlur={(e) => this.updateTokens()}/>
+                                    }} onBlur={(e) => this.updateTokens()}
+                                       onFocus={this.props.disableDeleteKey}/>
                                 </td>
                             </tr>,
                         )}
@@ -568,6 +572,8 @@ export class Inspector extends React.Component<IProps, IState> {
             cookies[this.receiveCookieKeys[i].value as string] = this.receiveCookieValues[i].value;
         }
         this.props.node.setAttribute("receiveCookies", cookies);
+        //called in onBlur
+        this.props.enableDeleteKey()
     }
 
     private updateSendCookies(): void {
@@ -576,6 +582,8 @@ export class Inspector extends React.Component<IProps, IState> {
             cookies[this.sendCookieKeys[i].value as string] = this.sendCookieValues[i].value;
         }
         this.props.node.setAttribute("sendCookies", cookies);
+        //called in onBlur
+        this.props.enableDeleteKey()
     }
 
     private updateTokens(): void {
@@ -584,6 +592,8 @@ export class Inspector extends React.Component<IProps, IState> {
             tokens[this.tokenNames[i].value] = this.tokenTargets[i].value;
         }
         this.props.node.setAttribute("tokenNames", tokens);
+        //called in onBlur
+        this.props.enableDeleteKey()
     }
 
     private hasExistingGeneratorConfig(): boolean {
