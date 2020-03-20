@@ -56,6 +56,9 @@ interface IRequestAtom extends IBaseAtom {
     basicAuth?: IBasicAuth;
     responseParams?: string[];
     assertions?: IAssertion[];
+    receiveCookies?: any;
+    sendCookies?: any;
+    tokenNames?: any;
 }
 
 interface IDelayAtom extends IBaseAtom {
@@ -339,6 +342,15 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     return {atoms};
 }
 
+function clearEmptyValuesInDict(object: any) {
+    for (const key of Object.keys(object)) {
+        if (object[key] === "") {
+            delete object[key];
+        }
+    }
+    return object;
+}
+
 function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfigComponent): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
     const type = node.getAtomType();
 
@@ -415,6 +427,18 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
             attr = node.getAttribute("assertions");
             if (attr) {
                 request.assertions = attr;
+            }
+            attr = node.getAttribute("receiveCookies");
+            if (attr) {
+                request.receiveCookies = clearEmptyValuesInDict(attr);
+            }
+            attr = node.getAttribute("sendCookies");
+            if (attr) {
+                request.sendCookies = clearEmptyValuesInDict(attr);
+            }
+            attr = node.getAttribute("tokenNames");
+            if (attr) {
+                request.tokenNames = clearEmptyValuesInDict(attr);
             }
             return {atoms: [request]};
     }
