@@ -1,4 +1,5 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
+import {classToPlain} from "class-transformer";
 import React from "react";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import "./Inspector.css";
