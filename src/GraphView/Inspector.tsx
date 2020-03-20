@@ -1,4 +1,5 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
+import {classToPlain} from "class-transformer";
 import React from "react";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import "./Inspector.css";
@@ -27,6 +28,8 @@ interface IState {
     addingAssertion: boolean;
     activeGenerator: {key: string, genConfig: GeneratorConfig} | null;
     activeAssertion: AssertionConfig | null;
+    receiveCookies: any;
+    sendCookies: any;
 }
 
 interface IBasicAuth {
@@ -35,6 +38,14 @@ interface IBasicAuth {
 }
 
 export class Inspector extends React.Component<IProps, IState> {
+
+    private receiveCookieKeys: HTMLInputElement[] = [];
+    private receiveCookieValues: HTMLInputElement[] = [];
+    private sendCookieKeys: HTMLInputElement[] = [];
+    private sendCookieValues: HTMLInputElement[] = [];
+
+    private tokenNames: HTMLInputElement[] = [];
+    private tokenTargets: HTMLInputElement[] = [];
     constructor(props: any) {
         super(props);
 
@@ -44,6 +55,8 @@ export class Inspector extends React.Component<IProps, IState> {
             addingAssertion: false,
             addingAuth: false,
             addingGenerator: false,
+            receiveCookies: {},
+            sendCookies: {},
         };
     }
 
@@ -375,6 +388,93 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(label);
                 inputs.push(authButton);
 
+            } else if (key === "receiveCookies" || key === "sendCookies") {
+                const description = (key === "receiveCookies") ? "Cookies to extract" : "Cookies to send";
+                inputs.push(<label>{description}</label>);
+                const cookies: any = node.getAttribute(key);
+
+                const cookieTable =
+                <table>
+                    <tbody>
+                    <tr><td>{(key === "receiveCookies") ? "Response Cookie" : "Token key"}</td><td>{(key === "receiveCookies") ? "Token key" : "Request Cookie"}</td></tr>
+                        {Object.keys(cookies).map((cookie) =>
+                            <tr id={cookie}>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            if ((key === "receiveCookies")) {
+                                                this.receiveCookieKeys.push(ref);
+                                            } else {
+                                                this.sendCookieKeys.push(ref);
+                                            }
+                                            ref.value = cookie;
+                                        }
+                                    }} onBlur={(e) => (key === "receiveCookies") ?
+                                        this.updateReceiveCookies() : this.updateSendCookies()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            if ((key === "receiveCookies")) {
+                                                this.receiveCookieValues.push(ref);
+                                            } else {
+                                                this.sendCookieValues.push(ref);
+                                            }
+                                            ref.value = node.getAttribute(key)[cookie];
+                                        }
+                                    }} onBlur={(e) => (key === "receiveCookies") ?
+                                        this.updateReceiveCookies() : this.updateSendCookies()}
+                                    onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                            </tr>,
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(cookieTable);
+                inputs.push(<button onClick={() => {
+                    node.getAttribute(key)[""] = "";
+                    // the above action does not trigger React to re-render although we need to here
+                    this.forceUpdate();
+                }}>Add Cookie</button>);
+            } else if (key === "tokenNames") {
+                inputs.push(<label>Hidden fields to extract</label>);
+                const tokens: any = node.getAttribute(key);
+
+                const cookieTable =
+                <table>
+                    <tbody>
+                    <tr><td>Field name</td><td>Token key</td></tr>
+                        {Object.keys(tokens).map((token) =>
+                            <tr id={token}>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.tokenNames.push(ref);
+                                            ref.value = token;
+                                        }
+                                    }} onBlur={(e) => this.updateTokens()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.tokenTargets.push(ref);
+                                            ref.value = node.getAttribute(key)[token];
+                                        }
+                                    }} onBlur={(e) => this.updateTokens()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                            </tr>,
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(cookieTable);
+                inputs.push(<button onClick={() => {
+                    node.getAttribute(key)[""] = "";
+                    // the above action does not trigger React to re-render although we need to here
+                    this.forceUpdate();
+                }}>Add hidden field</button>);
             } else if (key === "table") {
                 // tablename has to be a selection box
 
@@ -464,6 +564,36 @@ export class Inspector extends React.Component<IProps, IState> {
                 {assertionAdder}
             </div>
         );
+    }
+
+    private updateReceiveCookies(): void {
+        const cookies: any = {};
+        for (let i = 0; i < this.receiveCookieKeys.length; i++) {
+            cookies[this.receiveCookieKeys[i].value as string] = this.receiveCookieValues[i].value;
+        }
+        this.props.node.setAttribute("receiveCookies", cookies);
+        // called in onBlur
+        this.props.enableDeleteKey();
+    }
+
+    private updateSendCookies(): void {
+        const cookies: any = {};
+        for (let i = 0; i < this.sendCookieKeys.length; i++) {
+            cookies[this.sendCookieKeys[i].value as string] = this.sendCookieValues[i].value;
+        }
+        this.props.node.setAttribute("sendCookies", cookies);
+        // called in onBlur
+        this.props.enableDeleteKey();
+    }
+
+    private updateTokens(): void {
+        const tokens: any = {};
+        for (let i = 0; i < this.tokenNames.length; i++) {
+            tokens[this.tokenNames[i].value] = this.tokenTargets[i].value;
+        }
+        this.props.node.setAttribute("tokenNames", tokens);
+        // called in onBlur
+        this.props.enableDeleteKey();
     }
 
     private hasExistingGeneratorConfig(): boolean {
