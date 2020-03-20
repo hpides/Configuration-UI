@@ -43,6 +43,7 @@ export class RequestNode extends Node {
         this.attributes.receiveCookies = {};
         this.attributes.sendCookies = {};
         this.attributes.tokenNames = {};
+        this.attributes.xpaths = {};
     }
 
     public getAtomType(): AtomType {
