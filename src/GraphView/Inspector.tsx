@@ -572,8 +572,8 @@ export class Inspector extends React.Component<IProps, IState> {
             cookies[this.receiveCookieKeys[i].value as string] = this.receiveCookieValues[i].value;
         }
         this.props.node.setAttribute("receiveCookies", cookies);
-        //called in onBlur
-        this.props.enableDeleteKey()
+        // called in onBlur
+        this.props.enableDeleteKey();
     }
 
     private updateSendCookies(): void {
@@ -582,8 +582,8 @@ export class Inspector extends React.Component<IProps, IState> {
             cookies[this.sendCookieKeys[i].value as string] = this.sendCookieValues[i].value;
         }
         this.props.node.setAttribute("sendCookies", cookies);
-        //called in onBlur
-        this.props.enableDeleteKey()
+        // called in onBlur
+        this.props.enableDeleteKey();
     }
 
     private updateTokens(): void {
@@ -592,8 +592,8 @@ export class Inspector extends React.Component<IProps, IState> {
             tokens[this.tokenNames[i].value] = this.tokenTargets[i].value;
         }
         this.props.node.setAttribute("tokenNames", tokens);
-        //called in onBlur
-        this.props.enableDeleteKey()
+        // called in onBlur
+        this.props.enableDeleteKey();
     }
 
     private hasExistingGeneratorConfig(): boolean {

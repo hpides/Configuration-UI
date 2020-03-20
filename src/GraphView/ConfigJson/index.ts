@@ -342,13 +342,13 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
     return {atoms};
 }
 
-function clearEmptyValuesInDict(object:any){
-    for(let key of Object.keys(object)){
-        if(object[key] === ""){
-            delete object[key]
+function clearEmptyValuesInDict(object: any) {
+    for (const key of Object.keys(object)) {
+        if (object[key] === "") {
+            delete object[key];
         }
     }
-    return object
+    return object;
 }
 
 function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfigComponent): {atoms: IBaseAtom[], pdgfTable?: XMLBuilder} {
