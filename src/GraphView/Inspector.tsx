@@ -47,6 +47,8 @@ export class Inspector extends React.Component<IProps, IState> {
     private tokenTargets: HTMLInputElement[] = [];
     private xpathStatements: HTMLInputElement[] = [];
     private xpathTargets: HTMLInputElement[] = [];
+    private staticValueNames: HTMLInputElement[] = [];
+    private staticValues: HTMLInputElement[] = [];
     constructor(props: any) {
         super(props);
 
@@ -516,6 +518,44 @@ export class Inspector extends React.Component<IProps, IState> {
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add XPath expression</button>);
+            } else if (key === "staticValues") {
+                inputs.push(<label>Static values for every run</label>);
+                const values: any = node.getAttribute(key);
+
+                const valueTable =
+                <table>
+                    <tbody>
+                    <tr><td>Token key</td><td>Value</td></tr>
+                        {Object.keys(values).map((value) =>
+                            <tr id={value}>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.staticValueNames.push(ref);
+                                            ref.value = value;
+                                        }
+                                    }} onBlur={(e) => this.updateStaticValues()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.staticValues.push(ref);
+                                            ref.value = node.getAttribute(key)[value];
+                                        }
+                                    }} onBlur={(e) => this.updateStaticValues()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                            </tr>,
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(valueTable);
+                inputs.push(<button onClick={() => {
+                    node.getAttribute(key)[""] = "";
+                    // the above action does not trigger React to re-render although we need to here
+                    this.forceUpdate();
+                }}>Add static value</button>);
             } else if (key === "table") {
                 // tablename has to be a selection box
 
@@ -643,6 +683,16 @@ export class Inspector extends React.Component<IProps, IState> {
             xpaths[this.xpathStatements[i].value] = this.xpathTargets[i].value;
         }
         this.props.node.setAttribute("xpaths", xpaths);
+        // called in onBlur
+        this.props.enableDeleteKey();
+    }
+
+    private updateStaticValues(): void {
+        const staticValues: any = {};
+        for (let i = 0; i < this.staticValueNames.length; i++) {
+            staticValues[this.staticValueNames[i].value] = this.staticValues[i].value;
+        }
+        this.props.node.setAttribute("staticValues", staticValues);
         // called in onBlur
         this.props.enableDeleteKey();
     }

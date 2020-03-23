@@ -44,6 +44,7 @@ interface IDataGenerationAtom extends IBaseAtom {
     table: string;
     data: string[];
     dataToGenerate: string;
+    staticValues?: any
 }
 
 type HTTPVerb = "POST" | "GET";
@@ -279,6 +280,7 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
             dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: "",
+            staticValues: node.getAttribute("staticValues")
         }]};
     }
 
@@ -325,6 +327,7 @@ function ConvertDataGenerationNode(idMap: IdMap, baseAtomObj: IBaseAtom, node: D
             dataToGenerate: node.getAttribute("dataToGenerate"),
             name: node.getAttribute("name"),
             table: tableName,
+            staticValues: node.getAttribute("staticValues")
         });
     }
 

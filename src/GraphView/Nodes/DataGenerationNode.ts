@@ -52,6 +52,7 @@ export class DataGenerationNode extends Node {
         this.attributes.data = [];
 
         this.attributes.table = null;
+        this.attributes.staticValues = {};
         this._keyhandler = {
             disableDeleteKey,
             enableDeleteKey,
