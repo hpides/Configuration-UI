@@ -1,6 +1,6 @@
 import React from "react";
+import ReactTooltip from "react-tooltip";
 import "reflect-metadata";
-import ReactTooltip from 'react-tooltip'
 /*tslint:disable:max-classes-per-file*/
 /* tslint:disable:variable-name ... */
 export abstract class GeneratorConfig {
