@@ -1,5 +1,6 @@
 import {Exclude} from "class-transformer";
 import React from "react";
+import ReactTooltip from "react-tooltip";
 import "reflect-metadata";
 /*tslint:disable:max-classes-per-file*/
 /* tslint:disable:variable-name ... */
@@ -126,7 +127,8 @@ export class XPATHAssertion extends AssertionConfig {
     public render(keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
-                <label>XPATH expression: </label>
+                <ReactTooltip />
+                <label data-tip="Enter a valid XPATH expression. If the expression does not evaluate to a non-empty Stringvalue, the assertions is considered failed.">XPATH expression: </label>
                 <input
                     onFocus={this.keyhandler.disableDeleteKey}
                     onBlur={this.keyhandler.enableDeleteKey}

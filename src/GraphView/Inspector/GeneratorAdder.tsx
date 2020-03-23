@@ -145,6 +145,7 @@ export class GeneratorAdder extends React.Component<IProps, IState> {
                                 >
                                     <option value="RANDOM_STRING">Random String</option>
                                     <option value="RANDOM_SENTENCE">Random Sentence</option>
+                                    <option value="EXISTING">Load existing data</option>
                                 </select>
                             </div>
                         </div>
