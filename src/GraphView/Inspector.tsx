@@ -1,10 +1,9 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
-import {classToPlain} from "class-transformer";
 import React from "react";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import "./Inspector.css";
 import {AssertionAdder} from "./Inspector/AssertionAdder";
-import {ContentNotEmptyAssertion, ContentTypeAssertion, ResponseCodeAssertion} from "./Inspector/AssertionConfig";
+import {ContentNotEmptyAssertion, ContentTypeAssertion, ResponseCodeAssertion, XPATHAssertion} from "./Inspector/AssertionConfig";
 import {AssertionConfig} from "./Inspector/AssertionConfig";
 import {AuthAdder} from "./Inspector/AuthAdder";
 import {GeneratorAdder} from "./Inspector/GeneratorAdder";
@@ -328,7 +327,9 @@ export class Inspector extends React.Component<IProps, IState> {
             if (assertion instanceof ResponseCodeAssertion) {
                 assertionText = "Response Code is " + assertion.responseCode.toString();
             } else if (assertion instanceof ContentTypeAssertion) {
-                assertionText = "Response Conent Type is " + assertion.contentType;
+                assertionText = "Response Content Type is " + assertion.contentType;
+            } else if (assertion instanceof XPATHAssertion) {
+                assertionText = "Response has result for XPATH " + assertion.xpath;
             } else if (assertion instanceof ContentNotEmptyAssertion) {
                 assertionText = "Response is not empty";
             }

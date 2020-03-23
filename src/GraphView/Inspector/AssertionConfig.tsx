@@ -115,6 +115,31 @@ export class ContentTypeAssertion extends AssertionConfig {
     }
 }
 
+export class XPATHAssertion extends AssertionConfig {
+
+    public static getTypeString() {
+        return "XPATH";
+    }
+    public type = XPATHAssertion.getTypeString();
+    public xpath = "//h1[text()='Hello World!']";
+
+    public render(keyPressed: (event: React.KeyboardEvent) => void) {
+        return(
+            <div className="generator-config">
+                <label>XPATH expression: </label>
+                <input
+                    onFocus={this.keyhandler.disableDeleteKey}
+                    onBlur={this.keyhandler.enableDeleteKey}
+                    type="text"
+                    name="xpath"
+                    onChange={this.inputChanged}
+                    onKeyPress={keyPressed}
+                    value={this.xpath}/>
+            </div>
+    );
+    }
+}
+
 export class ContentNotEmptyAssertion extends AssertionConfig {
 
     public static  getTypeString() {

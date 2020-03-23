@@ -4,7 +4,7 @@ import {
     AssertionConfig,
     ContentNotEmptyAssertion,
     ContentTypeAssertion,
-    ResponseCodeAssertion,
+    ResponseCodeAssertion, XPATHAssertion,
 } from "../Inspector/AssertionConfig";
 import { Node } from "./Node";
 
@@ -72,6 +72,10 @@ export class RequestNode extends Node {
                         break;
                     case ContentTypeAssertion.getTypeString():
                         conf = new ContentTypeAssertion(this.keyhandler.disableDeleteKey,
+                            this.keyhandler.enableDeleteKey);
+                        break;
+                    case XPATHAssertion.getTypeString():
+                        conf = new XPATHAssertion(this.keyhandler.disableDeleteKey,
                             this.keyhandler.enableDeleteKey);
                         break;
                     default:
