@@ -3,7 +3,7 @@ import {
     AssertionConfig,
     ContentNotEmptyAssertion,
     ContentTypeAssertion,
-    ResponseCodeAssertion,
+    ResponseCodeAssertion, XPATHAssertion,
 } from "./AssertionConfig";
 import "./GeneratorAdder.css";
 
@@ -82,6 +82,14 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             this.assertionChanged,
                         )});
                         break;
+                    case "XPATH":
+                        this.setState({assertionConfig: new XPATHAssertion(
+                            this.props.disableDeleteKey,
+                            this.props.enableDeleteKey,
+                            this.state.name,
+                            this.assertionChanged,
+                        )});
+                        break;
                 }
                 break;
         }
@@ -128,11 +136,13 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                                 <select
                                     name="generator"
                                     value={this.state.assertionConfig.type}
+                                    className="generator-adder-select"
                                     onChange={this.inputChanged}
                                 >
                                     <option value="RESPONSE_CODE">Response Code</option>
                                     <option value="CONTENT_NOT_EMPTY">Content not empty</option>
                                     <option value="CONTENT_TYPE">Content type</option>
+                                    <option value="XPATH">XPATH</option>
                                 </select>
                             </div>
                         </div>
