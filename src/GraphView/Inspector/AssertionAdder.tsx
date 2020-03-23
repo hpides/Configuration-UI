@@ -136,6 +136,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                                 <select
                                     name="generator"
                                     value={this.state.assertionConfig.type}
+                                    className="generator-adder-select"
                                     onChange={this.inputChanged}
                                 >
                                     <option value="RESPONSE_CODE">Response Code</option>
