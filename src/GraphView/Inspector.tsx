@@ -11,6 +11,8 @@ import {ExistingDataConfig, GeneratorConfig} from "./Inspector/GeneratorConfig";
 import {DataGenerationNode} from "./Nodes/DataGenerationNode";
 import {Node} from "./Nodes/Node";
 import {RequestNode} from "./Nodes/RequestNode";
+import ReactTooltip from 'react-tooltip'
+
 
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
@@ -395,7 +397,7 @@ export class Inspector extends React.Component<IProps, IState> {
 
             } else if (key === "receiveCookies" || key === "sendCookies") {
                 const description = (key === "receiveCookies") ? "Cookies to extract" : "Cookies to send";
-                inputs.push(<label>{description}</label>);
+                inputs.push(<label data-tip={(key === "receiveCookies")? "Cookies from the result which will be stored in the Token." : "Cookies from the token to send in the request."}>{description}</label>);
                 const cookies: any = node.getAttribute(key);
 
                 const cookieTable =
@@ -443,7 +445,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     this.forceUpdate();
                 }}>Add Cookie</button>);
             } else if (key === "tokenNames") {
-                inputs.push(<label>Hidden fields to extract</label>);
+                inputs.push(<label data-tip="Convenience wrapper for custom xpath. E.g. if '_csrf' is entered, the XPATH expression '//input[@type = 'hidden'][@name = 'csrf']/@value' will be evaluated as described below.">Hidden fields to extract</label>);
                 const tokens: any = node.getAttribute(key);
 
                 const cookieTable =
@@ -481,7 +483,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     this.forceUpdate();
                 }}>Add hidden field</button>);
             } else if (key === "xpaths") {
-                inputs.push(<label>Custom values from the page (XPATH)</label>);
+                inputs.push(<label data-tip="XPATH expressions on the left will be evaluated for the returned page. The extracted string (first hit) will be stored in the token under the key on the right.">Custom values from the page (XPATH)</label>);
                 const xpaths: any = node.getAttribute(key);
 
                 const xpathTable =
@@ -519,7 +521,8 @@ export class Inspector extends React.Component<IProps, IState> {
                     this.forceUpdate();
                 }}>Add XPath expression</button>);
             } else if (key === "staticValues") {
-                inputs.push(<label>Static values for every run</label>);
+                inputs.push(<label data-tip="Values to put into the token for every run">Static values for every run</label>);
+                inputs.push(<i className="fa fa-question-circle" aria-hidden="true" />);
                 const values: any = node.getAttribute(key);
 
                 const valueTable =
@@ -582,6 +585,50 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(input);
 
                 // users should not enter IDs or dataToGenerate, this is handled in the background
+            } else if (key === "addr") {
+                const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
+                                     type="text"
+                                     data-tip="Token expansion is supported. E.g. addr='http://example.com/$deleteURL' with deleteURL='1/delete' will be expanded to 'http://example.com/1/delete'."
+                                     name={key}
+                                     value={node.getAttribute(key)}
+                                     onChange={this.inputChanged}
+                />;
+                inputs.push(label);
+                inputs.push(input);
+
+            }else if (key === "requestParams") {
+                const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
+                                     type="text"
+                                     data-tip="Given comma-separated parameters will be extracted from the Token and sent to the target via HTTP Form Parameters."
+                                     name={key}
+                                     value={node.getAttribute(key)}
+                                     onChange={this.inputChanged}
+                />;
+                inputs.push(label);
+                inputs.push(input);
+
+            }else if (key === "requestJSONObject") {
+                const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
+                                     type="text"
+                                     data-tip='Given text will be sent in the request body to the target with ContentType application/JSON. Token expansion is supported. E.g. {"key":$key, "value":$value} with key="abc" and value="def" will be expanded to {"key":"abc", "value":"def"}".'
+                                     name={key}
+                                     value={node.getAttribute(key)}
+                                     onChange={this.inputChanged}
+                />;
+                inputs.push(label);
+                inputs.push(input);
+
+            } else if (key === "responseJSONObject") {
+                const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
+                                     type="text"
+                                     data-tip="Response will be parsed, and given keys will be extracted and stored under their name in the token."
+                                     name={key}
+                                     value={node.getAttribute(key)}
+                                     onChange={this.inputChanged}
+                />;
+                inputs.push(label);
+                inputs.push(input);
+
             } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
@@ -643,6 +690,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 {generatorAdder}
                 {authAdder}
                 {assertionAdder}
+                <ReactTooltip />
             </div>
         );
     }
