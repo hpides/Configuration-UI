@@ -1,7 +1,7 @@
 import {plainToClassFromExist} from "class-transformer";
 import React from "react";
-import "./Testconfig.css";
 import ReactTooltip from "react-tooltip";
+import "./Testconfig.css";
 
 interface IState {
     activeInstancesPerSecond: string;
@@ -18,19 +18,19 @@ export class Testconfig extends React.Component<{}, IState> {
         this.state = {
             activeInstancesPerSecond : localStorage.getItem("activeInstancesPerSecond") || "",
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
-            noSession: localStorage.getItem("maximumConcurrentRequests") ==="true",
+            noSession: localStorage.getItem("maximumConcurrentRequests") === "true",
             repeat : localStorage.getItem("repeat") || "",
             scaleFactor : localStorage.getItem("scaleFactor") || "",
         };
     }
 
     public inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
-        console.log(event.currentTarget.name+" is "+event.currentTarget.value)
-        localStorage.setItem(event.currentTarget.name, event.currentTarget.value+"");
+        console.log(event.currentTarget.name + " is " + event.currentTarget.value);
+        localStorage.setItem(event.currentTarget.name, event.currentTarget.value + "");
         this.setState({
             activeInstancesPerSecond : localStorage.getItem("activeInstancesPerSecond") || "",
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
-            noSession : localStorage.getItem("noSession") ==="true",
+            noSession : localStorage.getItem("noSession") === "true",
             repeat : localStorage.getItem("repeat") || "",
             scaleFactor : localStorage.getItem("scaleFactor") || "",
         });
@@ -125,9 +125,9 @@ export class Testconfig extends React.Component<{}, IState> {
         );
     }
 
-    private toggleNoSession =():void => {
+    private toggleNoSession = (): void => {
         const oldValue = this.state.noSession;
-        this.setState({noSession: !this.state.noSession})
-        localStorage.setItem("noSession",""+!oldValue)
+        this.setState({noSession: !this.state.noSession});
+        localStorage.setItem("noSession", "" + !oldValue);
     }
 }

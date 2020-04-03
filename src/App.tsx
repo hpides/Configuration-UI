@@ -33,11 +33,11 @@ export interface IState {
 /*tslint:disable:max-line-length*/
 class App extends React.Component<{}, IState> {
 
+    public testConfig: Testconfig | null = null;
+
     private readonly graphViews: GraphView[] = [];
 
     private sidebar: Sidebar | null = null;
-
-    public testConfig: Testconfig | null = null;
     private  requestGeneratorHost: string | null;
 
     private readonly keyhandler: {
@@ -180,8 +180,8 @@ class App extends React.Component<{}, IState> {
             }
 
         }
-        if(this.testConfig) {
-            this.testConfig.import(testConfig)
+        if (this.testConfig) {
+            this.testConfig.import(testConfig);
         }
         if (this.state.existingConfigComponent && testConfig.existingXMLs) {
             // class-transformer is too stupid to map this to an IState, si we do it manually...
