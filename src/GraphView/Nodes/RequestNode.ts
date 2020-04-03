@@ -44,6 +44,7 @@ export class RequestNode extends Node {
         this.attributes.sendCookies = {};
         this.attributes.tokenNames = {};
         this.attributes.xpaths = {};
+        this.attributes.timeAggregation = true;
     }
 
     public getAtomType(): AtomType {
