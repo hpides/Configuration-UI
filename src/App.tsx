@@ -33,11 +33,11 @@ export interface IState {
 /*tslint:disable:max-line-length*/
 class App extends React.Component<{}, IState> {
 
+    public testConfig: Testconfig | null = null;
+
     private readonly graphViews: GraphView[] = [];
 
     private sidebar: Sidebar | null = null;
-
-    private testConfig: Testconfig | null = null;
     private  requestGeneratorHost: string | null;
 
     private readonly keyhandler: {
@@ -134,6 +134,7 @@ class App extends React.Component<{}, IState> {
             testConfigJSON.scaleFactor = testConfigState.scaleFactor;
             testConfigJSON.activeInstancesPerSecond = testConfigState.activeInstancesPerSecond;
             testConfigJSON.maximumConcurrentRequests = testConfigState.maximumConcurrentRequests;
+            testConfigJSON.noSession = testConfigState.noSession;
         }
         testConfigJSON.stories  = stories;
 
@@ -178,6 +179,9 @@ class App extends React.Component<{}, IState> {
                 this.sidebar.addStory(story.name);
             }
 
+        }
+        if (this.testConfig) {
+            this.testConfig.import(testConfig);
         }
         if (this.state.existingConfigComponent && testConfig.existingXMLs) {
             // class-transformer is too stupid to map this to an IState, si we do it manually...
