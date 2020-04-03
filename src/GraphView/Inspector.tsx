@@ -37,7 +37,6 @@ interface IBasicAuth {
     password: string;
 }
 
-
 export class Inspector extends React.Component<IProps, IState> {
 
     private receiveCookieKeys: HTMLInputElement[] = [];
@@ -164,11 +163,6 @@ export class Inspector extends React.Component<IProps, IState> {
 
     public addAuth = () => {
         this.setState({addingAuth: true});
-    }
-
-    private toggleTimeAggregation = ():void => {
-        this.props.node.setAttribute("timeAggregation", ""+!(this.props.node.getAttribute("timeAggregation") as boolean))
-        this.forceUpdate()
     }
 
     public tableSelectionChanged = (event: React.FormEvent<HTMLSelectElement>) => {
@@ -636,7 +630,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(label);
                 inputs.push(input);
             } else if (key === "timeAggregation") {
-                const box = <label>Aggregate recorded times: <input type="checkbox" checked={node.getAttribute(key) !== "false"} onChange={this.toggleTimeAggregation} /></label>
+                const box = <label>Aggregate recorded times: <input type="checkbox" checked={node.getAttribute(key) !== "false"} onChange={this.toggleTimeAggregation} /></label>;
                 inputs.push(<label data-tip={"If checked, recorded times for thid endpoint are shown under their  unescaoed name. You might want to disable this for debugging to see the replaced URLs."}>{box}</label>);
             } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -702,6 +696,12 @@ export class Inspector extends React.Component<IProps, IState> {
                 <ReactTooltip />
             </div>
         );
+    }
+
+    private toggleTimeAggregation = (): void => {
+        this.props.node.setAttribute("timeAggregation",
+            "" + !(this.props.node.getAttribute("timeAggregation") as boolean));
+        this.forceUpdate();
     }
 
     private updateReceiveCookies(): void {

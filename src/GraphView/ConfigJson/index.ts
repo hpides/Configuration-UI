@@ -59,7 +59,7 @@ interface IRequestAtom extends IBaseAtom {
     assertions?: IAssertion[];
     receiveCookies?: any;
     sendCookies?: any;
-    timeAggregation:boolean;
+    timeAggregation: boolean;
     tokenNames?: any;
     xpaths?: any;
 }
@@ -451,7 +451,7 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
             }
             attr = node.getAttribute("timeAggregation");
             if (attr) {
-                console.log("EXPORT!!!")
+                console.log("EXPORT!!!");
                 request.timeAggregation = attr as boolean;
             }
             return {atoms: [request]};
