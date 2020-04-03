@@ -62,6 +62,14 @@ describe("The ExistingConfigComponent", () => {
         expect(existingConfig.uploadedFiles.get("customer.xml")!.tableMapping.get("Users")!).toEqual(["username", "Passwort"]);
     });
 
+    it("interprets noSession", () => {
+        const component = <App/>;
+        const wrapper = mount<App, AppState>(component, {});
+        wrapper.instance().import(XMLFixtures.getTestConfigWithUploadedFiles());
+        const noSession = wrapper.instance().testConfig!.state.noSession;
+        expect(noSession).toBeTruthy()
+    });
+
     it("preserves order", () => {
         const nodes: { nodes: Node[], startNode: StartNode | null, links: LinkModel[] } = ConvertStoryToGraph(() => {}, () => {}, new ExistingConfigComponent({}), XMLFixtures.getTestConfigWithExistingData().stories[0]);
         expect(nodes.nodes[2].getAttribute("data")).toEqual(["title", "text"])

@@ -89,6 +89,7 @@ public static getTestConfigWithUploadedFiles() {
             "    \"scaleFactor\": \"20000\",\n" +
             "    \"activeInstancesPerSecond\": \"100\",\n" +
             "    \"maximumConcurrentRequests\": \"10\",\n" +
+            "    \"noSession\": true," +
             "    \"stories\": [],\n" +
             "    \"existingXMLs\": {\n" +
             "        \"uploadedFiles\": {\n" +
