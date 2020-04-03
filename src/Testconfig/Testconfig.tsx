@@ -1,10 +1,12 @@
 import {plainToClassFromExist} from "class-transformer";
 import React from "react";
 import "./Testconfig.css";
+import ReactTooltip from "react-tooltip";
 
 interface IState {
     activeInstancesPerSecond: string;
     maximumConcurrentRequests: string;
+    noSession: boolean;
     repeat: string;
     scaleFactor: string;
 }
@@ -16,16 +18,19 @@ export class Testconfig extends React.Component<{}, IState> {
         this.state = {
             activeInstancesPerSecond : localStorage.getItem("activeInstancesPerSecond") || "",
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
+            noSession: localStorage.getItem("maximumConcurrentRequests") ==="true",
             repeat : localStorage.getItem("repeat") || "",
             scaleFactor : localStorage.getItem("scaleFactor") || "",
         };
     }
 
     public inputChanged = (event: React.FormEvent<HTMLInputElement>) => {
-        localStorage.setItem(event.currentTarget.name, event.currentTarget.value);
+        console.log(event.currentTarget.name+" is "+event.currentTarget.value)
+        localStorage.setItem(event.currentTarget.name, event.currentTarget.value+"");
         this.setState({
             activeInstancesPerSecond : localStorage.getItem("activeInstancesPerSecond") || "",
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
+            noSession : localStorage.getItem("noSession") ==="true",
             repeat : localStorage.getItem("repeat") || "",
             scaleFactor : localStorage.getItem("scaleFactor") || "",
         });
@@ -42,6 +47,7 @@ export class Testconfig extends React.Component<{}, IState> {
     public render() {
         return (
             <div className="testconfig">
+                <ReactTooltip />
                 <h1>Testconfig</h1>
                 <div className="row">
                     <div className="col-25">
@@ -75,7 +81,7 @@ export class Testconfig extends React.Component<{}, IState> {
 
                 <div className="row">
                     <div className="col-25">
-                        <label htmlFor="activeInstancesPerSecond">Requests per second</label>
+                        <label data-tip="YOLO!!" htmlFor="activeInstancesPerSecond">Active users per second</label>
                     </div>
                     <div className="col-75">
                         <input
@@ -101,7 +107,27 @@ export class Testconfig extends React.Component<{}, IState> {
                         />
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col-25">
+                        <label htmlFor="maximumConcurrentRequests">Global session pooling disabled</label>
+                    </div>
+                    <div className="col-75">
+                        <input
+                            onChange={this.toggleNoSession}
+                            type="checkbox"
+                            id="noSession"
+                            name="noSession"
+                            checked={this.state.noSession}
+                        />
+                    </div>
+                </div>
             </div>
         );
+    }
+
+    private toggleNoSession =():void => {
+        const oldValue = this.state.noSession;
+        this.setState({noSession: !this.state.noSession})
+        localStorage.setItem("noSession",""+!oldValue)
     }
 }
