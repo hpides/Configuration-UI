@@ -65,23 +65,23 @@ export class RequestNode extends Node {
                 switch (current.type) {
                     case ResponseCodeAssertion.getTypeString():
                         conf = new ResponseCodeAssertion(this.keyhandler.disableDeleteKey,
-                            this.keyhandler.enableDeleteKey);
+                            this.keyhandler.enableDeleteKey, current.name, () => {});
                         break;
                     case ContentNotEmptyAssertion.getTypeString():
                         conf = new ContentNotEmptyAssertion(this.keyhandler.disableDeleteKey,
-                            this.keyhandler.enableDeleteKey);
+                            this.keyhandler.enableDeleteKey, current.name, () => {});
                         break;
                     case ContentTypeAssertion.getTypeString():
                         conf = new ContentTypeAssertion(this.keyhandler.disableDeleteKey,
-                            this.keyhandler.enableDeleteKey);
+                            this.keyhandler.enableDeleteKey, current.name, () => {});
                         break;
                     case XPATHAssertion.getTypeString():
                         conf = new XPATHAssertion(this.keyhandler.disableDeleteKey,
-                            this.keyhandler.enableDeleteKey);
+                            this.keyhandler.enableDeleteKey, current.name, () => {});
                         break;
                     case JSONPATHAssertion.getTypeString():
                         conf = new JSONPATHAssertion(this.keyhandler.disableDeleteKey,
-                            this.keyhandler.enableDeleteKey);
+                            this.keyhandler.enableDeleteKey, current.name, () => {});
                         break;
                     default:
                         alert("Can not deserialize a " + current.__type);
