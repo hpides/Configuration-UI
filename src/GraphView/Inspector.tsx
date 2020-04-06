@@ -216,7 +216,7 @@ export class Inspector extends React.Component<IProps, IState> {
         }
 
         const node: RequestNode = this.props.node;
-        if(!this.state.assertionDoesNotHaveToBeAdded) {
+        if (!this.state.assertionDoesNotHaveToBeAdded) {
             node.addAssertion(config);
         }
 
@@ -227,7 +227,7 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({
             activeAssertion: null,
             addingAssertion: false,
-            assertionDoesNotHaveToBeAdded: false
+            assertionDoesNotHaveToBeAdded: false,
         });
     }
 
@@ -254,8 +254,8 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({
             activeAssertion: assertion,
             addingAssertion: true,
-            //assertion is already known, editing values will propagate
-            assertionDoesNotHaveToBeAdded: true
+            // assertion is already known, editing values will propagate
+            assertionDoesNotHaveToBeAdded: true,
         });
     }
 
