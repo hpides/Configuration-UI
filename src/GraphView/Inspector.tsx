@@ -242,9 +242,10 @@ export class Inspector extends React.Component<IProps, IState> {
         if (!index) { return; }
 
         const assertion = node.getAttribute("assertions")[Number(index)] as AssertionConfig;
-        //both the following attributes might be changed / invalid here. Re-set them.
-        assertion.keyhandler = {disableDeleteKey : this.props.disableDeleteKey, enableDeleteKey: this.props.enableDeleteKey};
-        //forceUpdate is wrapped in lambda, since else the "this" context would be different
+        // both the following attributes might be changed / invalid here. Re-set them.
+        assertion.keyhandler = {disableDeleteKey : this.props.disableDeleteKey,
+            enableDeleteKey: this.props.enableDeleteKey};
+        // forceUpdate is wrapped in lambda, since else the "this" context would be different
         assertion.redraw = () => this.forceUpdate();
         this.setState({
             activeAssertion: assertion,
