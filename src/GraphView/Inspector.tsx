@@ -435,7 +435,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                             ref.value = cookie;
                                         }
                                     }} onBlur={(e) => (key === "receiveCookies") ?
-                                        this.updateReceiveCookies() : this.updateSendCookies()}
+                                        this.updateReceiveCookies() : this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                                 <td>
@@ -449,7 +449,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                             ref.value = node.getAttribute(key)[cookie];
                                         }
                                     }} onBlur={(e) => (key === "receiveCookies") ?
-                                        this.updateReceiveCookies() : this.updateSendCookies()}
+                                        this.updateReceiveCookies() : this.processInspectorBlur()}
                                     onFocus={this.props.disableDeleteKey}/>
                                 </td>
                             </tr>,
@@ -478,7 +478,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.tokenNames.push(ref);
                                             ref.value = token;
                                         }
-                                    }} onBlur={(e) => this.updateTokens()}
+                                    }} onBlur={(e) => this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                                 <td>
@@ -487,7 +487,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.tokenTargets.push(ref);
                                             ref.value = node.getAttribute(key)[token];
                                         }
-                                    }} onBlur={(e) => this.updateTokens()}
+                                    }} onBlur={(e) => this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                             </tr>,
@@ -516,7 +516,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.xpathStatements.push(ref);
                                             ref.value = xpath;
                                         }
-                                    }} onBlur={(e) => this.updateXPaths()}
+                                    }} onBlur={(e) => this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                                 <td>
@@ -525,7 +525,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.xpathTargets.push(ref);
                                             ref.value = node.getAttribute(key)[xpath];
                                         }
-                                    }} onBlur={(e) => this.updateXPaths()}
+                                    }} onBlur={(e) => this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                             </tr>,
@@ -557,7 +557,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.staticValueNames.push(ref);
                                             ref.value = value;
                                         }
-                                    }} onBlur={(e) => this.updateStaticValues()}
+                                    }} onBlur={(e) => this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                                 <td>
@@ -566,7 +566,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.staticValues.push(ref);
                                             ref.value = node.getAttribute(key)[value];
                                         }
-                                    }} onBlur={(e) => this.updateStaticValues()}
+                                    }} onBlur={(e) => this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                             </tr>,
@@ -715,6 +715,20 @@ export class Inspector extends React.Component<IProps, IState> {
                 <ReactTooltip />
             </div>
         );
+    }
+
+    public componentWillUnmount() {
+        // There might be changes in some text field whose onBlur Method did not trigger.
+        // Flush all of their changes before recycling the component.
+        this.processInspectorBlur();
+    }
+
+    private processInspectorBlur() {
+        this.updateXPaths();
+        this.updateTokens();
+        this.updateSendCookies();
+        this.updateReceiveCookies();
+        this.updateStaticValues();
     }
 
     private toggleTimeAggregation = (): void => {
