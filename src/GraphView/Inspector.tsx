@@ -34,6 +34,7 @@ interface IState {
     addingAssertion: boolean;
     activeGenerator: {key: string, genConfig: GeneratorConfig} | null;
     activeAssertion: AssertionConfig | null;
+    assertionDoesNotHaveToBeAdded: boolean;
     receiveCookies: any;
     sendCookies: any;
 }
@@ -65,6 +66,7 @@ export class Inspector extends React.Component<IProps, IState> {
             addingAssertion: false,
             addingAuth: false,
             addingGenerator: false,
+            assertionDoesNotHaveToBeAdded: false,
             receiveCookies: {},
             sendCookies: {},
         };
@@ -214,16 +216,18 @@ export class Inspector extends React.Component<IProps, IState> {
         }
 
         const node: RequestNode = this.props.node;
+        if (!this.state.assertionDoesNotHaveToBeAdded) {
+            node.addAssertion(config);
+        }
 
-        node.addAssertion(config);
-
-        this.setState({addingAssertion: false});
+        this.setState({addingAssertion: false, assertionDoesNotHaveToBeAdded: false});
     }
 
     public handleCancelAssertionDialog = () => {
         this.setState({
             activeAssertion: null,
             addingAssertion: false,
+            assertionDoesNotHaveToBeAdded: false,
         });
     }
 
@@ -250,6 +254,8 @@ export class Inspector extends React.Component<IProps, IState> {
         this.setState({
             activeAssertion: assertion,
             addingAssertion: true,
+            // assertion is already known, editing values will propagate
+            assertionDoesNotHaveToBeAdded: true,
         });
     }
 
