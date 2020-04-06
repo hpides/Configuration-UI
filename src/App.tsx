@@ -47,6 +47,8 @@ class App extends React.Component<{}, IState> {
 
     private lastExport: any = {};
 
+    private unloadHandler: () => void;
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -70,10 +72,19 @@ class App extends React.Component<{}, IState> {
                 view.enableDeleteKey();
             });
         }};
+        this.unloadHandler = () => {
+            this.export();
+            localStorage.setItem("lastConfig", this.lastExport.json);
+        };
     }
 
     public componentDidMount() {
+        const lastConfig = window.localStorage.getItem("lastConfig");
+        if (lastConfig) {
+            this.import(JSON.parse(lastConfig));
+        }
         this.requestGeneratorHost = process.env.REACT_APP_REQGEN_HOST || window.location + "/reqgen";
+        window.addEventListener("beforeunload", this.unloadHandler);
     }
 
     public changeView = (view: Views, story: string | null) => {
@@ -282,6 +293,12 @@ class App extends React.Component<{}, IState> {
                     </button>
 
                     <button onClick={this.startTest}>Start test</button>
+                    <button onClick={() => {
+                        // else the handler would immediately re-add the export to localstorage
+                        window.removeEventListener("beforeunload", this.unloadHandler);
+                        window.localStorage.removeItem("lastConfig");
+                        window.location.reload();
+                    }}>Discard current configuration</button>
                     <img src={logo} className="App-logo" alt="logo"/>
                     <div style={this.state.pdgfRunning ? {visibility: "visible"} : {visibility: "hidden"}}>
                         PDGF running
