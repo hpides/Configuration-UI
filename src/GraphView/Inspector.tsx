@@ -57,6 +57,9 @@ export class Inspector extends React.Component<IProps, IState> {
     private xpathTargets: HTMLInputElement[] = [];
     private staticValueNames: HTMLInputElement[] = [];
     private staticValues: HTMLInputElement[] = [];
+    private sendHeaderExpressions: HTMLInputElement[] = [];
+    private sendHeaderNames: HTMLInputElement[] = [];
+    private receiveHeaderNames: HTMLInputElement[] = [];
     constructor(props: any) {
         super(props);
 
@@ -579,6 +582,77 @@ export class Inspector extends React.Component<IProps, IState> {
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add static value</button>);
+            } else if (key === "sendHeaders") {
+                inputs.push(<label data-tip="Left input fields require the text for the header and might use variable expansion. Right side is respective Header name.">
+                    Headers to send
+                </label>);
+                const values: any = node.getAttribute(key);
+
+                const valueTable =
+                <table>
+                    <tbody>
+                    <tr><td>Expression</td><td>Header names</td></tr>
+                        {Object.keys(values).map((value) =>
+                            <tr id={value}>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.sendHeaderExpressions.push(ref);
+                                            ref.value = value;
+                                        }
+                                    }} onBlur={(e) => this.processInspectorBlur()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.sendHeaderNames.push(ref);
+                                            ref.value = node.getAttribute(key)[value];
+                                        }
+                                    }} onBlur={(e) => this.processInspectorBlur()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                            </tr>,
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(valueTable);
+                inputs.push(<button onClick={() => {
+                    node.getAttribute(key)[""] = "";
+                    // the above action does not trigger React to re-render although we need to here
+                    this.forceUpdate();
+                }}>Add header to send</button>);
+            } else if (key === "receiveHeaders") {
+                inputs.push(<label data-tip="Names to be extracted from the response stored into the token. Given name is as well the token key as the header name.">
+                    Headers to receive
+                </label>);
+                const values: string[] = node.getAttribute(key);
+
+                const valueTable =
+                <table>
+                    <tbody>
+                    <tr><td>Header names</td></tr>
+                        {values.map((value) =>
+                            <tr id={value}>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.receiveHeaderNames.push(ref);
+                                            ref.value = value;
+                                        }
+                                    }} onBlur={() => this.processInspectorBlur()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(valueTable);
+                inputs.push(<button onClick={() => {
+                    (node.getAttribute(key) as string[]).push("");
+                    // the above action does not trigger React to re-render although we need to here
+                    this.forceUpdate();
+                }}>Add header to receive</button>);
             } else if (key === "table") {
                 // tablename has to be a selection box
 
@@ -729,6 +803,8 @@ export class Inspector extends React.Component<IProps, IState> {
         this.updateSendCookies();
         this.updateReceiveCookies();
         this.updateStaticValues();
+        this.updateSendHeaders();
+        this.updateReceiveHeaders();
     }
 
     private toggleTimeAggregation = (): void => {
@@ -795,5 +871,24 @@ export class Inspector extends React.Component<IProps, IState> {
             }
         });
         return ret;
+    }
+
+    private updateSendHeaders(): void {
+        const headers: any = {};
+        for (let i = 0; i < this.sendHeaderExpressions.length; i++) {
+            headers[this.sendHeaderExpressions[i].value] = this.sendHeaderNames[i].value;
+        }
+        this.props.node.setAttribute("sendHeaders", headers);
+        // called in onBlur
+        this.props.enableDeleteKey();
+    }
+    private updateReceiveHeaders(): void {
+        const headers = new Set<string>()
+        for (let i = 0; i < this.receiveHeaderNames.length; i++) {
+            headers.add(this.receiveHeaderNames[i].value);
+        }
+        this.props.node.setAttribute("receiveHeaders", Array.from(headers));
+        // called in onBlur
+        this.props.enableDeleteKey();
     }
 }
