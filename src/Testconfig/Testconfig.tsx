@@ -81,7 +81,7 @@ export class Testconfig extends React.Component<{}, IState> {
 
                 <div className="row">
                     <div className="col-25">
-                        <label data-tip="YOLO!!" htmlFor="activeInstancesPerSecond">Active users per second</label>
+                        <label data-tip="Number of simulated users per second" htmlFor="activeInstancesPerSecond">Active users per second</label>
                     </div>
                     <div className="col-75">
                         <input
@@ -109,7 +109,7 @@ export class Testconfig extends React.Component<{}, IState> {
                 </div>
                 <div className="row">
                     <div className="col-25">
-                        <label htmlFor="maximumConcurrentRequests">Global session pooling disabled</label>
+                        <label htmlFor="noSession">Global session pooling disabled</label>
                     </div>
                     <div className="col-75">
                         <input
