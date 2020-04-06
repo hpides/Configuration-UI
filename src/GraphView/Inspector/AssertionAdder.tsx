@@ -3,8 +3,8 @@ import {
     AssertionConfig,
     ContentNotEmptyAssertion,
     ContentTypeAssertion,
-    ResponseCodeAssertion, XPATHAssertion,
-} from "./AssertionConfig";
+    JSONPATHAssertion, ResponseCodeAssertion,
+    XPATHAssertion} from "./AssertionConfig";
 import "./GeneratorAdder.css";
 
 interface IProps {
@@ -90,6 +90,14 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             this.assertionChanged,
                         )});
                         break;
+                    case "JSONPATH":
+                        this.setState({assertionConfig: new JSONPATHAssertion(
+                            this.props.disableDeleteKey,
+                            this.props.enableDeleteKey,
+                            this.state.name,
+                            this.assertionChanged,
+                        )});
+                        break;
                 }
                 break;
         }
@@ -143,6 +151,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                                     <option value="CONTENT_NOT_EMPTY">Content not empty</option>
                                     <option value="CONTENT_TYPE">Content type</option>
                                     <option value="XPATH">XPATH</option>
+                                    <option value="JSONPATH">JSONPATH</option>
                                 </select>
                             </div>
                         </div>

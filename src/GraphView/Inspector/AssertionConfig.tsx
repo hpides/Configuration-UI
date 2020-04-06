@@ -128,7 +128,7 @@ export class XPATHAssertion extends AssertionConfig {
         return(
             <div className="generator-config">
                 <ReactTooltip />
-                <label data-tip="Enter a valid XPATH expression. If the expression does not evaluate to a non-empty Stringvalue, the assertions is considered failed.">XPATH expression: </label>
+                <label data-tip="Enter a valid XPATH expression. If the expression does not evaluate to a non-empty String value, the assertions is considered failed.">XPATH expression: </label>
                 <input
                     onFocus={this.keyhandler.disableDeleteKey}
                     onBlur={this.keyhandler.enableDeleteKey}
@@ -137,6 +137,32 @@ export class XPATHAssertion extends AssertionConfig {
                     onChange={this.inputChanged}
                     onKeyPress={keyPressed}
                     value={this.xpath}/>
+            </div>
+    );
+    }
+}
+
+export class JSONPATHAssertion extends AssertionConfig {
+
+    public static getTypeString() {
+        return "JSONPATH";
+    }
+    public type = JSONPATHAssertion.getTypeString();
+    public jsonpath = "$[?(@.attr1=~ /val1/ && @.attr2=~ /attr2/)]";
+
+    public render(keyPressed: (event: React.KeyboardEvent) => void) {
+        return(
+            <div className="generator-config">
+                <ReactTooltip />
+                <label data-tip="Enter a valid JSONPATH expression. If the expression does not evaluate to a non-empty String value, the assertions is considered failed. Documentation can be found under https://github.com/json-path/JsonPath.">JSONPATH expression: </label>
+                <input
+                    onFocus={this.keyhandler.disableDeleteKey}
+                    onBlur={this.keyhandler.enableDeleteKey}
+                    type="text"
+                    name="jsonpath"
+                    onChange={this.inputChanged}
+                    onKeyPress={keyPressed}
+                    value={this.jsonpath}/>
             </div>
     );
     }
