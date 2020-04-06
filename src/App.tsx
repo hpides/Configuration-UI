@@ -73,7 +73,15 @@ class App extends React.Component<{}, IState> {
     }
 
     public componentDidMount() {
+        const lastConfig = window.localStorage.getItem("lastConfig")
+        if(lastConfig){
+            this.import(JSON.parse(lastConfig))
+        }
         this.requestGeneratorHost = process.env.REACT_APP_REQGEN_HOST || window.location + "/reqgen";
+        window.addEventListener("beforeunload", () => {
+            this.export()
+            localStorage.setItem("lastConfig", this.lastExport.json)
+        })
     }
 
     public changeView = (view: Views, story: string | null) => {
