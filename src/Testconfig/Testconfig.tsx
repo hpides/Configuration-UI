@@ -81,7 +81,8 @@ export class Testconfig extends React.Component<{}, IState> {
 
                 <div className="row">
                     <div className="col-25">
-                        <label data-tip="Number of simulated users per second" htmlFor="activeInstancesPerSecond">Active users per second</label>
+                        <label data-tip="Number of simulated users per second"
+                               htmlFor="activeInstancesPerSecond">Active users per second</label>
                     </div>
                     <div className="col-75">
                         <input

@@ -717,8 +717,9 @@ export class Inspector extends React.Component<IProps, IState> {
         );
     }
 
-    componentWillUnmount(){
-        //There might be changes in some text field whose onBlur Method did not trigger. Flush all of their changes before recycling the component.
+    public componentWillUnmount() {
+        // There might be changes in some text field whose onBlur Method did not trigger.
+        // Flush all of their changes before recycling the component.
         this.processInspectorBlur();
     }
 
