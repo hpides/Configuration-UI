@@ -3,8 +3,8 @@ import {
     AssertionConfig,
     ContentNotEmptyAssertion,
     ContentTypeAssertion,
-    ResponseCodeAssertion, XPATHAssertion,
-    JSONPATHAssertion} from "./AssertionConfig";
+    JSONPATHAssertion, ResponseCodeAssertion,
+    XPATHAssertion} from "./AssertionConfig";
 import "./GeneratorAdder.css";
 
 interface IProps {

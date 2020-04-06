@@ -9,7 +9,7 @@ import {
     ContentTypeAssertion,
     JSONPATHAssertion,
     ResponseCodeAssertion,
-    XPATHAssertion
+    XPATHAssertion,
 } from "./Inspector/AssertionConfig";
 import {AssertionConfig} from "./Inspector/AssertionConfig";
 import {AuthAdder} from "./Inspector/AuthAdder";
