@@ -28,6 +28,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
             this.props.disableDeleteKey,
             this.props.enableDeleteKey,
             "",
+            () => this.forceUpdate(),
             this.assertionChanged,
         );
         let name = "";
@@ -56,6 +57,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                 assertionConfig.setAttribute(event.currentTarget.name, event.currentTarget.value);
                 this.setState({assertionConfig});
                 break;
+            //forceUpdate is wrapped in lambda, since else the "this" context would be different
             case "generator":
                 switch (event.currentTarget.value) {
                     case "RESPONSE_CODE":
@@ -63,6 +65,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             this.props.disableDeleteKey,
                             this.props.enableDeleteKey,
                             this.state.name,
+                            () => this.forceUpdate(),
                             this.assertionChanged,
                         )});
                         break;
@@ -71,6 +74,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             this.props.disableDeleteKey,
                             this.props.enableDeleteKey,
                             this.state.name,
+                            () => this.forceUpdate(),
                             this.assertionChanged,
                         )});
                         break;
@@ -79,6 +83,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             this.props.disableDeleteKey,
                             this.props.enableDeleteKey,
                             this.state.name,
+                            () => this.forceUpdate(),
                             this.assertionChanged,
                         )});
                         break;
@@ -87,6 +92,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             this.props.disableDeleteKey,
                             this.props.enableDeleteKey,
                             this.state.name,
+                            () => this.forceUpdate(),
                             this.assertionChanged,
                         )});
                         break;
@@ -95,6 +101,7 @@ export class AssertionAdder extends React.Component<IProps, IState> {
                             this.props.disableDeleteKey,
                             this.props.enableDeleteKey,
                             this.state.name,
+                            () => this.forceUpdate(),
                             this.assertionChanged,
                         )});
                         break;

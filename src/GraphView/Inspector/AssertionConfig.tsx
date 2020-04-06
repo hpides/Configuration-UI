@@ -10,6 +10,9 @@ export abstract class AssertionConfig {
      get keyhandler(): { enableDeleteKey: () => void; disableDeleteKey: () => void } {
         return this._keyhandler;
     }
+    set keyhandler(handler: {enableDeleteKey: () => void; disableDeleteKey: () => void }) {
+        this._keyhandler = handler
+    }
 
     public static getTypeString(): string {
         return "";
@@ -20,14 +23,22 @@ export abstract class AssertionConfig {
     public name: string = "";
     public updateParent?: (assertion: AssertionConfig) => void;
     @Exclude()
-    private readonly _keyhandler: {
+    private _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
     };
+    @Exclude()
+    private _redraw: ()=> void;
+
+    set redraw(newVal: () => void){
+        this._redraw = newVal
+    }
+
     constructor(
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
         name: string = "",
+        redraw: ()=> void,
         updateParent?: (assertion: AssertionConfig) => void,
     ) {
         this._keyhandler = {
@@ -36,6 +47,7 @@ export abstract class AssertionConfig {
         };
         this.name = name;
         this.updateParent = updateParent;
+        this._redraw = redraw
     }
 
     public setAttribute(key: string, value: any) {
@@ -55,6 +67,7 @@ export abstract class AssertionConfig {
         if (event) {
             this.setAttribute(event.currentTarget.name, event.currentTarget.value);
             if (this.updateParent) { this.updateParent(this); }
+            this._redraw()
         }
     }
 
