@@ -3,7 +3,7 @@ import { AtomType } from "../ConfigJson";
 import {
     AssertionConfig,
     ContentNotEmptyAssertion,
-    ContentTypeAssertion,
+    ContentTypeAssertion, JSONPATHAssertion,
     ResponseCodeAssertion, XPATHAssertion,
 } from "../Inspector/AssertionConfig";
 import { Node } from "./Node";
@@ -77,6 +77,10 @@ export class RequestNode extends Node {
                         break;
                     case XPATHAssertion.getTypeString():
                         conf = new XPATHAssertion(this.keyhandler.disableDeleteKey,
+                            this.keyhandler.enableDeleteKey);
+                        break;
+                    case JSONPATHAssertion.getTypeString():
+                        conf = new JSONPATHAssertion(this.keyhandler.disableDeleteKey,
                             this.keyhandler.enableDeleteKey);
                         break;
                     default:

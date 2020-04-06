@@ -4,7 +4,13 @@ import ReactTooltip from "react-tooltip";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import "./Inspector.css";
 import {AssertionAdder} from "./Inspector/AssertionAdder";
-import {ContentNotEmptyAssertion, ContentTypeAssertion, ResponseCodeAssertion, XPATHAssertion} from "./Inspector/AssertionConfig";
+import {
+    ContentNotEmptyAssertion,
+    ContentTypeAssertion,
+    JSONPATHAssertion,
+    ResponseCodeAssertion,
+    XPATHAssertion
+} from "./Inspector/AssertionConfig";
 import {AssertionConfig} from "./Inspector/AssertionConfig";
 import {AuthAdder} from "./Inspector/AuthAdder";
 import {GeneratorAdder} from "./Inspector/GeneratorAdder";
@@ -335,6 +341,8 @@ export class Inspector extends React.Component<IProps, IState> {
                 assertionText = "Response has result for XPATH " + assertion.xpath;
             } else if (assertion instanceof ContentNotEmptyAssertion) {
                 assertionText = "Response is not empty";
+            } else if (assertion instanceof JSONPATHAssertion) {
+                assertionText = "Response has result for JSONPATH";
             }
             rows.push(
                 <tr key={i} data-index={i} onClick={this.editAssertion}>
