@@ -301,11 +301,13 @@ export class Inspector extends React.Component<IProps, IState> {
                 <tr key={i} data-key={keys[i]} onClick={this.editGenerator}>
                     <td>{keys[i]}</td>
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
+                    <td>
                     <button
                         className="delete-data-btn"
                         data-key={keys[i]}
                         onClick={this.deleteGenerator}
                     >&times;</button>
+                    </td>
                 </tr>,
             );
         }
@@ -362,11 +364,13 @@ export class Inspector extends React.Component<IProps, IState> {
                 <tr key={i} data-index={i} onClick={this.editAssertion}>
                     <td>{assertion.name}</td>
                     <td>{assertionText}</td>
+                    <td>
                     <button
                         className="delete-data-btn"
                         data-index={i}
                         onClick={this.deleteAssertion}
                     >&times;</button>
+                    </td>
                 </tr>,
             );
         }
@@ -418,17 +422,17 @@ export class Inspector extends React.Component<IProps, IState> {
 
             } else if (key === "receiveCookies" || key === "sendCookies") {
                 const description = (key === "receiveCookies") ? "Cookies to extract" : "Cookies to send";
-                inputs.push(<label data-tip={(key === "receiveCookies") ? "Cookies from the result which will be stored in the Token." : "Cookies from the token to send in the request."}>{description}</label>);
+                inputs.push(<label key={key} data-tip={(key === "receiveCookies") ? "Cookies from the result which will be stored in the Token." : "Cookies from the token to send in the request."}>{description}</label>);
                 const cookies: any = node.getAttribute(key);
 
                 const cookieTable =
-                <table>
+                <table key={key + "table"}>
                     <tbody>
                     <tr><td>{(key === "receiveCookies") ? "Response Cookie" : "Token key"}</td><td>{(key === "receiveCookies") ? "Token key" : "Request Cookie"}</td></tr>
                         {Object.keys(cookies).map((cookie) =>
-                            <tr id={cookie}>
+                            <tr key={cookie}>
                                 <td>
-                                    <input type="text" ref={(ref) => {
+                                    <input key={cookie + "left"} type="text" ref={(ref) => {
                                         if (ref) {
                                             if ((key === "receiveCookies")) {
                                                 this.receiveCookieKeys.push(ref);
@@ -442,7 +446,7 @@ export class Inspector extends React.Component<IProps, IState> {
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                                 <td>
-                                    <input type="text" ref={(ref) => {
+                                    <input key={cookie + "right"} type="text" ref={(ref) => {
                                         if (ref) {
                                             if ((key === "receiveCookies")) {
                                                 this.receiveCookieValues.push(ref);
@@ -460,21 +464,21 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(cookieTable);
-                inputs.push(<button onClick={() => {
+                inputs.push(<button key={key+"button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add Cookie</button>);
             } else if (key === "tokenNames") {
-                inputs.push(<label data-tip="Convenience wrapper for custom xpath. E.g. if '_csrf' is entered, the XPATH expression '//input[@type = 'hidden'][@name = 'csrf']/@value' will be evaluated as described below.">Hidden fields to extract</label>);
+                inputs.push(<label key={key} data-tip="Convenience wrapper for custom xpath. E.g. if '_csrf' is entered, the XPATH expression '//input[@type = 'hidden'][@name = 'csrf']/@value' will be evaluated as described below.">Hidden fields to extract</label>);
                 const tokens: any = node.getAttribute(key);
 
                 const cookieTable =
-                <table>
+                <table key={key+"table"}>
                     <tbody>
                     <tr><td>Field name</td><td>Token key</td></tr>
                         {Object.keys(tokens).map((token) =>
-                            <tr id={token}>
+                            <tr key={token}>
                                 <td>
                                     <input type="text" ref={(ref) => {
                                         if (ref) {
@@ -498,21 +502,21 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(cookieTable);
-                inputs.push(<button onClick={() => {
+                inputs.push(<button key={key+"button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add hidden field</button>);
             } else if (key === "xpaths") {
-                inputs.push(<label data-tip="XPATH expressions on the left will be evaluated for the returned page. The extracted string (first hit) will be stored in the token under the key on the right.">Custom values from the page (XPATH)</label>);
+                inputs.push(<label key={key} data-tip="XPATH expressions on the left will be evaluated for the returned page. The extracted string (first hit) will be stored in the token under the key on the right.">Custom values from the page (XPATH)</label>);
                 const xpaths: any = node.getAttribute(key);
 
                 const xpathTable =
-                <table>
+                <table key={key+"table"}>
                     <tbody>
                     <tr><td>XPATH statement</td><td>Token key</td></tr>
                         {Object.keys(xpaths).map((xpath) =>
-                            <tr id={xpath}>
+                            <tr key={xpath}>
                                 <td>
                                     <input type="text" ref={(ref) => {
                                         if (ref) {
@@ -536,24 +540,23 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(xpathTable);
-                inputs.push(<button onClick={() => {
+                inputs.push(<button key={key+"button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add XPath expression</button>);
             } else if (key === "staticValues") {
-                inputs.push(<label data-tip="Values to put into the token for every run">
+                inputs.push(<label key={key} data-tip="Values to put into the token for every run">
                     Static values for every run
                 </label>);
-                inputs.push(<i className="fa fa-question-circle" aria-hidden="true" />);
                 const values: any = node.getAttribute(key);
 
                 const valueTable =
-                <table>
+                <table key={key+"table"}>
                     <tbody>
                     <tr><td>Token key</td><td>Value</td></tr>
                         {Object.keys(values).map((value) =>
-                            <tr id={value}>
+                            <tr key={value}>
                                 <td>
                                     <input type="text" ref={(ref) => {
                                         if (ref) {
@@ -577,23 +580,23 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(valueTable);
-                inputs.push(<button onClick={() => {
+                inputs.push(<button key={key+"button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add static value</button>);
             } else if (key === "sendHeaders") {
-                inputs.push(<label data-tip="Left input fields require the text for the header and might use variable expansion. Right side is respective Header name.">
+                inputs.push(<label key={key} data-tip="Left input fields require the text for the header and might use variable expansion. Right side is respective Header name.">
                     Headers to send
                 </label>);
                 const values: any = node.getAttribute(key);
 
                 const valueTable =
-                <table>
+                <table key={key+"table"}>
                     <tbody>
                     <tr><td>Expression</td><td>Header names</td></tr>
                         {Object.keys(values).map((value) =>
-                            <tr id={value}>
+                            <tr key={value}>
                                 <td>
                                     <input type="text" ref={(ref) => {
                                         if (ref) {
@@ -617,23 +620,23 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(valueTable);
-                inputs.push(<button onClick={() => {
+                inputs.push(<button key={key+"button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add header to send</button>);
             } else if (key === "receiveHeaders") {
-                inputs.push(<label data-tip="Names to be extracted from the response stored into the token. Given name is as well the token key as the header name.">
+                inputs.push(<label key={key} data-tip="Names to be extracted from the response stored into the token. Given name is as well the token key as the header name.">
                     Headers to receive
                 </label>);
                 const values: string[] = node.getAttribute(key);
 
                 const valueTable =
-                <table>
+                <table key={key+"table"}>
                     <tbody>
                     <tr><td>Header names</td></tr>
                         {values.map((value) =>
-                            <tr id={value}>
+                            <tr key={value}>
                                 <td>
                                     <input type="text" ref={(ref) => {
                                         if (ref) {
@@ -643,12 +646,12 @@ export class Inspector extends React.Component<IProps, IState> {
                                     }} onBlur={() => this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
-                            </tr>
+                            </tr>,
                         )}
                     </tbody>
                 </table>;
                 inputs.push(valueTable);
-                inputs.push(<button onClick={() => {
+                inputs.push(<button key={key+"button"} onClick={() => {
                     (node.getAttribute(key) as string[]).push("");
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
@@ -723,8 +726,11 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(label);
                 inputs.push(input);
             } else if (key === "timeAggregation") {
-                const box = <label>Aggregate recorded times: <input type="checkbox" checked={node.getAttribute(key) !== false} onChange={this.toggleTimeAggregation} /></label>;
-                inputs.push(<label data-tip={"If checked, recorded times for thid endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>{box}</label>);
+                const box = <label>Aggregate recorded times:
+                    <input key={key+"box"} type="checkbox" checked={node.getAttribute(key) !== false}
+                           onChange={this.toggleTimeAggregation} />
+                </label>;
+                inputs.push(<label key={key} data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>{box}</label>);
             } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
@@ -883,9 +889,9 @@ export class Inspector extends React.Component<IProps, IState> {
         this.props.enableDeleteKey();
     }
     private updateReceiveHeaders(): void {
-        const headers = new Set<string>()
-        for (let i = 0; i < this.receiveHeaderNames.length; i++) {
-            headers.add(this.receiveHeaderNames[i].value);
+        const headers = new Set<string>();
+        for (const header of this.receiveHeaderNames) {
+            headers.add(header.value);
         }
         this.props.node.setAttribute("receiveHeaders", Array.from(headers));
         // called in onBlur
