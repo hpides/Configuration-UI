@@ -464,7 +464,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(cookieTable);
-                inputs.push(<button key={key+"button"} onClick={() => {
+                inputs.push(<button key={key + "button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
@@ -474,7 +474,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 const tokens: any = node.getAttribute(key);
 
                 const cookieTable =
-                <table key={key+"table"}>
+                <table key={key + "table"}>
                     <tbody>
                     <tr><td>Field name</td><td>Token key</td></tr>
                         {Object.keys(tokens).map((token) =>
@@ -502,7 +502,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(cookieTable);
-                inputs.push(<button key={key+"button"} onClick={() => {
+                inputs.push(<button key={key + "button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
@@ -512,7 +512,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 const xpaths: any = node.getAttribute(key);
 
                 const xpathTable =
-                <table key={key+"table"}>
+                <table key={key + "table"}>
                     <tbody>
                     <tr><td>XPATH statement</td><td>Token key</td></tr>
                         {Object.keys(xpaths).map((xpath) =>
@@ -540,7 +540,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(xpathTable);
-                inputs.push(<button key={key+"button"} onClick={() => {
+                inputs.push(<button key={key + "button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
@@ -552,7 +552,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 const values: any = node.getAttribute(key);
 
                 const valueTable =
-                <table key={key+"table"}>
+                <table key={key + "table"}>
                     <tbody>
                     <tr><td>Token key</td><td>Value</td></tr>
                         {Object.keys(values).map((value) =>
@@ -580,7 +580,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(valueTable);
-                inputs.push(<button key={key+"button"} onClick={() => {
+                inputs.push(<button key={key + "button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
@@ -592,7 +592,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 const values: any = node.getAttribute(key);
 
                 const valueTable =
-                <table key={key+"table"}>
+                <table key={key + "table"}>
                     <tbody>
                     <tr><td>Expression</td><td>Header names</td></tr>
                         {Object.keys(values).map((value) =>
@@ -620,7 +620,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(valueTable);
-                inputs.push(<button key={key+"button"} onClick={() => {
+                inputs.push(<button key={key + "button"} onClick={() => {
                     node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
@@ -632,7 +632,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 const values: string[] = node.getAttribute(key);
 
                 const valueTable =
-                <table key={key+"table"}>
+                <table key={key + "table"}>
                     <tbody>
                     <tr><td>Header names</td></tr>
                         {values.map((value) =>
@@ -651,7 +651,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     </tbody>
                 </table>;
                 inputs.push(valueTable);
-                inputs.push(<button key={key+"button"} onClick={() => {
+                inputs.push(<button key={key + "button"} onClick={() => {
                     (node.getAttribute(key) as string[]).push("");
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
@@ -727,7 +727,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(input);
             } else if (key === "timeAggregation") {
                 const box = <label>Aggregate recorded times:
-                    <input key={key+"box"} type="checkbox" checked={node.getAttribute(key) !== false}
+                    <input key={key + "box"} type="checkbox" checked={node.getAttribute(key) !== false}
                            onChange={this.toggleTimeAggregation} />
                 </label>;
                 inputs.push(<label key={key} data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>{box}</label>);
