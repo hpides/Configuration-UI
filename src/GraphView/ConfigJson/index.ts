@@ -452,8 +452,9 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
                 request.xpaths = clearEmptyValuesInDict(attr);
             }
             attr = node.getAttribute("timeAggregation");
-            if (attr) {
-                request.timeAggregation = attr as boolean;
+            //might also be null or undefined
+            if (attr === true || attr === false) {
+                request.timeAggregation = attr;
             }
             attr = node.getAttribute("sendHeaders");
             if (attr) {
