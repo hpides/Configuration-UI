@@ -45,6 +45,8 @@ export class RequestNode extends Node {
         this.attributes.tokenNames = {};
         this.attributes.xpaths = {};
         this.attributes.timeAggregation = true;
+        this.attributes.sendHeaders = {};
+        this.attributes.receiveHeaders = [];
     }
 
     public getAtomType(): AtomType {

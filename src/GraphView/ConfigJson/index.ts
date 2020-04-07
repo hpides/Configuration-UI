@@ -62,6 +62,8 @@ interface IRequestAtom extends IBaseAtom {
     timeAggregation: boolean;
     tokenNames?: any;
     xpaths?: any;
+    sendHeaders: any;
+    receiveHeaders: string[];
 }
 
 interface IDelayAtom extends IBaseAtom {
@@ -450,9 +452,17 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
                 request.xpaths = clearEmptyValuesInDict(attr);
             }
             attr = node.getAttribute("timeAggregation");
+            // might also be null or undefined
+            if (attr === true || attr === false) {
+                request.timeAggregation = attr;
+            }
+            attr = node.getAttribute("sendHeaders");
             if (attr) {
-                console.log("EXPORT!!!");
-                request.timeAggregation = attr as boolean;
+                request.sendHeaders = clearEmptyValuesInDict(attr);
+            }
+            attr = node.getAttribute("receiveHeaders");
+            if (attr) {
+                request.receiveHeaders = attr;
             }
             return {atoms: [request]};
     }
