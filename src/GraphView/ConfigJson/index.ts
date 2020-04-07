@@ -461,7 +461,7 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
             }
             attr = node.getAttribute("receiveHeaders");
             if (attr) {
-                request.receiveHeaders = attr as string[];
+                request.receiveHeaders = attr;
             }
             return {atoms: [request]};
     }
