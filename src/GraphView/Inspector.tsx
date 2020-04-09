@@ -313,13 +313,14 @@ export class Inspector extends React.Component<IProps, IState> {
             );
         }
         let isExistingConfig = false;
-        for(let datum of Array.from(node.dataToGenerate.value.values())){
-            if(datum.getTypeString() === "EXISTING"){
-                isExistingConfig = true
+        for (const datum of Array.from(node.dataToGenerate.value.values())) {
+            if (datum.getTypeString() === "EXISTING") {
+                isExistingConfig = true;
             }
         }
         let locked = "";
-        //after reload / import also data generations that are not existing data config have (generated) table names --> make sure they are not locked away
+        // after reload / import also data generations that are not existing data config have (generated) table names
+        // --> make sure they are not locked away
         if (node.getAttribute("table") !== null && isExistingConfig) {
             locked = " locked";
         }
