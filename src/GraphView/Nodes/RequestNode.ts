@@ -46,7 +46,7 @@ export class RequestNode extends Node {
         this.attributes.xpaths = {};
         this.attributes.timeAggregation = true;
         this.attributes.sendHeaders = {};
-        this.attributes.receiveHeaders = [];
+        this.attributes.receiveHeaders = {};
     }
 
     public getAtomType(): AtomType {

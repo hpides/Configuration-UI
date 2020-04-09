@@ -63,7 +63,7 @@ interface IRequestAtom extends IBaseAtom {
     tokenNames?: any;
     xpaths?: any;
     sendHeaders: any;
-    receiveHeaders: string[];
+    receiveHeaders: any;
 }
 
 interface IDelayAtom extends IBaseAtom {
@@ -462,7 +462,7 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
             }
             attr = node.getAttribute("receiveHeaders");
             if (attr) {
-                request.receiveHeaders = attr;
+                request.receiveHeaders = clearEmptyValuesInDict(attr);
             }
             return {atoms: [request]};
     }

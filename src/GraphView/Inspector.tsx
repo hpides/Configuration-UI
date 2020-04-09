@@ -60,6 +60,7 @@ export class Inspector extends React.Component<IProps, IState> {
     private sendHeaderExpressions: HTMLInputElement[] = [];
     private sendHeaderNames: HTMLInputElement[] = [];
     private receiveHeaderNames: HTMLInputElement[] = [];
+    private receiveHeaderValues: HTMLInputElement[] = [];
     constructor(props: any) {
         super(props);
 
@@ -626,16 +627,16 @@ export class Inspector extends React.Component<IProps, IState> {
                     this.forceUpdate();
                 }}>Add header to send</button>);
             } else if (key === "receiveHeaders") {
-                inputs.push(<label key={key} data-tip="Names to be extracted from the response stored into the token. Given name is as well the token key as the header name.">
+                inputs.push(<label key={key} data-tip="Names to be extracted from the response and stored into the token. Left is the response name, right is the target name in the token.">
                     Headers to receive
                 </label>);
-                const values: string[] = node.getAttribute(key);
+                const values: any = node.getAttribute(key);
 
                 const valueTable =
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Header names</td></tr>
-                        {values.map((value) =>
+                    <tr><td>Header name</td><td>Name in token</td></tr>
+                        {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
                                     <input type="text" ref={(ref) => {
@@ -643,7 +644,16 @@ export class Inspector extends React.Component<IProps, IState> {
                                             this.receiveHeaderNames.push(ref);
                                             ref.value = value;
                                         }
-                                    }} onBlur={() => this.processInspectorBlur()}
+                                    }} onBlur={(e) => this.processInspectorBlur()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.receiveHeaderValues.push(ref);
+                                            ref.value = node.getAttribute(key)[value];
+                                        }
+                                    }} onBlur={(e) => this.processInspectorBlur()}
                                        onFocus={this.props.disableDeleteKey}/>
                                 </td>
                             </tr>,
@@ -652,7 +662,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 </table>;
                 inputs.push(valueTable);
                 inputs.push(<button key={key + "button"} onClick={() => {
-                    (node.getAttribute(key) as string[]).push("");
+                    node.getAttribute(key)[""] = "";
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add header to receive</button>);
@@ -888,12 +898,13 @@ export class Inspector extends React.Component<IProps, IState> {
         // called in onBlur
         this.props.enableDeleteKey();
     }
+
     private updateReceiveHeaders(): void {
-        const headers = new Set<string>();
-        for (const header of this.receiveHeaderNames) {
-            headers.add(header.value);
+        const headers: any = {};
+        for (let i = 0; i < this.receiveHeaderNames.length; i++) {
+            headers[this.receiveHeaderNames[i].value] = this.receiveHeaderValues[i].value;
         }
-        this.props.node.setAttribute("receiveHeaders", Array.from(headers));
+        this.props.node.setAttribute("receiveHeaders", headers);
         // called in onBlur
         this.props.enableDeleteKey();
     }
