@@ -195,32 +195,13 @@ class App extends React.Component<{}, IState> {
             this.testConfig.import(testConfig);
         }
         if (this.state.existingConfigComponent && testConfig.existingXMLs) {
-            // class-transformer is too stupid to map this to an IState, si we do it manually...
-            const existing = testConfig.existingXMLs;
-            const allTables = new Set<string>();
-            for (const table of existing.allTables) {
-                allTables.add(table);
+            this.importUploadedPDGFConfigs(testConfig);
+        }
+        else {
+            //can not (yet) import PDGF config since component has not yet rendered. Defer until ref available
+            if(!this.state.existingConfigComponent && testConfig.existingXMLs !== {} && testConfig.existingXMLs){
+                this.lastConfig = testConfig
             }
-            const uploadedFiles = new Map<string, IUploadedFile>();
-
-            for (const member in existing.uploadedFiles) {
-                if (member) {
-                    const uploadedFile = existing.uploadedFiles[member];
-                    const fileRepr = {} as IUploadedFile;
-                    fileRepr.existingTables = uploadedFile.existingTables;
-                    fileRepr.fileContent = uploadedFile.fileContent;
-                    fileRepr.tableMapping = new Map<string, string[]>();
-                    for (const innerMember in uploadedFile.tableMapping) {
-                        if (innerMember) {
-                            const fields = uploadedFile.tableMapping[innerMember];
-                            fileRepr.tableMapping.set(innerMember, fields);
-                        }
-                    }
-                    uploadedFiles.set(member, fileRepr);
-                }
-            }
-
-            this.state.existingConfigComponent.setState({ allTables, uploadedFiles});
         }
         // need to re-render to create respective views before we can call the update
         this.forceUpdate(() => {
@@ -232,6 +213,38 @@ class App extends React.Component<{}, IState> {
                 views[i].setVisibility(false);
             }
         });
+    }
+
+    //used to import PDGF configs after reload
+    private lastConfig?: any = null;
+
+    private importUploadedPDGFConfigs = (testConfig: any) => {
+// class-transformer is too stupid to map this to an IState, si we do it manually...
+        const existing = testConfig.existingXMLs;
+        const allTables = new Set<string>();
+        for (const table of existing.allTables) {
+            allTables.add(table);
+        }
+        const uploadedFiles = new Map<string, IUploadedFile>();
+
+        for (const member in existing.uploadedFiles) {
+            if (member) {
+                const uploadedFile = existing.uploadedFiles[member];
+                const fileRepr = {} as IUploadedFile;
+                fileRepr.existingTables = uploadedFile.existingTables;
+                fileRepr.fileContent = uploadedFile.fileContent;
+                fileRepr.tableMapping = new Map<string, string[]>();
+                for (const innerMember in uploadedFile.tableMapping) {
+                    if (innerMember) {
+                        const fields = uploadedFile.tableMapping[innerMember];
+                        fileRepr.tableMapping.set(innerMember, fields);
+                    }
+                }
+                uploadedFiles.set(member, fileRepr);
+            }
+        }
+
+        this.state.existingConfigComponent?.setState({allTables, uploadedFiles});
     }
 
     public async startTest() {
@@ -330,7 +343,17 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.Existing ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            <ExistingConfigComponent ref={(ref) => {if (!this.state.existingConfigComponent) {this.setState({existingConfigComponent: ref}); }}}/>
+                            <ExistingConfigComponent ref={(ref) => {if (!this.state.existingConfigComponent) {
+                                //the import might happen before the setState is executed (!!!), so use the callback to process the unimported last config
+                                this.setState({existingConfigComponent: ref}, () => {
+                                    //load PDGF config that could not be restored because this component has not yet been rendered
+                                    if(this.lastConfig){
+                                        this.importUploadedPDGFConfigs(this.lastConfig)
+                                        //make sure not to re-import
+                                        this.lastConfig = null
+                                    }
+                                });
+                            }}}/>
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
