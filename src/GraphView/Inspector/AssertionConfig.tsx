@@ -14,6 +14,10 @@ export abstract class AssertionConfig {
         this._keyhandler = handler;
     }
 
+    set redraw(newVal: () => void) {
+        this._redraw = newVal;
+    }
+
     public static getTypeString(): string {
         return "";
     }
@@ -23,16 +27,12 @@ export abstract class AssertionConfig {
     public name: string = "";
     public updateParent?: (assertion: AssertionConfig) => void;
     @Exclude()
+    protected _redraw: () => void;
+    @Exclude()
     private _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
     };
-    @Exclude()
-    protected _redraw: () => void;
-
-    set redraw(newVal: () => void) {
-        this._redraw = newVal;
-    }
 
     constructor(
         disableDeleteKey: () => void,
@@ -138,14 +138,6 @@ export class XPATHAssertion extends AssertionConfig {
     public xpath = "//h1[text()='Hello World!']";
     public returnPage: boolean = false;
 
-    private invertReturnPage = (e:MouseEvent<any,any>)=>{
-        //During import, this method is called for some reason with e=undefined. Do not alter the value in this case.
-        if(e!==undefined) {
-            this.returnPage = !this.returnPage;
-            this._redraw()
-        }
-    };
-
     public render(keyPressed: (event: React.KeyboardEvent) => void) {
         return(
             <div className="generator-config">
@@ -165,6 +157,14 @@ export class XPATHAssertion extends AssertionConfig {
             </div>
     );
     }
+
+    private invertReturnPage = (e: MouseEvent<any, any>) => {
+        // During import, this method is called for some reason with e=undefined. Do not alter the value in this case.
+        if (e !== undefined) {
+            this.returnPage = !this.returnPage;
+            this._redraw();
+        }
+    }
 }
 
 export class JSONPATHAssertion extends AssertionConfig {
@@ -175,14 +175,6 @@ export class JSONPATHAssertion extends AssertionConfig {
     public type = JSONPATHAssertion.getTypeString();
     public jsonpath = "$[?(@.attr1=~ /val1/ && @.attr2=~ /attr2/)]";
     public returnResponse: boolean = false;
-
-    private invertReturnResponse = (e:MouseEvent<any,any>)=>{
-        //During import, this method is called for some reason with e=undefined. Do not alter the value in this case.
-        if(e!==undefined) {
-            this.returnResponse = !this.returnResponse;
-            this._redraw()
-        }
-    };
 
     public render(keyPressed: (event: React.KeyboardEvent) => void) {
         return(
@@ -202,6 +194,14 @@ export class JSONPATHAssertion extends AssertionConfig {
                        onClick={(e) => this.invertReturnResponse(e)} id={"returnResponse"} />
             </div>
     );
+    }
+
+    private invertReturnResponse = (e: MouseEvent<any, any>) => {
+        // During import, this method is called for some reason with e=undefined. Do not alter the value in this case.
+        if (e !== undefined) {
+            this.returnResponse = !this.returnResponse;
+            this._redraw();
+        }
     }
 }
 
