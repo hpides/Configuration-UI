@@ -1,5 +1,5 @@
 import {Exclude} from "class-transformer";
-import React from "react";
+import React, {MouseEvent} from "react";
 import ReactTooltip from "react-tooltip";
 import "reflect-metadata";
 /*tslint:disable:max-classes-per-file*/
@@ -28,7 +28,7 @@ export abstract class AssertionConfig {
         enableDeleteKey: () => void,
     };
     @Exclude()
-    private _redraw: () => void;
+    protected _redraw: () => void;
 
     set redraw(newVal: () => void) {
         this._redraw = newVal;
@@ -136,6 +136,15 @@ export class XPATHAssertion extends AssertionConfig {
     }
     public type = XPATHAssertion.getTypeString();
     public xpath = "//h1[text()='Hello World!']";
+    public returnPage: boolean = false;
+
+    private invertReturnPage = (e:MouseEvent<any,any>)=>{
+        //During import, this method is called for some reason with e=undefined. Do not alter the value in this case.
+        if(e!==undefined) {
+            this.returnPage = !this.returnPage;
+            this._redraw()
+        }
+    };
 
     public render(keyPressed: (event: React.KeyboardEvent) => void) {
         return(
@@ -150,6 +159,9 @@ export class XPATHAssertion extends AssertionConfig {
                     onChange={this.inputChanged}
                     onKeyPress={keyPressed}
                     value={this.xpath}/>
+                <label htmlFor="returnPage">Return whole page if no XPATH result was found:</label>
+                <input type="checkbox" checked={this.returnPage}
+                       onClick={(e) => this.invertReturnPage(e)} id={"returnPage"} />
             </div>
     );
     }
@@ -162,6 +174,15 @@ export class JSONPATHAssertion extends AssertionConfig {
     }
     public type = JSONPATHAssertion.getTypeString();
     public jsonpath = "$[?(@.attr1=~ /val1/ && @.attr2=~ /attr2/)]";
+    public returnResponse: boolean = false;
+
+    private invertReturnResponse = (e:MouseEvent<any,any>)=>{
+        //During import, this method is called for some reason with e=undefined. Do not alter the value in this case.
+        if(e!==undefined) {
+            this.returnResponse = !this.returnResponse;
+            this._redraw()
+        }
+    };
 
     public render(keyPressed: (event: React.KeyboardEvent) => void) {
         return(
@@ -176,6 +197,9 @@ export class JSONPATHAssertion extends AssertionConfig {
                     onChange={this.inputChanged}
                     onKeyPress={keyPressed}
                     value={this.jsonpath}/>
+                <label htmlFor="returnResponse">Return whole response if no JSONPATH result was found:</label>
+                <input type="checkbox" checked={this.returnResponse}
+                       onClick={(e) => this.invertReturnResponse(e)} id={"returnResponse"} />
             </div>
     );
     }
