@@ -191,7 +191,13 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
                 // ignore messages for another test
                 const currentId: string = components[1];
                 // there was some type problem here
-                if (!(currentId.toString() === this.props.testId.toString())) {
+		// all control messages except testStart and TestEnd can be ignored
+		if(components[0] !== "testStart" && components[0] !== "testEnd"){
+			console.log("Ignoring control message "+components[0]);
+			return;
+		}
+		
+                if (currentId && !(currentId.toString() === this.props.testId.toString())) {
                     return;
                 }
 
