@@ -255,8 +255,8 @@ function applyAttributes(target: Node, source: any) {
 function generatorToXml(genConfig: GeneratorConfig): XMLBuilder {
     const frag = fragment();
     switch (genConfig.getTypeString()) {
-	case "RANDOM_STRING":
-            const randomString = frag.ele("gen_RandomString")
+        case "RANDOM_STRING":
+            const randomString = frag.ele("gen_RandomString");
             randomString.ele("max").txt(genConfig.getAttribute("maxChars"));
             randomString.ele("min").txt(genConfig.getAttribute("minChars"));
             break;
