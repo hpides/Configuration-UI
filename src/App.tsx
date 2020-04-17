@@ -233,7 +233,7 @@ class App extends React.Component<{}, IState> {
         if (this.state.existingConfigComponent) {
             for (const fileName of Array.from(this.state.existingConfigComponent.state.uploadedFiles.keys())) {
                 const file = this.state.existingConfigComponent.state.uploadedFiles.get(fileName)!;
-                const existingConfigResponse = await axios.post(this.requestGeneratorHost + "/uploadPDGF", file.fileContent, axiosParams);
+                const existingConfigResponse = await axios.post(this.requestGeneratorHost + "/uploadPDGF/distributed", file.fileContent, axiosParams);
                 // do not start test if PDGF failed
                 if (existingConfigResponse.status !== 200) {
                     alert("PDGF return status: " + existingConfigResponse.status);
@@ -242,7 +242,7 @@ class App extends React.Component<{}, IState> {
                 }
             }
         }
-        const response = await axios.post(this.requestGeneratorHost + "/uploadPDGF", config.xml, axiosParams);
+        const response = await axios.post(this.requestGeneratorHost + "/uploadPDGF/distributed", config.xml, axiosParams);
         if (response.status === 200) {
             this.setState({pdgfOutput: response.data.replace(/</g, "&lt;").replace(/>/g, "&gt;").split("\n"), currentView: Views.PDGFOutput, pdgfRunning: false});
         } else {
@@ -391,7 +391,7 @@ class App extends React.Component<{}, IState> {
         const axiosParams = {headers: {
                 "Content-Type": "application/json",
             }} as AxiosRequestConfig;
-        axios.post(this.requestGeneratorHost + "/upload/" + config.id, config.json, axiosParams).then((r) => alert("Test " + dateString + " started with response code " + r.status)).catch((e) => alert(e));
+        axios.post(this.requestGeneratorHost + "/upload/" + config.id + '/distributed', config.json, axiosParams).then((r) => alert("Test " + dateString + " started with response code " + r.status+" on "+r.data+" nodes.")).catch((e) => alert(e));
         this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
         this.forceUpdate();
     }
