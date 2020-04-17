@@ -191,12 +191,11 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
                 // ignore messages for another test
                 const currentId: string = components[1];
                 // there was some type problem here
-		// all control messages except testStart and TestEnd can be ignored
-		if(components[0] !== "testStart" && components[0] !== "testEnd"){
-			console.log("Ignoring control message "+components[0]);
-			return;
-		}
-		
+                // all control messages except testStart and TestEnd can be ignored
+                if (components[0] !== "testStart" && components[0] !== "testEnd") {
+                    return;
+                }
+
                 if (currentId && !(currentId.toString() === this.props.testId.toString())) {
                     return;
                 }
@@ -235,7 +234,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
                 const date = new Date(0);
                 date.setUTCMilliseconds(creationTime);
                 let troughputOverall = 0;
-		const nodeNumber = object.hasOwnProperty('nodeNumber')? object.nodeNumber: 0;
+                const nodeNumber = object.hasOwnProperty("nodeNumber") ? object.nodeNumber : 0;
                 object = object.times;
                 // tslint required checking the existence of the iterator value in every loop
                 for (const adress in object) {
@@ -245,7 +244,7 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
                             for (const story in object[adress][endpoint]) {
                                 if (story) {
                                     const storyObject = object[adress][endpoint][story];
-                                    const requestIdentifier = endpoint + " " + adress + " in " + story+" (node "+nodeNumber+")";
+                                    const requestIdentifier = endpoint + " " + adress + " in " + story + " (node " + nodeNumber + ")";
                                     // this gives us a (hopefully) unique color for each line in the graph, but can be reproduced when the test is watched again
                                     const borderColor = "rgb(" + this.hashToInt(adress) + ", "
                                         + this.hashToInt(endpoint)  + ", " + this.hashToInt(story) * 255 + ")";

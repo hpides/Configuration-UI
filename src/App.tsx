@@ -391,7 +391,7 @@ class App extends React.Component<{}, IState> {
         const axiosParams = {headers: {
                 "Content-Type": "application/json",
             }} as AxiosRequestConfig;
-        axios.post(this.requestGeneratorHost + "/upload/" + config.id + '/distributed', config.json, axiosParams).then((r) => alert("Test " + dateString + " started with response code " + r.status+" on "+r.data+" nodes.")).catch((e) => alert(e));
+        axios.post(this.requestGeneratorHost + "/upload/" + config.id + "/distributed", config.json, axiosParams).then((r) => alert("Test " + dateString + " started with response code " + r.status + " on " + r.data + " nodes.")).catch((e) => alert(e));
         this.setState({currentView: Views.Evaluation, currentTestId: config.id.toString()});
         this.forceUpdate();
     }
