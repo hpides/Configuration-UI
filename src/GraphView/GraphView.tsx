@@ -24,6 +24,7 @@ import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
+import { ApisEditor } from "../ApisEditor/ApisEditor";
 
 interface IStory {
     nodes: Node[];
@@ -38,6 +39,7 @@ export interface IState extends IStory {
 
 export interface IProps {
     existingConfig: ExistingConfigComponent;
+    existingApi: ApisEditor;
 }
 
 /* tslint:disable:no-console ... */
@@ -245,6 +247,7 @@ export class GraphView extends React.Component<IProps, IState> {
                 onValueChanged={this.handleInspectorValueChanged}
                 node={this.state.selectedNode}
                 existingConfig={this.props.existingConfig}
+                existingApi={this.props.existingApi}
             />;
         }
         return (
