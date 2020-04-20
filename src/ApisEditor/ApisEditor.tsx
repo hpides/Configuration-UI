@@ -3,25 +3,33 @@ import "./ApisEditor.css";
 import Dropzone from "react-dropzone";
 import Alert from "reactstrap/lib/Alert";
 import YAML from "yaml";
+import {ServerChooser} from './ServerChooser';
 
 export interface IUploadedFile {
     existingEndpoints: string[];
     fileContent: string;
 }
 
+interface IProps {
+}
+
 export interface IState {
     uploadedFiles: Map<string, IUploadedFile>;
     allEndpoints: Set<string>;
     lastError: string;
+    choosingServer: boolean;
+    serversToChoose: string[];
 }
 
-export class ApisEditor extends React.Component<{}, IState> {
-    public constructor(props: {}) {
+export class ApisEditor extends React.Component<IProps, IState> {
+    public constructor(props: IProps) {
         super(props);
         this.state = {
             uploadedFiles: new Map<string, IUploadedFile>(),
             lastError: "",
-            allEndpoints: new Set<string>()
+            allEndpoints: new Set<string>(),
+            choosingServer: false,
+            serversToChoose: [],
         };
     }
 
@@ -42,7 +50,11 @@ export class ApisEditor extends React.Component<{}, IState> {
 
         let api = YAML.parse(reader.toString());
         let paths = api.paths;
+        let servers = api.servers;
         let endpoints = Object.keys(paths);
+
+        let serverUrls: string[] = [];
+        servers.forEach((server: any) => serverUrls.push(server.url));
 
         console.log(Object.keys(paths));
 
@@ -55,11 +67,36 @@ export class ApisEditor extends React.Component<{}, IState> {
 
         this.state.uploadedFiles.set(filename, uploadedFileRepr);
         endpoints.forEach((value) => this.state.allEndpoints.add(value));
-        console.log(this.state.allEndpoints);
-        this.setState({uploadedFiles: this.state.uploadedFiles, allEndpoints: this.state.allEndpoints});
+
+        this.setState({
+            uploadedFiles: this.state.uploadedFiles,
+            allEndpoints: this.state.allEndpoints,
+            serversToChoose: serverUrls,
+        });
+
+        this.setState({
+            choosingServer: true,
+        });
+    }
+
+    public serverSelected = (server: string) => {
+        this.setState({choosingServer: false});
+    }
+
+    public serverSelectionCancelled = () => {
+        this.setState({choosingServer: false});
     }
 
     public render() {
+        let serverChooser;
+        if (this.state.choosingServer) {
+            serverChooser = <ServerChooser
+                servers={this.state.serversToChoose}
+                selectedServer={null}
+                onAdd={this.serverSelected}
+                onCancel={this.serverSelectionCancelled}
+            />;
+        }
         return <div>
             <div>
                 {this.state.lastError === "" ? <div/> : <Alert color="danger">
@@ -85,6 +122,7 @@ export class ApisEditor extends React.Component<{}, IState> {
                 }</li>;
             })}
             </ul>
+            {serverChooser}
         </div>;
     }
 }

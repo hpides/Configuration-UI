@@ -1,0 +1,82 @@
+.generator-adder {
+    position: fixed;
+    margin: 20px;
+    width: 50vw;
+    height: 52vh;
+    left: 25vw;
+    top: 25vh;
+    background-color: #282c34;
+    color: white;
+    border: 3px solid #565d6a;
+    border-radius: 10px;
+}
+
+.generator-adder-background {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0.7;
+    background-color: white;
+}
+
+.generator-adder-select {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+
+    position: absolute;
+
+    width: calc(100% - 27px);
+    height: 38px;
+    padding-left: 30px;
+    left: 10px;
+    background-color: #636d80;
+    color: white;
+    font-size: 14px;
+    box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.3);
+    margin-bottom: 20px;
+    top: 30px;
+}
+
+.generator-adder .select-wrapper {
+    position: absolute;
+    width: 50%;
+    height: 80px;
+}
+
+.generator-adder .select-wrapper::after {
+    font-family: "Font Awesome 5 Free";
+    content: "\f078";
+    font-size: 20px;
+    position: absolute;
+    left: 15px;
+    top: 35px;
+    color: #fff;
+}
+
+.generator-adder label {
+    display: block;
+    font-size: 14pt;
+}
+
+.generator-meta {
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    margin-left: 10px;
+}
+
+.generator-meta > div {
+    float: left;
+    width: 50%;
+    height: 80px;
+    
+}
+
+.generator-config {
+    height: fit-content;
+    margin: 0 10px;
+}

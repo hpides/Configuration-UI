@@ -309,10 +309,9 @@ class App extends React.Component<{}, IState> {
                         <div
                             style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <ApisEditor ref={(ref) => {if (!this.state.apisEditor) {
-                                this.setState({apisEditor: ref}, () => {
-
-                                });
-                            }}}/></div>
+                                this.setState({apisEditor: ref}, () => {});
+                                }}}
+                            /></div>
                         <div
                             style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <Testconfig ref={(ref) => this.testConfig = ref}/>
