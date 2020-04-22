@@ -23,7 +23,7 @@ export class ServerChooser extends React.Component<IProps, IState> {
         }
 
         this.state = {
-            selectedServer
+            selectedServer,
         };
     }
 
@@ -56,7 +56,7 @@ export class ServerChooser extends React.Component<IProps, IState> {
     }
 
     public render() {
-        let servers: JSX.Element[] = [];
+        const servers: JSX.Element[] = [];
         for (const server of this.props.servers) {
             servers.push(<label><input
                 type="radio"

@@ -56,11 +56,11 @@ class App extends React.Component<{}, IState> {
     constructor(props: any) {
         super(props);
         this.state = {
+            apisEditor: null,
             currentStory: null,
             currentTestId: undefined,
             currentView: Views.UserStories,
             existingConfigComponent: null,
-            apisEditor: null,
             pdgfOutput: null,
             pdgfRunning: false,
             stories: [],

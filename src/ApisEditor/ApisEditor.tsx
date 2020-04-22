@@ -1,9 +1,9 @@
 import React from "react";
-import "./ApisEditor.css";
 import Dropzone from "react-dropzone";
 import Alert from "reactstrap/lib/Alert";
 import YAML from "yaml";
-import {ServerChooser} from './ServerChooser';
+import "./ApisEditor.css";
+import {ServerChooser} from "./ServerChooser";
 
 export interface IUploadedFile {
     existingEndpoints: string[];
@@ -11,30 +11,25 @@ export interface IUploadedFile {
     server: string;
 }
 
-interface IProps {
-}
-
 export interface IState {
     uploadedFiles: Map<string, IUploadedFile>;
     allEndpoints: Set<string>;
-    lastError: string;
     choosingServer: boolean;
     serversToChoose: string[];
     lastUploadedFile: IUploadedFile | null;
     lastFilename: string | null;
 }
 
-export class ApisEditor extends React.Component<IProps, IState> {
-    public constructor(props: IProps) {
+export class ApisEditor extends React.Component<{}, IState> {
+    public constructor(props: {}) {
         super(props);
         this.state = {
-            uploadedFiles: new Map<string, IUploadedFile>(),
-            lastError: "",
             allEndpoints: new Set<string>(),
             choosingServer: false,
-            serversToChoose: [],
-            lastUploadedFile: null,
             lastFilename: null,
+            lastUploadedFile: null,
+            serversToChoose: [],
+            uploadedFiles: new Map<string, IUploadedFile>(),
         };
     }
 
@@ -51,17 +46,14 @@ export class ApisEditor extends React.Component<IProps, IState> {
     }
 
     public async processFileContents(reader: string, filename: string) {
-        this.setState({lastError: ""});
 
-        let api = YAML.parse(reader.toString());
-        let paths = api.paths;
-        let servers = api.servers;
-        let endpoints = Object.keys(paths);
+        const api = YAML.parse(reader.toString());
+        const paths = api.paths;
+        const servers = api.servers;
+        const endpoints = Object.keys(paths);
 
-        let serverUrls: string[] = [];
+        const serverUrls: string[] = [];
         servers.forEach((server: any) => serverUrls.push(server.url));
-
-        console.log(Object.keys(paths));
 
         const uploadedFileRepr: IUploadedFile = {
             existingEndpoints: [],
@@ -72,13 +64,10 @@ export class ApisEditor extends React.Component<IProps, IState> {
         uploadedFileRepr.existingEndpoints = endpoints;
 
         this.setState({
-            lastUploadedFile: uploadedFileRepr,
-            lastFilename: filename,
-            serversToChoose: serverUrls,
-        });
-
-        this.setState({
             choosingServer: true,
+            lastFilename: filename,
+            lastUploadedFile: uploadedFileRepr,
+            serversToChoose: serverUrls,
         });
     }
 
@@ -91,22 +80,22 @@ export class ApisEditor extends React.Component<IProps, IState> {
         this.state.lastUploadedFile.server = server;
         this.state.uploadedFiles.set(this.state.lastFilename, this.state.lastUploadedFile);
         this.state.lastUploadedFile.existingEndpoints.forEach(
-            (value) => this.state.allEndpoints.add(server+value)
+            (value) => this.state.allEndpoints.add(server + value),
         );
         this.setState({
-            choosingServer: false,
-            uploadedFiles: this.state.uploadedFiles,
             allEndpoints: this.state.allEndpoints,
-            lastUploadedFile: null,
+            choosingServer: false,
             lastFilename: null,
+            lastUploadedFile: null,
+            uploadedFiles: this.state.uploadedFiles,
         });
     }
 
     public serverSelectionCancelled = () => {
         this.setState({
             choosingServer: false,
-            lastUploadedFile: null,
             lastFilename: null,
+            lastUploadedFile: null,
         });
     }
 
@@ -121,10 +110,6 @@ export class ApisEditor extends React.Component<IProps, IState> {
             />;
         }
         return <div>
-            <div>
-                {this.state.lastError === "" ? <div/> : <Alert color="danger">
-                    Import error: <div dangerouslySetInnerHTML={{__html: this.state.lastError}}/></Alert>}
-            </div>
             <Dropzone onDrop={ (files) => this.onDrop(files)}>
                 {({getRootProps, getInputProps}) => (
                     <section>

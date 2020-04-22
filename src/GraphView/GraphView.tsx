@@ -15,6 +15,7 @@ import {
 } from "@projectstorm/react-canvas-core";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
 import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
+import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
 import { Inspector } from "./Inspector";
@@ -24,7 +25,6 @@ import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
-import { ApisEditor } from "../ApisEditor/ApisEditor";
 
 interface IStory {
     nodes: Node[];

@@ -1,6 +1,7 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import React from "react";
 import ReactTooltip from "react-tooltip";
+import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import "./Inspector.css";
 import {AssertionAdder} from "./Inspector/AssertionAdder";
@@ -18,7 +19,6 @@ import {ExistingDataConfig, GeneratorConfig} from "./Inspector/GeneratorConfig";
 import {DataGenerationNode} from "./Nodes/DataGenerationNode";
 import {Node} from "./Nodes/Node";
 import {RequestNode} from "./Nodes/RequestNode";
-import { ApisEditor } from "../ApisEditor/ApisEditor";
 
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
@@ -711,13 +711,11 @@ export class Inspector extends React.Component<IProps, IState> {
                                      onChange={this.inputChanged}
                                      ref={(ref) => addrInputRef = ref}
                 />;
-                let endpointOptions: JSX.Element[] = [];
-                console.log("Inspector addr");
-                console.log(this.props.existingApi.state.allEndpoints);
-                for (let endpoint of this.props.existingApi.state.allEndpoints) {
+                const endpointOptions: JSX.Element[] = [];
+                for (const endpoint of this.props.existingApi.state.allEndpoints) {
                     endpointOptions.push(
-                        <option value={endpoint}>{endpoint}</option>
-                    )
+                        <option value={endpoint}>{endpoint}</option>,
+                    );
                 }
                 const preset = <div className="preset-select">
                     <select value="EMPTY" name="addrPreset"
@@ -728,7 +726,7 @@ export class Inspector extends React.Component<IProps, IState> {
                         <option value="EMPTY" disabled>Choose Preset</option>
                         {endpointOptions}
                     </select>
-                </div>
+                </div>;
                 inputs.push(label);
                 inputs.push(input);
                 inputs.push(preset);
