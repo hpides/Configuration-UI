@@ -27,30 +27,17 @@ export class ServerChooser extends React.Component<IProps, IState> {
         };
     }
 
+    public radioChanged = (event: React.FormEvent<HTMLInputElement>) => {
+        if (event.currentTarget.value === "OTHER") {
+            this.setState({selectedServer: ""});
+        } else {
+            this.setState({selectedServer: event.currentTarget.value});
+        }
+    }
+
     public inputChanged = (event: any) => {
 
-        /*switch (event.currentTarget.name) {
-            case "other_textfield":
-                this.setState({key: event.currentTarget.value});
-                break;
-            case "generator":
-                switch (event.currentTarget.value) {
-                    case "RANDOM_STRING":
-                        this.setState({genConfig: new RandomStringGeneratorConfig(this.props.disableDeleteKey,
-                                this.props.enableDeleteKey)});
-                        break;
-                    case "RANDOM_SENTENCE":
-                        this.setState({genConfig: new RandomSentence(this.props.disableDeleteKey,
-                                this.props.enableDeleteKey)});
-                        break;
-                    case "EXISTING":
-                        const config = new ExistingDataConfig(this.props.disableDeleteKey,
-                            this.props.enableDeleteKey);
-                        this.setState({genConfig: config});
-                        break;
-                }
-                break;
-        }*/
+        this.setState({selectedServer: event.currentTarget.value});
 
     }
 
@@ -61,7 +48,7 @@ export class ServerChooser extends React.Component<IProps, IState> {
     }
 
     public doneButtonClicked = () => {
-        this.props.onAdd("");
+        this.props.onAdd(this.state.selectedServer);
     }
 
     public cancelButtonClicked = () => {
@@ -75,6 +62,7 @@ export class ServerChooser extends React.Component<IProps, IState> {
                 type="radio"
                 name="SERVER"
                 value={server}
+                onChange={this.radioChanged}
             />{server}</label>);
         }
         return (
@@ -87,12 +75,19 @@ export class ServerChooser extends React.Component<IProps, IState> {
                             type="radio"
                             name="SERVER"
                             value="OTHER"
+                            checked={!this.props.servers.includes(this.state.selectedServer)}
+                            onChange={this.radioChanged}
                         />
                             <input type="text"
                                 name="key"
                                 onChange={this.inputChanged}
                                 onKeyPress={this.keyPressed}
-                                value={this.state.selectedServer}
+                                placeholder="Custom..."
+                                value={
+                                    !this.props.servers.includes(this.state.selectedServer)
+                                        ? this.state.selectedServer
+                                        : ""
+                                }
                             />
                     </fieldset>
                     <button

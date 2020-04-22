@@ -8,6 +8,7 @@ import {ServerChooser} from './ServerChooser';
 export interface IUploadedFile {
     existingEndpoints: string[];
     fileContent: string;
+    server: string;
 }
 
 interface IProps {
@@ -19,6 +20,8 @@ export interface IState {
     lastError: string;
     choosingServer: boolean;
     serversToChoose: string[];
+    lastUploadedFile: IUploadedFile | null;
+    lastFilename: string | null;
 }
 
 export class ApisEditor extends React.Component<IProps, IState> {
@@ -30,6 +33,8 @@ export class ApisEditor extends React.Component<IProps, IState> {
             allEndpoints: new Set<string>(),
             choosingServer: false,
             serversToChoose: [],
+            lastUploadedFile: null,
+            lastFilename: null,
         };
     }
 
@@ -60,17 +65,15 @@ export class ApisEditor extends React.Component<IProps, IState> {
 
         const uploadedFileRepr: IUploadedFile = {
             existingEndpoints: [],
-            fileContent: reader
+            fileContent: reader,
+            server: "",
         };
 
         uploadedFileRepr.existingEndpoints = endpoints;
 
-        this.state.uploadedFiles.set(filename, uploadedFileRepr);
-        endpoints.forEach((value) => this.state.allEndpoints.add(value));
-
         this.setState({
-            uploadedFiles: this.state.uploadedFiles,
-            allEndpoints: this.state.allEndpoints,
+            lastUploadedFile: uploadedFileRepr,
+            lastFilename: filename,
             serversToChoose: serverUrls,
         });
 
@@ -80,11 +83,31 @@ export class ApisEditor extends React.Component<IProps, IState> {
     }
 
     public serverSelected = (server: string) => {
-        this.setState({choosingServer: false});
+        if (!(this.state.lastUploadedFile && this.state.lastFilename)) {
+            this.setState({choosingServer: false});
+            return;
+        }
+
+        this.state.lastUploadedFile.server = server;
+        this.state.uploadedFiles.set(this.state.lastFilename, this.state.lastUploadedFile);
+        this.state.lastUploadedFile.existingEndpoints.forEach(
+            (value) => this.state.allEndpoints.add(server+value)
+        );
+        this.setState({
+            choosingServer: false,
+            uploadedFiles: this.state.uploadedFiles,
+            allEndpoints: this.state.allEndpoints,
+            lastUploadedFile: null,
+            lastFilename: null,
+        });
     }
 
     public serverSelectionCancelled = () => {
-        this.setState({choosingServer: false});
+        this.setState({
+            choosingServer: false,
+            lastUploadedFile: null,
+            lastFilename: null,
+        });
     }
 
     public render() {
@@ -115,9 +138,14 @@ export class ApisEditor extends React.Component<IProps, IState> {
         <label>Loaded configurations:</label>
             <ul>
             {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
-                return <li key={fileIndex}>{filename + " : "}{
+                return <li key={fileIndex}>{filename + " : " + this.state.uploadedFiles.get(filename)!.server}{
                     <ul>
-
+                        {
+                            Array.from(this.state.uploadedFiles.get(filename)!
+                                .existingEndpoints).map((endpoint) => {
+                                    return <li key={endpoint}>{endpoint}</li>;
+                                })
+                        }
                     </ul>
                 }</li>;
             })}
