@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\evaluation",
+    "\\src\\evaluation\\connectivity",
+    "\\src\\GraphView\\ConfigJson",
+    "\\src\\GraphView\\Inspector",
+    "\\src\\GraphView\\Nodes",
+    "\\src\\Testconfig"
+  ],
+  "SelectedNode": "\\src\\evaluation\\connectivity\\PerformanceDataStorageClient.ts",
+  "PreviewInSolutionExplorer": false
+}
