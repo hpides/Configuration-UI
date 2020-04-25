@@ -300,9 +300,9 @@ class App extends React.Component<{}, IState> {
                     <div className="main" style={this.state.currentView === Views.UserStories ? {overflow: "hidden"} : {overflow: "auto"}}>
 
                         {pdgfOutput}
-                        <div
+                        <div 
                             style={this.state.currentView === Views.Evaluation ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            <Evaluation id={this.state.currentTestId} importTestConfig={this.import} ref={ (ref) => {if (ref) {ref.update(); }}}/>
+                            <Evaluation importTestConfigFunc={this.import}/>
                         </div>
                         <div
                             style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>

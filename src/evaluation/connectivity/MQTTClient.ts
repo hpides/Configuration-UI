@@ -1,6 +1,7 @@
 import mqtt, { Packet } from "mqtt";
 import { Statistic } from "../statistic_pb";
 import { StatisticReceivedCallback, ControlReceivedCallback, ControlMessageType } from "./Messages";
+import { MQTT_HOST } from "./Origins";
 
 export class MQTTClient {
 
@@ -15,12 +16,10 @@ export class MQTTClient {
 	constructor(statisticReceivedCallback: StatisticReceivedCallback,
 		controlReceivedCallback: ControlReceivedCallback) {
 
-		const mqttBroker = process.env.REACT_APP_MQTT_HOST || window.location.hostname + "/mosquitto";
-
 		this.statisticReceivedCallback = statisticReceivedCallback;
 		this.controlReceivedCallback = controlReceivedCallback;
 
-		this.client = mqtt.connect(mqttBroker)
+        this.client = mqtt.connect(MQTT_HOST)
 		this.client.on("connect", () => {
 			this.client.subscribe(MQTTClient.TimesTopic, { qos: 2 });
 			this.client.subscribe(MQTTClient.ControlTopic, { qos: 2 });

@@ -8,7 +8,6 @@ import { MQTTClient } from "./connectivity/MQTTClient";
 import { Statistic } from "./statistic_pb";
 import { ControlMessageType } from "./connectivity/Messages";
 import * as chartjs from "chart.js";
-import { asyncLoadTest } from "./connectivity/PerformanceDataStorageClient";
 
 enum Teststate { NotStarted, Running, Finished }
 
