@@ -25,6 +25,7 @@ export interface IState {
     pdgfRunning: boolean;
     currentTestId: string | undefined;
     existingConfigComponent: ExistingConfigComponent | null;
+    apisEditor: ApisEditor | null;
     pdgfOutput: string[]| null;
 }
 
@@ -55,6 +56,7 @@ class App extends React.Component<{}, IState> {
     constructor(props: any) {
         super(props);
         this.state = {
+            apisEditor: null,
             currentStory: null,
             currentTestId: undefined,
             currentView: Views.UserStories,
@@ -306,7 +308,10 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            <ApisEditor/></div>
+                            <ApisEditor ref={(ref) => {if (!this.state.apisEditor) {
+                                this.setState({apisEditor: ref}, () => {});
+                                }}}
+                            /></div>
                         <div
                             style={this.state.currentView === Views.Testconfig ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <Testconfig ref={(ref) => this.testConfig = ref}/>
@@ -329,7 +334,7 @@ class App extends React.Component<{}, IState> {
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             {[...Array(this.state.stories.length)].map((item, story) => <div key={story}
                                                                                 style={this.graphViews[story] && this.state.currentStory === this.graphViews[story].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
-                                <GraphView existingConfig={this.state.existingConfigComponent || new ExistingConfigComponent({})} ref={(ref) => {
+                                <GraphView existingConfig={this.state.existingConfigComponent || new ExistingConfigComponent({})} existingApi={this.state.apisEditor || new ApisEditor({})} ref={(ref) => {
                                     // story names can change at any time. Using them as props will destroy the graph view, so set it here instead
                                     if (ref) {
                                         ref.setStory(this.state.stories[story]);

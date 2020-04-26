@@ -15,6 +15,7 @@ import {
 } from "@projectstorm/react-canvas-core";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
 import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
+import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
 import { Inspector } from "./Inspector";
@@ -38,6 +39,7 @@ export interface IState extends IStory {
 
 export interface IProps {
     existingConfig: ExistingConfigComponent;
+    existingApi: ApisEditor;
 }
 
 /* tslint:disable:no-console ... */
@@ -245,6 +247,7 @@ export class GraphView extends React.Component<IProps, IState> {
                 onValueChanged={this.handleInspectorValueChanged}
                 node={this.state.selectedNode}
                 existingConfig={this.props.existingConfig}
+                existingApi={this.props.existingApi}
             />;
         }
         return (
