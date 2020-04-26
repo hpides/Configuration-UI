@@ -48,10 +48,11 @@ export class Testconfig extends React.Component<{}, IState> {
         return (
             <div className="testconfig">
                 <ReactTooltip />
-                <h1>Testconfig</h1>
+                <h1>Test Configuration</h1>
                 <div className="row">
                     <div className="col-25">
-                        <label htmlFor="repeat">Repeat</label>
+                        <label data-tip="How often the test is repeated"
+                            htmlFor="repeat">Repeat</label>
                     </div>
                     <div className="col-75">
                         <input
@@ -66,7 +67,8 @@ export class Testconfig extends React.Component<{}, IState> {
 
                 <div className="row">
                     <div className="col-25">
-                        <label htmlFor="scaleFactor">Scale Factor</label>
+                        <label data-tip="Scale the whole test load by a factor"
+                            htmlFor="scaleFactor">Scale Factor</label>
                     </div>
                     <div className="col-75">
                         <input
@@ -82,7 +84,7 @@ export class Testconfig extends React.Component<{}, IState> {
                 <div className="row">
                     <div className="col-25">
                         <label data-tip="Number of simulated users per second"
-                               htmlFor="activeInstancesPerSecond">Active users per second</label>
+                               htmlFor="activeInstancesPerSecond">Active Users per Second</label>
                     </div>
                     <div className="col-75">
                         <input
@@ -96,7 +98,8 @@ export class Testconfig extends React.Component<{}, IState> {
                 </div>
                 <div className="row">
                     <div className="col-25">
-                        <label htmlFor="maximumConcurrentRequests">Maximum Concurrent Requests</label>
+                        <label data-tip="Maximum number of requests which are sent at the same time"
+                            htmlFor="maximumConcurrentRequests">Maximum Concurrent Requests</label>
                     </div>
                     <div className="col-75">
                         <input
@@ -110,7 +113,7 @@ export class Testconfig extends React.Component<{}, IState> {
                 </div>
                 <div className="row">
                     <div className="col-25">
-                        <label htmlFor="noSession">Global session pooling disabled</label>
+                        <label htmlFor="noSession">Global Session Pooling Disabled</label>
                     </div>
                     <div className="col-75">
                         <input
@@ -120,6 +123,7 @@ export class Testconfig extends React.Component<{}, IState> {
                             name="noSession"
                             checked={this.state.noSession}
                         />
+                        <label htmlFor="noSession"></label>
                     </div>
                 </div>
             </div>
