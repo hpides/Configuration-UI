@@ -48,3 +48,46 @@ input {
   border: solid 1px white;
   display: block;
 }
+
+/*
+ * Checkbox Styling by Marc Borkowski
+ * https://boolie.org/css-checkbox-styling/
+ */
+input[type="checkbox"] {
+  display:none;
+}
+input[type="checkbox"] + label {
+  padding: initial;
+  width: 60px;
+  height: 30px;
+  border-radius: 30px;
+  border: 2px solid #ddd;
+  background-color: #EEE;
+  display: inline-block;
+  content: "";
+  float: left;
+  margin-right: 5px;
+  transition: background-color 0.5s linear;
+  margin-top: 15px;
+}
+input[type="checkbox"] + label:hover {
+  cursor: pointer;
+}
+input[type="checkbox"] + label::before {
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  background-color: #fff;
+  display: block;
+  content: "";
+  float: left;
+  margin-right: 5px;
+  transition: margin 0.1s linear;
+  box-shadow: 0px 0px 5px #aaa;
+}
+input[type="checkbox"]:checked+label{
+  background-color: #44c767;
+}
+input[type="checkbox"]:checked+label::before {
+  margin: 0 0 0 30px;
+}
