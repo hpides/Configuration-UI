@@ -1,6 +1,7 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import React from "react";
 import ReactTooltip from "react-tooltip";
+import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import "./Inspector.css";
 import {AssertionAdder} from "./Inspector/AssertionAdder";
@@ -26,6 +27,7 @@ interface IProps {
     disableDeleteKey: () => void;
     enableDeleteKey: () => void;
     existingConfig: ExistingConfigComponent;
+    existingApi: ApisEditor;
 }
 
 interface IState {
@@ -700,15 +702,34 @@ export class Inspector extends React.Component<IProps, IState> {
 
                 // users should not enter IDs or dataToGenerate, this is handled in the background
             } else if (key === "addr") {
+                let addrInputRef: any;
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
                                      data-tip="Token expansion is supported. E.g. addr='http://example.com/$deleteURL' with deleteURL='1/delete' will be expanded to 'http://example.com/1/delete'."
                                      name={key}
                                      value={node.getAttribute(key)}
                                      onChange={this.inputChanged}
+                                     ref={(ref) => addrInputRef = ref}
                 />;
+                const endpointOptions: JSX.Element[] = [];
+                for (const endpoint of this.props.existingApi.state.allEndpoints) {
+                    endpointOptions.push(
+                        <option value={endpoint}>{endpoint}</option>,
+                    );
+                }
+                const preset = <div className="preset-select">
+                    <select value="EMPTY" name="addrPreset"
+                        onChange={(event) => {
+                            addrInputRef.value = event.currentTarget.value;
+                        }}
+                    >
+                        <option value="EMPTY" disabled>Choose Preset</option>
+                        {endpointOptions}
+                    </select>
+                </div>;
                 inputs.push(label);
                 inputs.push(input);
+                inputs.push(preset);
 
             } else if (key === "requestParams") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
