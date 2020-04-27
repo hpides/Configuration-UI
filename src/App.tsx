@@ -57,7 +57,7 @@ class App extends React.Component<{}, IState> {
         this.state = {
             currentStory: null,
             currentTestId: undefined,
-            currentView: Views.UserStories,
+            currentView: Views.Evaluation,
             existingConfigComponent: null,
             pdgfOutput: null,
             pdgfRunning: false,

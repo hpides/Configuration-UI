@@ -5,7 +5,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { Alert, Button } from "reactstrap";
 import "./table.css";
 import { MQTTClient } from "./connectivity/MQTTClient";
-import { Statistic } from "./statistic_pb";
+import { Statistic } from "./Statistic/Statistic";
 import { ControlMessageType } from "./connectivity/Messages";
 import * as chartjs from "chart.js";
 
@@ -176,7 +176,7 @@ export class ChartDrawer extends Component<Props, State> {
 							</div>
 						</td>
 					</tr>
-				</tbody>
+				</tbody> 
 			</table>
 		</div>;
 	}

@@ -4,11 +4,11 @@
     "\\src",
     "\\src\\evaluation",
     "\\src\\evaluation\\connectivity",
-    "\\src\\GraphView\\ConfigJson",
-    "\\src\\GraphView\\Inspector",
-    "\\src\\GraphView\\Nodes",
+    "\\src\\evaluation\\EvaluationDetail",
+    "\\src\\evaluation\\Statistic",
+    "\\src\\GraphView",
     "\\src\\Testconfig"
   ],
-  "SelectedNode": "\\src\\evaluation\\connectivity\\PerformanceDataStorageClient.ts",
+  "SelectedNode": "\\src\\evaluation\\connectivity\\Messages.ts",
   "PreviewInSolutionExplorer": false
 }

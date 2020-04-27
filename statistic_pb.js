@@ -1,4 +1,3 @@
-/* eslint-disable */
 // source: statistic.proto
 /**
  * @fileoverview

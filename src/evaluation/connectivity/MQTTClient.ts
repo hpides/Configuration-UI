@@ -1,5 +1,6 @@
 import mqtt, { Packet } from "mqtt";
-import { Statistic } from "../statistic_pb";
+import { Statistic as ProtoStatistic } from "../statistic_pb";
+import { Statistic } from "../Statistic/Statistic";
 import { StatisticReceivedCallback, ControlReceivedCallback, ControlMessageType } from "./Messages";
 import { MQTT_HOST } from "./Origins";
 
@@ -39,17 +40,22 @@ export class MQTTClient {
 				let msgType: ControlMessageType;
 				if (components[0] === "testStart")
 					msgType = "testStart";
-				else if (components[1] === "testEnd")
+				else if (components[0] === "testEnd")
 					msgType = "testEnd";
 				else
 					msgType = "unknown";
 
 				this.controlReceivedCallback(msgType, Number(components[1]));
 				break;
-			case MQTTClient.TimesTopic:
-				const stats = Statistic.deserializeBinary(payload);
+            case MQTTClient.TimesTopic:
+                const stats = new Statistic(
+                    ProtoStatistic.deserializeBinary(new Uint8Array(payload)));
 				this.statisticReceivedCallback(stats);
 				break;
 		}
-	}
+    }
+
+    public close() {
+        this.client.end();
+    }
 }
