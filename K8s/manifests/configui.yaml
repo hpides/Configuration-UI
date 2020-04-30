@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configui-deployment
+  labels:
+    app: configui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configui
+  template:
+    metadata:
+      labels:
+        app: configui
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: configui
+          image: localhost:5000/configui:${tag}
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "128m"
+            limits:
+              memory: "512Mi"
+              cpu: "2"
+          ports:
+            - containerPort: 80
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configui
+spec:
+  selector:
+    app: configui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: configui-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: configui
+              servicePort: 80
+      host: configui
+
