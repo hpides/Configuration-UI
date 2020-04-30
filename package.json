@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@amcharts/amcharts4": "^4.9.17",
     "@fortawesome/fontawesome-svg-core": "^1.2.26",
     "@fortawesome/free-solid-svg-icons": "^5.12.0",
     "@fortawesome/react-fontawesome": "^0.1.8",
@@ -58,6 +59,7 @@
     "reactstrap": "^8.4.1",
     "reflect-metadata": "^0.1.13",
     "resize-observer-polyfill": "^1.5.1",
+    "sub-events": "^1.8.4",
     "tslint": "^5.20.1",
     "typescript": "^3.7.3",
     "xmlbuilder2": "^1.3.0",

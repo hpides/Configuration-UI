@@ -6,9 +6,8 @@
     "\\src\\evaluation\\connectivity",
     "\\src\\evaluation\\EvaluationDetail",
     "\\src\\evaluation\\Statistic",
-    "\\src\\GraphView",
-    "\\src\\Testconfig"
+    "\\src\\GraphView"
   ],
-  "SelectedNode": "\\src\\evaluation\\connectivity\\Messages.ts",
+  "SelectedNode": "\\src\\evaluation\\Statistic\\Population.ts",
   "PreviewInSolutionExplorer": false
 }

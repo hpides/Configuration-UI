@@ -25,6 +25,11 @@ export class Statistic extends jspb.Message {
   getSequencenr(): number;
   setSequencenr(value: number): void;
 
+  clearUserspertimeList(): void;
+  getUserspertimeList(): Array<LongIntEntry>;
+  setUserspertimeList(value: Array<LongIntEntry>): void;
+  addUserspertime(value?: LongIntEntry, index?: number): LongIntEntry;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Statistic.AsObject;
   static toObject(includeInstance: boolean, msg: Statistic): Statistic.AsObject;
@@ -42,6 +47,7 @@ export namespace Statistic {
     populationsList: Array<Population.AsObject>,
     errorsList: Array<ErrorEntry.AsObject>,
     sequencenr: number,
+    userspertimeList: Array<LongIntEntry.AsObject>,
   }
 }
 
@@ -90,6 +96,11 @@ export class Population extends jspb.Message {
   getLatestrequesttime(): number;
   setLatestrequesttime(value: number): void;
 
+  clearLatencypersecondList(): void;
+  getLatencypersecondList(): Array<StoredLatency>;
+  setLatencypersecondList(value: Array<StoredLatency>): void;
+  addLatencypersecond(value?: StoredLatency, index?: number): StoredLatency;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Population.AsObject;
   static toObject(includeInstance: boolean, msg: Population): Population.AsObject;
@@ -114,6 +125,7 @@ export namespace Population {
     totalcontentlength: number,
     starttime: number,
     latestrequesttime: number,
+    latencypersecondList: Array<StoredLatency.AsObject>,
   }
 }
 
@@ -201,6 +213,34 @@ export namespace LongIntEntry {
   export type AsObject = {
     key: number,
     value: number,
+  }
+}
+
+export class StoredLatency extends jspb.Message {
+  getTime(): number;
+  setTime(value: number): void;
+
+  getPercentile50(): number;
+  setPercentile50(value: number): void;
+
+  getPercentile95(): number;
+  setPercentile95(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StoredLatency.AsObject;
+  static toObject(includeInstance: boolean, msg: StoredLatency): StoredLatency.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: StoredLatency, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StoredLatency;
+  static deserializeBinaryFromReader(message: StoredLatency, reader: jspb.BinaryReader): StoredLatency;
+}
+
+export namespace StoredLatency {
+  export type AsObject = {
+    time: number,
+    percentile50: number,
+    percentile95: number,
   }
 }
 

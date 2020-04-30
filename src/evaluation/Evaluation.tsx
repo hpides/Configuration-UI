@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { Component } from "react";
 import { Alert } from "reactstrap";
 import "./Evaluation.css";
-import { ChartDrawer } from "./ChartDrawer";
 import { EvaluationDetail } from "./EvaluationDetail/EvaluationDetail";
 import { TestData, StrippedTestJSON } from "./connectivity/Messages";
 import { loadTest, loadAllTestIds } from "./connectivity/PerformanceDataStorageClient";
@@ -80,6 +79,7 @@ export class Evaluation extends Component<Props, State> {
                 }
 
             });
+            tests.sort((a, b) => (a.key as number) - (b.key as number));
 
             return (
                 <div>
@@ -87,7 +87,10 @@ export class Evaluation extends Component<Props, State> {
                 </div>);
         } else {
             return (
-                <EvaluationDetail test={this.state.selectedTest} />
+                <React.Fragment>
+                    <div onClick={() => { this.setState({ ...this.state, selectedTest: null }); }}>Back</div>
+                    <EvaluationDetail test={this.state.selectedTest} />
+                </React.Fragment >
             );
         }
     }

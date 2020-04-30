@@ -17,7 +17,8 @@ import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
 import {Testconfig} from "./Testconfig/Testconfig";
-import {Views} from "./Views";
+import { Views } from "./Views";
+
 export interface IState {
     currentView: Views;
     currentStory: string | null;

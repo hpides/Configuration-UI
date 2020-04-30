@@ -2,10 +2,16 @@ import * as React from "react";
 import { TestData, ControlMessageType } from "../connectivity/Messages";
 import { Header } from "./Header";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { Overview } from "./Overview";
+import { StatTableDrawer } from "./StatTableDrawer";
 import { MQTTClient } from "../connectivity/MQTTClient";
 import { Statistic } from '../Statistic/Statistic';
 import { loadTest } from "../connectivity/PerformanceDataStorageClient";
+import { RPSDrawer } from "./RPSDrawer";
+import { SubEvent } from 'sub-events';
+import { PercentileDrawer } from "./PercentileDrawer";
+import { UPSDrawer } from "./UPSDrawer";
+import { LPSDrawer } from "./LPSDrawer";
+import { RequestRatioDrawer } from "./RequestRatioDrawer";
 
 
 interface Props {
@@ -21,6 +27,7 @@ export class EvaluationDetail extends React.Component<Props, State> {
     private testDataAbortController = new AbortController();
     private mqttClient: MQTTClient | null;
     private cachedStats: (Statistic | undefined)[] = [];
+    private statisticChangeEventHandler: SubEvent<Statistic> = new SubEvent();
 
     constructor(props: Props) {
         super(props);
@@ -52,10 +59,16 @@ export class EvaluationDetail extends React.Component<Props, State> {
                         <Tab>Download</Tab>
                     </TabList>
                     <TabPanel>
-                        <Overview testData={t} />
+                        <StatTableDrawer testData={t} />
                     </TabPanel>
                     <TabPanel>
-                        "Index"
+                        <RPSDrawer testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
+                        <UPSDrawer testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
+
+                        <RequestRatioDrawer testData={t} />
+                        <PercentileDrawer pop={t.statistic.total} />
+                        <LPSDrawer testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
+                        
                     </TabPanel>
                     <TabPanel>
                         "Railgun"
@@ -68,6 +81,7 @@ export class EvaluationDetail extends React.Component<Props, State> {
     onStatisticReceived = (stat: Statistic) => {
         if (this.state.test.statistic.sequenceNr === stat.sequenceNr - 1) {
             this.state.test.statistic.merge(stat);
+            this.statisticChangeEventHandler.emit(stat);
             this.forceUpdate();
         } else if (this.state.test.statistic.sequenceNr >= stat.sequenceNr) {
             // ignore
@@ -108,6 +122,7 @@ export class EvaluationDetail extends React.Component<Props, State> {
                 for (let i = 0; i < this.cachedStats.length; i++) {
                     if (this.cachedStats[i] !== undefined && this.cachedStats[i]!!.sequenceNr - 1 === test.statistic.sequenceNr) {
                         test.statistic.merge(this.cachedStats[i]!!);
+                        this.statisticChangeEventHandler.emit(this.cachedStats[i]!!);
                         cachedElemCount--;
                         this.cachedStats[i] = undefined;
                         break;

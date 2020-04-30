@@ -1,6 +1,11 @@
 import { Population as ProtoPopulation, Endpoint } from "../statistic_pb";
 import { Statistic } from "./Statistic";
 
+export interface StoredLatency {
+    percentile50: number,
+    percentile95: number
+}
+
 export class Population {
     endpoint: Endpoint.AsObject;
     numRequests: number;
@@ -15,11 +20,14 @@ export class Population {
     requestsPerSecond: Map<number, number>;
     failuresPerSecond: Map<number, number>;
     responseTimes: Map<number, number>;
+    latencyPerSecond: Map<number, StoredLatency>;
 
     statistic: Statistic;
+    hash: string;
 
-    constructor(protoPop: ProtoPopulation, statistic: Statistic) {
+    constructor(protoPop: ProtoPopulation, statistic: Statistic, hash: string) {
         this.statistic = statistic;
+        this.hash = hash;
 
         this.endpoint = protoPop.getEp()!!.toObject();
         this.numRequests = protoPop.getNumrequests();
@@ -44,6 +52,11 @@ export class Population {
         this.responseTimes = new Map();
         for (const e of protoPop.getResponsetimesList()) {
             this.responseTimes.set(e.getKey(), e.getValue());
+        }
+
+        this.latencyPerSecond = new Map();
+        for (const e of protoPop.getLatencypersecondList()) {
+            this.latencyPerSecond.set(e.getTime(), { percentile50: e.getPercentile50(), percentile95: e.getPercentile95() });
         }
     }
 
@@ -120,7 +133,7 @@ export class Population {
 
         let medianPos = (this.numRequests - 1) / 2;
 
-        const sortedKeys = Array.from(this.responseTimes.keys()).sort();
+        const sortedKeys = Array.from(this.responseTimes.keys()).sort((a, b) => a - b);
         let medianTime = 0;
 
         for (const k of sortedKeys) {
@@ -145,9 +158,22 @@ export class Population {
     }
 
     public AverageContentLength() {
+        if (this.numRequests == 0)
+            return 0;
         return this.totalContentLength / this.numRequests;
     }
 
+    public MinResponseTime() {
+        if (this.numRequests == 0)
+            return 0;
+        return this.minResponseTime;
+    }
+
+    public MaxResponseTime() {
+        if (this.numRequests == 0)
+            return 0;
+        return this.maxResponseTime;
+    }
 
     public Merge(other: Population) {
         /*
@@ -183,7 +209,29 @@ export class Population {
             for (const [key, value] of other.requestsPerSecond) {
                 this.requestsPerSecond.set(key, (this.requestsPerSecond.get(key) || 0) + value);
             }
+
+            for (const [key, value] of other.latencyPerSecond) {
+                if (!this.latencyPerSecond.get(key))
+                    this.latencyPerSecond.set(key, value);
+            }
         }
 
+    }
+
+    /// percentile = percentile to calculate. Between 0.0 - 1.0
+    public CalculateResponseTimePercentile(percentile: number): number {
+        let percentileRequestCount = this.numRequests * percentile;
+
+        const sortedKeys = Array.from(this.responseTimes.keys()).sort((a, b) => a - b);
+
+        let processedCount = 0;
+        for (let index = sortedKeys.length - 1; index >= 0; index--) {
+            const value = this.responseTimes.get(sortedKeys[index])!;
+            processedCount += value;
+            if (this.numRequests - processedCount <= percentileRequestCount) {
+                return sortedKeys[index];
+            }
+        }
+        return 0;
     }
 }

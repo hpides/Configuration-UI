@@ -4,6 +4,6 @@ execute in cmd not shell
 
 add
 /* eslint-disable */
-to result
+to result .js
 
 Praise be thy Omnissiah
