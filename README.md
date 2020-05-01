@@ -52,3 +52,6 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Note on running on Kubernetes with Ingress
+This app uses WebSockets to show real-time performance data. Some ingress controlers do not handle the WebSockets protocol correctly, which will lead to this feature not working properly. The included Kubernetes configuration sets the required flags for the nginx-ingress controller. Please refer to your ingress controller's manual for the appropriate configuration or uncomment and use the included NodePort service instead of ingress.

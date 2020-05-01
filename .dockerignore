@@ -2,3 +2,4 @@ node_modules
 .git
 build
 Docker/Dockerfile
+K8s

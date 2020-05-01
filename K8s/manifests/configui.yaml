@@ -43,6 +43,19 @@ spec:
       port: 80
       targetPort: 80
 
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: configui-external
+#spec:
+#  selector:
+#    app: configui
+#  type: NodePort
+#  ports:
+#    - protocol: TCP
+#      port: 80
+#      targetPort: 80
 ---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -50,6 +63,10 @@ metadata:
   name: configui-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "7200"
+    nginx.org/websocket-services: "configui"
 spec:
   rules:
     - http:
