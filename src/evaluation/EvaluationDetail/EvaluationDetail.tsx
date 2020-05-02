@@ -12,6 +12,8 @@ import { PercentileDrawer } from "./PercentileDrawer";
 import { UPSDrawer } from "./UPSDrawer";
 import { LPSDrawer } from "./LPSDrawer";
 import { RequestRatioDrawer } from "./RequestRatioDrawer";
+import { LVRDrawer } from "./LVRDrawer";
+import 'react-tabs/style/react-tabs.css';
 
 
 interface Props {
@@ -54,7 +56,7 @@ export class EvaluationDetail extends React.Component<Props, State> {
                 <Header testData={t} />
                 <Tabs>
                     <TabList>
-                        <Tab>Overview</Tab>
+                        <Tab>Summary</Tab>
                         <Tab>Charts</Tab>
                         <Tab>Download</Tab>
                     </TabList>
@@ -62,13 +64,12 @@ export class EvaluationDetail extends React.Component<Props, State> {
                         <StatTableDrawer testData={t} />
                     </TabPanel>
                     <TabPanel>
-                        <RPSDrawer testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
-                        <UPSDrawer testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
-
-                        <RequestRatioDrawer testData={t} />
-                        <PercentileDrawer pop={t.statistic.total} />
-                        <LPSDrawer testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
-                        
+                        <RPSDrawer className="eval_chart" testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
+                        <UPSDrawer className="eval_chart" testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
+                        <RequestRatioDrawer className="eval_chart" testData={t} />
+                        <PercentileDrawer className="eval_chart" pop={t.statistic.total} />
+                        <LPSDrawer className="eval_chart" testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
+                        <LVRDrawer className="eval_chart" testData={t} statisticChangeEventHandler={this.statisticChangeEventHandler} />
                     </TabPanel>
                     <TabPanel>
                         "Railgun"

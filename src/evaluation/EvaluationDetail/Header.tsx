@@ -13,10 +13,15 @@ export class Header extends React.Component<Props> {
         const stat = testData.statistic;
 
         return (
-            <div>
-                <div>
-                    {"Running: " + (testData.isActive)}
-                </div>
+            <div id="test_header">
+                <h2 id="test_header">
+                    {testData.id}
+                </h2>
+                {testData.isActive &&
+                    <div className="test_header_item">
+                        Is currently running
+                    </div>
+                }
                 <div>
                     {"RPS: " +
                         roundNumberTo2Places(testData.isActive ?

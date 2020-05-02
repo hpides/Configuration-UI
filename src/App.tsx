@@ -12,6 +12,8 @@ import "./App.css";
 import {Evaluation} from "./evaluation/Evaluation";
 // has classes for alerts
 import "./evaluation/Evaluation.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import {ExistingConfigComponent, IUploadedFile} from "./ExistingConfig/existingConfigComponent";
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";

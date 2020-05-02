@@ -7,11 +7,9 @@ interface Props {
     testData: TestData;
 }
 
-const statisticTableHeader = (
+const statisticTableTotalHeader = (
     <thead>
         <tr>
-            <th>Type</th>
-            <th>Name</th>
             <th># Requests</th>
             <th># Fails</th>
             <th>Median(ms)</th>
@@ -19,15 +17,31 @@ const statisticTableHeader = (
             <th>Min(ms)</th>
             <th>Max(ms)</th>
             <th>Avg size(bytes)</th>
-            <th>Current RPS</th>
+            <th>RPS</th>
+        </tr>
+    </thead>);
+
+const statisticTableHeader = (
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th># Requests</th>
+            <th># Fails</th>
+            <th>Median(ms)</th>
+            <th>Average(ms)</th>
+            <th>Min(ms)</th>
+            <th>Max(ms)</th>
+            <th>Avg size(bytes)</th>
+            <th>RPS</th>
         </tr>
     </thead>);
 
 const errorTableHeader = (
     <thead>
         <tr>
-            <th>Type</th>
             <th>Name</th>
+            <th>Type</th>
             <th>Error</th>
             <th># Occurances</th>
         </tr>
@@ -39,6 +53,7 @@ export class StatTableDrawer extends React.Component<Props> {
         return (
             <React.Fragment>
                 {this.renderStatisticTables()}
+                {this.props.testData.statistic.errors.size > 0 && <hr/>}
                 {this.renderErrorTable()}
             </React.Fragment>
         )
@@ -53,9 +68,9 @@ export class StatTableDrawer extends React.Component<Props> {
             const tableEntries = new Array<JSX.Element>();
             for (const pop of pops) {
                 tableEntries.push((
-                    <tr key={pop.endpoint.method + pop.endpoint.url}>
-                        <td>{endpointMethodToString(pop.endpoint.method)}</td>
+                    <tr key={pop.endpoint.url + pop.endpoint.method}>
                         <td>{locationFromUrl(pop.endpoint.url)}</td>
+                        <td>{endpointMethodToString(pop.endpoint.method)}</td>                  
                         <td>{pop.numRequests}</td>
                         <td>{pop.numFailures}</td>
                         <td>{pop.MedianResponseTime()}</td>
@@ -66,11 +81,12 @@ export class StatTableDrawer extends React.Component<Props> {
                         <td>{this.props.testData.isActive ? roundNumberTo2Places(pop.CurrentRequestsPerSecond()) : 0}</td>
                     </tr>));
             }
+            tableEntries.sort((a, b) => (a.key as string).localeCompare(b.key as string));
 
             tables.push(
                 <React.Fragment key={host}>
-                    <div>{host}</div>
-                    <table>
+                    <h3 className="stat_table_title">{"Summary of " + host}</h3>
+                    <table className="stat_table">
                         {statisticTableHeader}
                         <tbody>
                             {tableEntries}
@@ -83,13 +99,11 @@ export class StatTableDrawer extends React.Component<Props> {
         return (
             <React.Fragment>
                 {tables}
-                <div>Total</div>
-                <table>
-                    {statisticTableHeader}
+                <h3 className="stat_table_title">Total</h3>
+                <table className="stat_table">
+                    {statisticTableTotalHeader}
                     <tbody>
                         <tr key={total.endpoint.method + total.endpoint.url}>
-                            <td></td>
-                            <td></td>
                             <td>{total.numRequests}</td>
                             <td>{total.numFailures}</td>
                             <td>{total.MedianResponseTime()}</td>
@@ -116,18 +130,19 @@ export class StatTableDrawer extends React.Component<Props> {
                 const endpoint = error.endpoint || { url: "", method: 0 };
                 const location = locationFromUrl(endpoint.url);
                 tableEntries.push((
-                    <tr key={location+error.error}>
-                        <td>{endpointMethodToString(endpoint.method)}</td>
+                    <tr key={location + error.error}>
                         <td>{location}</td>
+                        <td>{endpointMethodToString(endpoint.method)}</td>
                         <td>{error.error}</td>
                         <td>{error.count}</td>
                     </tr>));
             }
+            tableEntries.sort((a, b) => (a.key as string).localeCompare(b.key as string));
 
             tables.push(
                 <React.Fragment key={host}>
-                    <div>{host}</div>
-                    <table>
+                    <h3 className="stat_table_title">{"Errors for " + host}</h3>
+                    <table className="stat_table">
                         {errorTableHeader}
                         <tbody>
                             {tableEntries}

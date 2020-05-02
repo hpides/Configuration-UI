@@ -8,6 +8,6 @@
     "\\src\\evaluation\\Statistic",
     "\\src\\GraphView"
   ],
-  "SelectedNode": "\\src\\evaluation\\Statistic\\Population.ts",
+  "SelectedNode": "\\src\\evaluation\\EvaluationDetail\\EvaluationDetail.tsx",
   "PreviewInSolutionExplorer": false
 }

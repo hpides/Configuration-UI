@@ -5,10 +5,12 @@ import { Statistic, getPopulationName } from "../Statistic/Statistic";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { SubEvent, Subscription } from 'sub-events';
+import { Card, CardBody, CardHeader } from "reactstrap";
 
 interface Props {
     testData: TestData;
     statisticChangeEventHandler: SubEvent<Statistic>;
+    className?: string;
 }
 
 function rightShiftArray<T>(array: Array<T>, start: number): T {
@@ -28,16 +30,16 @@ export class UPSDrawer extends React.Component<Props> {
 
     componentDidMount() {
         this.chart = am4core.create("ups_chart", am4charts.XYChart)
-        const title = this.chart.titles.create();
-        title.text = "Active Users";
 
         const xAxis = this.chart.xAxes.push(new am4charts.DateAxis());
-        xAxis.title.text = "Time";
+        xAxis.renderer.labels.template.fill = am4core.color("#ffffff");
         //xAxis.groupData = true;
         //xAxis.groupCount = 500;
 
         const yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
         yAxis.title.text = "Users";
+        yAxis.title.fill = am4core.color("#ffffff");
+        yAxis.renderer.labels.template.fill = am4core.color("#ffffff");
 
         const series = this.chart.series.push(new am4charts.LineSeries());
         series.dataFields.dateX = "x";
@@ -45,7 +47,6 @@ export class UPSDrawer extends React.Component<Props> {
         series.name = "Total";
 
         this.chart.cursor = new am4charts.XYCursor();
-        this.chart.legend = new am4charts.Legend();
         this.chart.scrollbarX = new am4core.Scrollbar();
 
         this.onStatisticChanged(this.props.testData.statistic);
@@ -63,9 +64,14 @@ export class UPSDrawer extends React.Component<Props> {
 
     render() {
         return (
-            <React.Fragment>
-                <div id="ups_chart" style={{ height: "600px" }} />
-            </React.Fragment>
+            <Card color="dark" className={this.props.className}>
+                <CardHeader>
+                    Users per second
+                </CardHeader>
+                <CardBody>
+                    <div id="ups_chart" style={{ height: "600px" }} />
+                </CardBody>
+            </Card>
         );
     }
 

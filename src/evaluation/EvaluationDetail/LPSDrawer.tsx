@@ -1,14 +1,16 @@
 import * as React from "react";
 import { TestData } from "../connectivity/Messages";
 import { Population } from "../Statistic/Population";
-import { Statistic, getPopulationName } from "../Statistic/Statistic";
+import { Statistic, getPopulationName, avgResponseTime } from "../Statistic/Statistic";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { SubEvent, Subscription } from 'sub-events';
+import { Card, CardHeader, CardBody } from "reactstrap";
 
 interface Props {
     testData: TestData;
     statisticChangeEventHandler: SubEvent<Statistic>;
+    className?: string;
 }
 
 function rightShiftArray<T>(array: Array<T>, start: number): T {
@@ -29,16 +31,16 @@ export class LPSDrawer extends React.Component<Props> {
 
     componentDidMount() {
         this.chart = am4core.create("lps_chart", am4charts.XYChart);
-        const title = this.chart.titles.create();
-        title.text = "Latency per second";
 
         const xAxis = this.chart.xAxes.push(new am4charts.DateAxis());
-        xAxis.title.text = "Time";
         xAxis.groupData = true;
         xAxis.groupCount = 500;
+        xAxis.renderer.labels.template.fill = am4core.color("#ffffff");
 
         const yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+        yAxis.title.fill = am4core.color("#ffffff");
         yAxis.title.text = "Latency";
+        yAxis.renderer.labels.template.fill = am4core.color("#ffffff");
 
         const stat = this.props.testData.statistic;
         const series = this.chart.series.push(new am4charts.LineSeries());
@@ -52,7 +54,9 @@ export class LPSDrawer extends React.Component<Props> {
         }
 
         this.chart.cursor = new am4charts.XYCursor();
-        this.chart.legend = new am4charts.Legend();
+        const legend = this.chart.legend = new am4charts.Legend();
+        legend.labels.template.fill = am4core.color("#ffffff");
+
         this.chart.scrollbarX = new am4core.Scrollbar();
 
         this.onStatisticChanged(this.props.testData.statistic);
@@ -70,10 +74,14 @@ export class LPSDrawer extends React.Component<Props> {
 
     render() {
         return (
-            <React.Fragment>
-                <div id="lps_chart" style={{ height: "600px" }} />
-                <div>{"Avg LPS: " + this.props.testData.statistic.total.AvgResponseTime()}</div>
-            </React.Fragment>
+            <Card color="dark" className={this.props.className}>
+                <CardHeader>
+                    {"Latency per second (Avg " + this.props.testData.statistic.total.AvgResponseTime()+ ")"}
+                </CardHeader>
+                <CardBody>
+                    <div id="lps_chart" style={{ height: "600px" }} />
+                </CardBody>
+            </Card>
         );
     }
 
@@ -112,10 +120,10 @@ export class LPSDrawer extends React.Component<Props> {
                     break;
                 } else if (series.data[i].x > date) {
                     if (i === series.data.length - 1) {
-                        dataItems.push({ x: date, y: count.percentile95 });
+                        dataItems.push({ x: date, y: avgResponseTime(count) });
                     } else {
                         dataItems.push(rightShiftArray(series.data, i + 1));
-                        series.data[i + 1] = { x: date, y: count.percentile95 };
+                        series.data[i + 1] = { x: date, y: avgResponseTime(count) };
                         dataWasShuffled = true;
                     }
                     addedDataPoint = true;
@@ -123,7 +131,7 @@ export class LPSDrawer extends React.Component<Props> {
                 }
             }
             if (!addedDataPoint)
-                dataItems.push({ x: date, y: count.percentile95 });
+                dataItems.push({ x: date, y: avgResponseTime(count) });
         }
 
         dataItems.sort((a, b) => a.x.getTime() - b.x.getTime());
@@ -137,6 +145,7 @@ export class LPSDrawer extends React.Component<Props> {
         const series = this.chart.series.push(new am4charts.LineSeries());
         series.dataFields.dateX = "x";
         series.dataFields.valueY = "y";
+        series.connect = false;
         series.name = getPopulationName(pop);
         this.mapPopulationToSeriesIndex.set(pop.hash, this.chart.series.length - 1);
         return series;

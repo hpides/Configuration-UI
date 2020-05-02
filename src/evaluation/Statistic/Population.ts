@@ -1,11 +1,6 @@
 import { Population as ProtoPopulation, Endpoint } from "../statistic_pb";
 import { Statistic } from "./Statistic";
 
-export interface StoredLatency {
-    percentile50: number,
-    percentile95: number
-}
-
 export class Population {
     endpoint: Endpoint.AsObject;
     numRequests: number;
@@ -20,7 +15,7 @@ export class Population {
     requestsPerSecond: Map<number, number>;
     failuresPerSecond: Map<number, number>;
     responseTimes: Map<number, number>;
-    latencyPerSecond: Map<number, StoredLatency>;
+    latencyPerSecond: Map<number, Map<number, number>>;
 
     statistic: Statistic;
     hash: string;
@@ -50,13 +45,25 @@ export class Population {
         }
 
         this.responseTimes = new Map();
-        for (const e of protoPop.getResponsetimesList()) {
-            this.responseTimes.set(e.getKey(), e.getValue());
+        for (const e of protoPop.getLatencypersecondList()) {
+            for (const k of e.getLatencycountList()) {
+                const ex = this.responseTimes.get(k.getKey());
+                if (ex !== undefined) {
+                    this.responseTimes.set(k.getKey(), ex + k.getValue());
+                } else {
+                    this.responseTimes.set(k.getKey(), k.getValue());
+                }
+            }
         }
 
         this.latencyPerSecond = new Map();
         for (const e of protoPop.getLatencypersecondList()) {
-            this.latencyPerSecond.set(e.getTime(), { percentile50: e.getPercentile50(), percentile95: e.getPercentile95() });
+            const l = e.getLatencycountList();
+            const m = new Map();
+            for (const ll of l) {
+                m.set(ll.getKey(), ll.getValue());
+            }
+            this.latencyPerSecond.set(e.getTime(), m);
         }
     }
 
@@ -207,13 +214,30 @@ export class Population {
             }
 
             for (const [key, value] of other.requestsPerSecond) {
-                this.requestsPerSecond.set(key, (this.requestsPerSecond.get(key) || 0) + value);
+                const ex = this.requestsPerSecond.get(key);
+                if (ex) {
+                    this.requestsPerSecond.set(key, ex + value);
+                } else {
+                    this.requestsPerSecond.set(key, value);
+                }
             }
 
             for (const [key, value] of other.latencyPerSecond) {
-                if (!this.latencyPerSecond.get(key))
+                const ex = this.latencyPerSecond.get(key);
+                if (!ex)
                     this.latencyPerSecond.set(key, value);
+                else {
+                    for (const [k, v] of value) {
+                        const ibaraki = ex.get(k);
+                        if (!ibaraki) {
+                            ex.set(k, v);
+                        } else {
+                            ex.set(k, v + ibaraki);
+                        }
+                    }
+                }
             }
+            console.log(other.latencyPerSecond);
         }
 
     }

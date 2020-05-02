@@ -2,9 +2,11 @@ import * as React from "react";
 import { Population } from "../Statistic/Population";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
+import { Card, CardHeader, CardBody } from "reactstrap";
 
 interface Props {
     pop: Population;
+    className?: string;
 }
 
 export class PercentileDrawer extends React.Component<Props> {
@@ -18,12 +20,16 @@ export class PercentileDrawer extends React.Component<Props> {
         
         const xAxis = this.chart.xAxes.push(new am4charts.CategoryAxis());
         xAxis.title.text = "percentile";
+        xAxis.title.fill = am4core.color("#ffffff");
         xAxis.renderer.grid.template.location = 0;
         xAxis.renderer.minGridDistance = 30;
         xAxis.dataFields.category = "x";
+        xAxis.renderer.labels.template.fill = am4core.color("#ffffff");
 
         const yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
         yAxis.title.text = "latency";
+        yAxis.title.fill = am4core.color("#ffffff");
+        yAxis.renderer.labels.template.fill = am4core.color("#ffffff");
 
         const series = this.chart.series.push(new am4charts.ColumnSeries());
         series.dataFields.categoryX = "x";
@@ -51,7 +57,14 @@ export class PercentileDrawer extends React.Component<Props> {
 
     render() {
         return (
-            <div id="percentile_chart" style={{ height: "600px" }} />
+            <Card color="dark" className={this.props.className}>
+                <CardHeader>
+                    Latency percentiles
+                </CardHeader>
+                <CardBody>
+                    <div id="percentile_chart" style={{ height: "600px" }} />
+                </CardBody>
+            </Card>
         );
     }
 

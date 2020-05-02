@@ -18,16 +18,15 @@ message Population {
   Endpoint ep = 1;
   repeated LongIntEntry requestsPerSecond = 2;
   repeated LongIntEntry failuresPerSecond = 3;
-  repeated LongIntEntry responseTimes = 4;
-  uint32 numRequests = 5;
-  uint32 numFailures = 6;
-  uint64 totalResponseTime = 7;
-  uint64 minResponseTime = 8;
-  uint64 maxResponseTime = 9;
-  uint32 totalContentLength = 10;
-  uint64 startTime = 11;
-  uint64 latestRequestTime = 12;
-  repeated StoredLatency latencyPerSecond = 13;
+  uint32 numRequests = 4;
+  uint32 numFailures = 5;
+  uint64 totalResponseTime = 6;
+  uint64 minResponseTime = 7;
+  uint64 maxResponseTime = 8;
+  uint32 totalContentLength = 9;
+  uint64 startTime = 10;
+  uint64 latestRequestTime = 11;
+  repeated ResponseTimeEntry latencyPerSecond = 12;
 }
 
 message Endpoint {
@@ -53,8 +52,7 @@ message LongIntEntry {
   uint32 value = 2;
 }
 
-message StoredLatency {
+message ResponseTimeEntry {
   uint64 time = 1;
-  float percentile50 = 2;
-  float percentile95 = 3;
+  repeated LongIntEntry latencyCount = 2;
 }

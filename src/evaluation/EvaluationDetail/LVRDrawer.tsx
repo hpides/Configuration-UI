@@ -1,10 +1,11 @@
 import * as React from "react";
 import { TestData } from "../connectivity/Messages";
 import { Population } from "../Statistic/Population";
-import { Statistic, getPopulationName } from "../Statistic/Statistic";
+import { Statistic, getPopulationName, mergeResponseTimes, avgResponseTime } from "../Statistic/Statistic";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { SubEvent, Subscription } from 'sub-events';
+import { number } from "prop-types";
 import { Card, CardHeader, CardBody } from "reactstrap";
 
 interface Props {
@@ -23,28 +24,28 @@ function rightShiftArray<T>(array: Array<T>, start: number): T {
     return prev;
 }
 
-export class RPSDrawer extends React.Component<Props> {
+export class LVRDrawer extends React.Component<Props> {
 
-    rpsChart: am4charts.XYChart | undefined;
+    chart: am4charts.XYChart | undefined;
     statisticChangeSubscription: Subscription | undefined;
     mapPopulationToSeriesIndex = new Map<string, number>();
 
     componentDidMount() {
-        this.rpsChart = am4core.create("rps_chart", am4charts.XYChart)
+        this.chart = am4core.create("lvr_chart", am4charts.XYChart)
 
-        const xAxis = this.rpsChart.xAxes.push(new am4charts.DateAxis());
-        xAxis.groupData = true;
-        xAxis.groupCount = 500;
+        const xAxis = this.chart.xAxes.push(new am4charts.ValueAxis());
+        xAxis.title.text = "Requests";
+        xAxis.title.fill = am4core.color("#ffffff");
         xAxis.renderer.labels.template.fill = am4core.color("#ffffff");
 
-        const yAxis = this.rpsChart.yAxes.push(new am4charts.ValueAxis());
-        yAxis.title.text = "Requests";
-        yAxis.title.fill = am4core.color("#ffffff");
+        const yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+        yAxis.title.text = "Latency";
         yAxis.renderer.labels.template.fill = am4core.color("#ffffff");
+        yAxis.title.fill = am4core.color("#ffffff");
 
         const stat = this.props.testData.statistic;
-        const series = this.rpsChart.series.push(new am4charts.LineSeries());
-        series.dataFields.dateX = "x";
+        const series = this.chart.series.push(new am4charts.LineSeries());
+        series.dataFields.valueX = "x";
         series.dataFields.valueY = "y";
         series.name = "Total";
         this.mapPopulationToSeriesIndex.set(stat.total.hash, 0);
@@ -53,10 +54,10 @@ export class RPSDrawer extends React.Component<Props> {
             this.createSerieForPopulation(pop);
         }
 
-        this.rpsChart.cursor = new am4charts.XYCursor();
-        const legend = this.rpsChart.legend = new am4charts.Legend();
+        this.chart.cursor = new am4charts.XYCursor();
+        const legend = this.chart.legend = new am4charts.Legend();
         legend.labels.template.fill = am4core.color("#ffffff");
-        this.rpsChart.scrollbarX = new am4core.Scrollbar();
+        this.chart.scrollbarX = new am4core.Scrollbar();
 
         this.onStatisticChanged(this.props.testData.statistic);
 
@@ -65,8 +66,8 @@ export class RPSDrawer extends React.Component<Props> {
     }
 
     componentWillUnmount() {
-        if (this.rpsChart)
-            this.rpsChart.dispose();
+        if (this.chart)
+            this.chart.dispose();
         if (this.statisticChangeSubscription)
             this.statisticChangeSubscription.cancel();
     }
@@ -75,10 +76,10 @@ export class RPSDrawer extends React.Component<Props> {
         return (
             <Card color="dark" className={this.props.className}>
                 <CardHeader>
-                    {"Total requests per second (Avg " + this.props.testData.statistic.total.TotalRequestsPerSecond() + ")"}
+                    Latency vs Requests
                 </CardHeader>
                 <CardBody>
-                    <div id="rps_chart" style={{ height: "600px" }} />
+                    <div id="lvr_chart" style={{ height: "600px" }} />
                 </CardBody>
             </Card>
         );
@@ -91,7 +92,7 @@ export class RPSDrawer extends React.Component<Props> {
     }
 
     updateRPSData(deltaPop: Population) {
-        if (!this.rpsChart)
+        if (!this.chart)
             return;
 
         let series: am4charts.Series | undefined;
@@ -100,57 +101,44 @@ export class RPSDrawer extends React.Component<Props> {
             series = this.createSerieForPopulation(deltaPop);
         }
         else {
-            series = this.rpsChart.series.getIndex(index);
+            series = this.chart.series.getIndex(index);
         }
         if (!series)
             return;
 
-        const dataItems = new Array<{ x: Date, y: number }>();
-        let dataWasShuffled = false;
-        for (const [second, count] of deltaPop.requestsPerSecond) {
+        const map = new Map<number, Map<number, number>>();
+        for (const [second, rCount] of deltaPop.requestsPerSecond) {
+            const latency = deltaPop.latencyPerSecond.get(second);
+            if (!latency)
+                continue;
 
-            const date = new Date(second * 1000);
-            let addedDataPoint = false;
-            for (let i = series.data.length - 1; i >= 0; i--) {
-
-                if (series.data[i].x === date) {
-                    series.data[i].y += count;
-                    addedDataPoint = true;
-                    break;
-                } else if (series.data[i].x > date) {
-                    if (i === series.data.length - 1) {
-                        dataItems.push({ x: date, y: count });
-                    } else {
-                        dataItems.push(rightShiftArray(series.data, i + 1));
-                        series.data[i + 1] = { x: date, y: count };
-                        dataWasShuffled = true;
-                    }
-                    addedDataPoint = true;
-                    break;
-                }
+            const ex = map.get(rCount);
+            if (ex) {
+                mergeResponseTimes(ex, latency);
+            } else {
+                map.set(rCount, latency);
             }
-            if (!addedDataPoint)
-                dataItems.push({ x: date, y: count });
         }
 
-        dataItems.sort((a, b) => a.x.getTime() - b.x.getTime());
-        series.data = series.data.concat(dataItems);
-        if (dataWasShuffled)
-            this.rpsChart.invalidateData();
-        else
-            this.rpsChart.invalidateRawData();
+        const data: Array<{ x: number, y: number }> = [];
+        for (const [rCount, latencies] of map) {
+            data.push({ x: rCount, y: avgResponseTime(latencies) });
+        }
+        data.sort((a, b) => a.x - b.x);
+
+        series.data = data;
     }
 
     createSerieForPopulation(pop: Population) {
-        if (!this.rpsChart)
+        if (!this.chart)
             return undefined;
 
-        const series = this.rpsChart.series.push(new am4charts.LineSeries());
-        series.dataFields.dateX = "x";
+        const series = this.chart.series.push(new am4charts.LineSeries());
+        series.dataFields.valueX = "x";
         series.dataFields.valueY = "y";
         series.connect = false;
         series.name = getPopulationName(pop);
-        this.mapPopulationToSeriesIndex.set(pop.hash, this.rpsChart.series.length - 1);
+        this.mapPopulationToSeriesIndex.set(pop.hash, this.chart.series.length - 1);
         return series;
     }
 }

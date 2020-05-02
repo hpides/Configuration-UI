@@ -20,6 +20,30 @@ export function getPopulationName(pop: Population): string {
     return url.host + url.pathname + ":" + endpointMethodToString(pop.endpoint.method);
 }
 
+export function avgResponseTime(responseTimes: Map<number, number>) {
+    let count = 0;
+    let value = 0;
+
+    for (const [x, y] of responseTimes) {
+        count += y;
+        value += y * x;
+    }
+    if (count > 0)
+        return value / count;
+    return 0;
+}
+
+export function mergeResponseTimes(a: Map<number, number>, b: Map<number, number>) {
+    for (const [key, value] of b) {
+        const ex = a.get(key);
+        if (ex) {
+            a.set(key, ex + value);
+        } else {
+            a.set(key, value);
+        }
+    }
+}
+
 export class Statistic {
     total: Population;
     populations: Map<string, Population>;

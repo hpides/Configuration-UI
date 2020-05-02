@@ -1,12 +1,13 @@
-import axios from "axios";
 import React, { Component } from "react";
-import { Alert } from "reactstrap";
-import "./Evaluation.css";
+import "./style.css";
 import { EvaluationDetail } from "./EvaluationDetail/EvaluationDetail";
 import { TestData, StrippedTestJSON } from "./connectivity/Messages";
 import { loadTest, loadAllTestIds } from "./connectivity/PerformanceDataStorageClient";
 import { delay } from "q";
-import { object } from "prop-types";
+import am4themes_material from "@amcharts/amcharts4/themes/material";
+import * as am4core from "@amcharts/amcharts4/core";
+
+am4core.useTheme(am4themes_material);
 
 interface Props {
     importTestConfigFunc: (testConfig: any) => void;
@@ -87,10 +88,10 @@ export class Evaluation extends Component<Props, State> {
                 </div>);
         } else {
             return (
-                <React.Fragment>
+                <div id="eval">
                     <div onClick={() => { this.setState({ ...this.state, selectedTest: null }); }}>Back</div>
                     <EvaluationDetail test={this.state.selectedTest} />
-                </React.Fragment >
+                </div >
             );
         }
     }

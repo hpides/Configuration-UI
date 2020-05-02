@@ -67,11 +67,6 @@ export class Population extends jspb.Message {
   setFailurespersecondList(value: Array<LongIntEntry>): void;
   addFailurespersecond(value?: LongIntEntry, index?: number): LongIntEntry;
 
-  clearResponsetimesList(): void;
-  getResponsetimesList(): Array<LongIntEntry>;
-  setResponsetimesList(value: Array<LongIntEntry>): void;
-  addResponsetimes(value?: LongIntEntry, index?: number): LongIntEntry;
-
   getNumrequests(): number;
   setNumrequests(value: number): void;
 
@@ -97,9 +92,9 @@ export class Population extends jspb.Message {
   setLatestrequesttime(value: number): void;
 
   clearLatencypersecondList(): void;
-  getLatencypersecondList(): Array<StoredLatency>;
-  setLatencypersecondList(value: Array<StoredLatency>): void;
-  addLatencypersecond(value?: StoredLatency, index?: number): StoredLatency;
+  getLatencypersecondList(): Array<ResponseTimeEntry>;
+  setLatencypersecondList(value: Array<ResponseTimeEntry>): void;
+  addLatencypersecond(value?: ResponseTimeEntry, index?: number): ResponseTimeEntry;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Population.AsObject;
@@ -116,7 +111,6 @@ export namespace Population {
     ep?: Endpoint.AsObject,
     requestspersecondList: Array<LongIntEntry.AsObject>,
     failurespersecondList: Array<LongIntEntry.AsObject>,
-    responsetimesList: Array<LongIntEntry.AsObject>,
     numrequests: number,
     numfailures: number,
     totalresponsetime: number,
@@ -125,7 +119,7 @@ export namespace Population {
     totalcontentlength: number,
     starttime: number,
     latestrequesttime: number,
-    latencypersecondList: Array<StoredLatency.AsObject>,
+    latencypersecondList: Array<ResponseTimeEntry.AsObject>,
   }
 }
 
@@ -216,31 +210,29 @@ export namespace LongIntEntry {
   }
 }
 
-export class StoredLatency extends jspb.Message {
+export class ResponseTimeEntry extends jspb.Message {
   getTime(): number;
   setTime(value: number): void;
 
-  getPercentile50(): number;
-  setPercentile50(value: number): void;
-
-  getPercentile95(): number;
-  setPercentile95(value: number): void;
+  clearLatencycountList(): void;
+  getLatencycountList(): Array<LongIntEntry>;
+  setLatencycountList(value: Array<LongIntEntry>): void;
+  addLatencycount(value?: LongIntEntry, index?: number): LongIntEntry;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): StoredLatency.AsObject;
-  static toObject(includeInstance: boolean, msg: StoredLatency): StoredLatency.AsObject;
+  toObject(includeInstance?: boolean): ResponseTimeEntry.AsObject;
+  static toObject(includeInstance: boolean, msg: ResponseTimeEntry): ResponseTimeEntry.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: StoredLatency, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): StoredLatency;
-  static deserializeBinaryFromReader(message: StoredLatency, reader: jspb.BinaryReader): StoredLatency;
+  static serializeBinaryToWriter(message: ResponseTimeEntry, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ResponseTimeEntry;
+  static deserializeBinaryFromReader(message: ResponseTimeEntry, reader: jspb.BinaryReader): ResponseTimeEntry;
 }
 
-export namespace StoredLatency {
+export namespace ResponseTimeEntry {
   export type AsObject = {
     time: number,
-    percentile50: number,
-    percentile95: number,
+    latencycountList: Array<LongIntEntry.AsObject>,
   }
 }
 
