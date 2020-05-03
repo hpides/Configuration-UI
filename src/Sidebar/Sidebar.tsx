@@ -114,21 +114,21 @@ export class Sidebar extends React.Component<IProps, IState> {
                     name="evaluation"
                     className={cv === Views.Evaluation ? "active" : ""}
                     onClick={this.changeView}
-                >Running and finished tests</button>
-                <button
-                    name="apis"
-                    className={cv === Views.Apis ? "active" : ""}
-                    onClick={this.changeView}
-                >Apis</button><button
-                    name="existing"
-                    className={cv === Views.Existing ? "active" : ""}
-                    onClick={this.changeView}
-                >Upload existing PDGF config</button>
+                >Recent Tests</button>
                 <button
                     name="testconfig"
                     className={cv === Views.Testconfig ? "active" : ""}
                     onClick={this.changeView}
-                >Testconfig</button>
+                >Test Configuration</button>
+                <button
+                    name="apis"
+                    className={cv === Views.Apis ? "active" : ""}
+                    onClick={this.changeView}
+                >Edit APIs</button><button
+                    name="existing"
+                    className={cv === Views.Existing ? "active" : ""}
+                    onClick={this.changeView}
+                >Edit PDGF Configurations</button>
                 <button
                     name="pdgf"
                     className={cv === Views.PDGFOutput ? "active" : ""}
@@ -138,7 +138,7 @@ export class Sidebar extends React.Component<IProps, IState> {
                     name="userstories"
                     className={cv === Views.UserStories ? "active stories-btn" : "stories-btn"}
                     onClick={this.changeView}
-                >UserStories</button>
+                >User Stories</button>
                 <button
                     className="add-story-btn"
                     onClick={(event) => this.addStory()}
