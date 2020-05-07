@@ -91,3 +91,18 @@ input[type="checkbox"]:checked+label{
 input[type="checkbox"]:checked+label::before {
   margin: 0 0 0 30px;
 }
+
+.dropzone {
+  border: 3px solid #6172a9;
+  border-radius: 10px;
+  background-color: #666d82;
+  margin: 20px;
+  -webkit-transition: background 0.5s ease-in-out;
+  -moz-transition: background 0.5s ease-in-out;
+  -ms-transition: background 0.5s ease-in-out;
+  -o-transition: background 0.5s ease-in-out;
+  transition: background 0.5s ease-in-out;
+}
+.dropzone:hover {
+  background-color: #414654;
+}
