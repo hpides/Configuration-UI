@@ -99,6 +99,14 @@ export class ApisEditor extends React.Component<{}, IState> {
         });
     }
 
+    public deleteConfig = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const key = event.currentTarget.getAttribute("data-key");
+        if (!key) { return; }
+
+        this.state.uploadedFiles.delete(key);
+        this.setState({uploadedFiles: this.state.uploadedFiles});
+    }
+
     public render() {
         let serverChooser;
         if (this.state.choosingServer) {
@@ -134,7 +142,15 @@ export class ApisEditor extends React.Component<{}, IState> {
                 </tr>
                 {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
                     return [<tr>
-                        <td rowSpan={2}>{filename}</td>
+                        <td rowSpan={2}>
+                            <span>{filename}</span>
+                            <button
+                                className="delete-data-btn"
+                                data-key={filename}
+                                onClick={this.deleteConfig}
+                            >&times;</button>
+                            
+                        </td>
                         <td>{this.state.uploadedFiles.get(filename)!.server}</td>
                     </tr>,
                     <tr>

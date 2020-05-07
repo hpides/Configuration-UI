@@ -26,3 +26,36 @@
     overflow: scroll;
     margin: 0;
 }
+
+.apis-editor .delete-data-btn {
+    display: inline-block;
+    width: 0px;
+    height: 0px;
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease 0s;
+}
+
+.apis-editor .delete-data-btn:before {
+    display: inline-block;
+    content: "\00d7";
+    position: relative;
+    border-radius: 50px;
+    top: 3px;
+    background-color:#d3584b;
+	border:1px solid #b04c41;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:26px;
+    padding:0px 7px;
+	text-decoration:none;
+    margin: 0;
+    right: -15px;
+    height: 30px;
+    width: 15px;
+    transition: all 0.3s ease 0s;
+}
+.apis-editor .delete-data-btn:hover:before {
+	background-color:#b04c41;
+}
