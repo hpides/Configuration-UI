@@ -1,9 +1,9 @@
 .apis-editor table {
     background-color: white;
     color: black;
-    width: calc(100% - 20px);
+    width: calc(100% - 40px);
     border-collapse: collapse;
-    margin: 0 10px;
+    margin: 0 20px;
 }
 
 .apis-editor table td {
@@ -11,6 +11,10 @@
     width: initial;
     border-left: 1px solid #c0c0c0;
     border-bottom: 1px solid #c0c0c0;
+}
+
+.apis-editor table td.api-name {
+    width: 30%;
 }
 
 .apis-editor table th {
@@ -22,7 +26,7 @@
 }
 
 .apis-editor table td ul {
-    max-height: 100px;
+    max-height: 200px;
     overflow: scroll;
     margin: 0;
 }

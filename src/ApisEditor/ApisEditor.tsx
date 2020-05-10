@@ -124,6 +124,7 @@ export class ApisEditor extends React.Component<{}, IState> {
             </tr>
         }
         return <div className="apis-editor">
+            <h1>API Editor</h1>
             <div className="dropzone">
                 <Dropzone onDrop={ (files) => this.onDrop(files)}>
                     {({getRootProps, getInputProps}) => (
@@ -142,7 +143,7 @@ export class ApisEditor extends React.Component<{}, IState> {
                 </tr>
                 {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
                     return [<tr>
-                        <td rowSpan={2}>
+                        <td rowSpan={2} className="api-name">
                             <span>{filename}</span>
                             <button
                                 className="delete-data-btn"
