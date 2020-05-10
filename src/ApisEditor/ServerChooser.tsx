@@ -74,7 +74,7 @@ export class ServerChooser extends React.Component<IProps, IState> {
                     <fieldset className="server-list">
                         <ul>
                             {servers}
-                        
+
                         <li><input
                             type="radio"
                             name="SERVER"

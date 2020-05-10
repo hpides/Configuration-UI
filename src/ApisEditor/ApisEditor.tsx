@@ -121,7 +121,7 @@ export class ApisEditor extends React.Component<{}, IState> {
         if (this.state.uploadedFiles.size === 0) {
             noConfig = <tr>
                 <td colSpan={2}>No Configurations</td>
-            </tr>
+            </tr>;
         }
         return <div className="apis-editor">
             <h1>API Editor</h1>
@@ -150,7 +150,7 @@ export class ApisEditor extends React.Component<{}, IState> {
                                 data-key={filename}
                                 onClick={this.deleteConfig}
                             >&times;</button>
-                            
+
                         </td>
                         <td>{this.state.uploadedFiles.get(filename)!.server}</td>
                     </tr>,
