@@ -78,16 +78,18 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
                 {this.state.lastError === "" ? <div/> : <Alert color="danger">
                     Import error: <div dangerouslySetInnerHTML={{__html: this.state.lastError}}/></Alert>}
             </div>
-            <Dropzone onDrop={ (files) => this.onDrop(files)}>
-                {({getRootProps, getInputProps}) => (
-                    <section>
-                        <div {...getRootProps()}>
-                            <input {...getInputProps()} />
-                            <p>Drag 'n' drop some files here, or click to select files</p>
-                        </div>
-                    </section>
-                )}
-            </Dropzone>
+            <div className="dropzone">
+                <Dropzone onDrop={ (files) => this.onDrop(files)}>
+                    {({getRootProps, getInputProps}) => (
+                        <section>
+                            <div {...getRootProps()}>
+                                <input {...getInputProps()} />
+                                <p>Drag 'n' drop some files here, or click to select files</p>
+                            </div>
+                        </section>
+                    )}
+                </Dropzone>
+            </div>
         <label>Loaded configurations:</label>
             <ul>
             {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {

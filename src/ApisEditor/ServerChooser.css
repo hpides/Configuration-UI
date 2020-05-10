@@ -80,3 +80,39 @@
     height: fit-content;
     margin: 0 10px;
 }
+
+fieldset.server-list {
+    border: none;
+    margin: 0 20px;
+    text-align: left;
+}
+
+fieldset.server-list label {
+    clear: none;
+    display: inline;
+    padding: 0 1em 0 10pt;
+}
+
+fieldset.server-list input[type=radio] {
+    clear: none;
+    margin: 2px 0 0 2px;
+    display: inline;
+}
+
+fieldset.server-list input[type=text] {
+    display: inline;
+    margin-left: 10pt;
+    
+}
+
+fieldset.server-list ul {
+    list-style-type: none;
+}
+
+fieldset.server-list ul > li {
+    margin-top: 15px;
+}
+
+fieldset.server-list ul > li:last-child {
+    margin-top: 0;
+}
