@@ -58,20 +58,24 @@ export class ServerChooser extends React.Component<IProps, IState> {
     public render() {
         const servers: JSX.Element[] = [];
         for (const server of this.props.servers) {
-            servers.push(<label><input
+            servers.push(<li><input
                 type="radio"
                 name="SERVER"
                 value={server}
+                id={"radio-" + server}
                 onChange={this.radioChanged}
-            />{server}</label>);
+            /><label htmlFor={"radio-" + server}>{server}</label></li>);
         }
         return (
             <div className="generator-adder-container">
                 <div className="generator-adder-background"/>
                 <div className="generator-adder">
-                    <fieldset>
-                        {servers}
-                        <input
+                    <h3>Choose Server</h3>
+                    <fieldset className="server-list">
+                        <ul>
+                            {servers}
+                        
+                        <li><input
                             type="radio"
                             name="SERVER"
                             value="OTHER"
@@ -88,7 +92,8 @@ export class ServerChooser extends React.Component<IProps, IState> {
                                         ? this.state.selectedServer
                                         : ""
                                 }
-                            />
+                            /></li>
+                        </ul>
                     </fieldset>
                     <button
                         onClick={this.doneButtonClicked}
