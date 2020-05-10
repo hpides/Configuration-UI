@@ -99,6 +99,14 @@ export class ApisEditor extends React.Component<{}, IState> {
         });
     }
 
+    public deleteConfig = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const key = event.currentTarget.getAttribute("data-key");
+        if (!key) { return; }
+
+        this.state.uploadedFiles.delete(key);
+        this.setState({uploadedFiles: this.state.uploadedFiles});
+    }
+
     public render() {
         let serverChooser;
         if (this.state.choosingServer) {
@@ -109,32 +117,54 @@ export class ApisEditor extends React.Component<{}, IState> {
                 onCancel={this.serverSelectionCancelled}
             />;
         }
-        return <div>
-            <Dropzone onDrop={ (files) => this.onDrop(files)}>
-                {({getRootProps, getInputProps}) => (
-                    <section>
-                        <div {...getRootProps()}>
-                            <input {...getInputProps()} />
-                            <p>Drag 'n' drop some files here, or click to select files</p>
-                        </div>
-                    </section>
-                )}
-            </Dropzone>
-        <label>Loaded configurations:</label>
-            <ul>
-            {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
-                return <li key={fileIndex}>{filename + " : " + this.state.uploadedFiles.get(filename)!.server}{
-                    <ul>
-                        {
-                            Array.from(this.state.uploadedFiles.get(filename)!
-                                .existingEndpoints).map((endpoint) => {
-                                    return <li key={endpoint}>{endpoint}</li>;
-                                })
-                        }
-                    </ul>
-                }</li>;
-            })}
-            </ul>
+        let noConfig;
+        if (this.state.uploadedFiles.size === 0) {
+            noConfig = <tr>
+                <td colSpan={2}>No Configurations</td>
+            </tr>;
+        }
+        return <div className="apis-editor">
+            <h1>API Editor</h1>
+            <div className="dropzone">
+                <Dropzone onDrop={ (files) => this.onDrop(files)}>
+                    {({getRootProps, getInputProps}) => (
+                        <section>
+                            <div {...getRootProps()}>
+                                <input {...getInputProps()} />
+                                <p>Drag 'n' drop some files here, or click to select files</p>
+                            </div>
+                        </section>
+                    )}
+                </Dropzone>
+            </div>
+            <table>
+                <tr>
+                    <th colSpan={2}>Loaded Configurations:</th>
+                </tr>
+                {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
+                    return [<tr>
+                        <td rowSpan={2} className="api-name">
+                            <span>{filename}</span>
+                            <button
+                                className="delete-data-btn"
+                                data-key={filename}
+                                onClick={this.deleteConfig}
+                            >&times;</button>
+
+                        </td>
+                        <td>{this.state.uploadedFiles.get(filename)!.server}</td>
+                    </tr>,
+                    <tr>
+                        <td><ul>
+                            {Array.from(this.state.uploadedFiles.get(filename)!
+                            .existingEndpoints).map((endpoint) => {
+                                return <li key={endpoint}>{endpoint}</li>;
+                            })}
+                        </ul></td>
+                    </tr>];
+                })}
+                {noConfig}
+            </table>
             {serverChooser}
         </div>;
     }
