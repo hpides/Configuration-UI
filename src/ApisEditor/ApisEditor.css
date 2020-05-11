@@ -37,7 +37,7 @@
     height: 0px;
     margin: 0;
     padding: 0;
-    transition: all 0.3s ease 0s;
+    transition: background-color 0.3s ease 0s;
 }
 
 .apis-editor .delete-data-btn:before {
@@ -58,7 +58,7 @@
     right: -15px;
     height: 30px;
     width: 15px;
-    transition: all 0.3s ease 0s;
+    transition: background-color 0.3s ease 0s;
 }
 .apis-editor .delete-data-btn:hover:before {
 	background-color:#b04c41;

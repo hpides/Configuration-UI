@@ -7,7 +7,7 @@ import "reflect-metadata";
 import { create } from "xmlbuilder2";
 import {fragment} from "xmlbuilder2/lib";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
-import {ApisEditor} from "./ApisEditor/ApisEditor";
+import {ApisEditor, IUploadedFile as IUploadedFileAPI} from "./ApisEditor/ApisEditor";
 import "./App.css";
 import {Evaluation} from "./evaluation/Evaluation";
 // has classes for alerts
@@ -52,6 +52,7 @@ class App extends React.Component<{}, IState> {
 
     // used to import PDGF configs after reload
     private lastConfig?: any = null;
+    private lastConfigAPI?: any = null;
 
     constructor(props: any) {
         super(props);
@@ -155,6 +156,7 @@ class App extends React.Component<{}, IState> {
         testConfigJSON.stories  = stories;
 
         testConfigJSON.existingXMLs = this.state.existingConfigComponent ? this.state.existingConfigComponent.state : {};
+        testConfigJSON.apis = this.state.apisEditor ? this.state.apisEditor.state : {};
 
         // make sure to remove excluded attributes before export
         // also, pretty-print
@@ -205,6 +207,14 @@ class App extends React.Component<{}, IState> {
             // can not (yet) import PDGF config since component has not yet rendered. Defer until ref available
             if (!this.state.existingConfigComponent && testConfig.existingXMLs !== {} && testConfig.existingXMLs) {
                 this.lastConfig = testConfig;
+            }
+        }
+        if (this.state.apisEditor && testConfig.apis) {
+            this.importUploadedAPIConfigs(testConfig);
+        } else {
+            // can not (yet) import API config since component has not yet rendered. Defer until ref available
+            if (!this.state.apisEditor && testConfig.apis !== {} && testConfig.apis) {
+                this.lastConfigAPI = testConfig;
             }
         }
         // need to re-render to create respective views before we can call the update
@@ -309,7 +319,13 @@ class App extends React.Component<{}, IState> {
                         <div
                             style={this.state.currentView === Views.Apis ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
                             <ApisEditor ref={(ref) => {if (!this.state.apisEditor) {
-                                this.setState({apisEditor: ref}, () => {});
+                                // see ExistingConfigComponent for details
+                                this.setState({apisEditor: ref}, () => {
+                                    if (this.lastConfigAPI) {
+                                        this.importUploadedAPIConfigs(this.lastConfigAPI);
+                                        this.lastConfigAPI = null;
+                                    }
+                                });
                                 }}}
                             /></div>
                         <div
@@ -356,6 +372,28 @@ class App extends React.Component<{}, IState> {
 
             </div>
         );
+    }
+
+    private importUploadedAPIConfigs = (testConfig: any) => {
+        const existing = testConfig.apis;
+        const allEndpoints = new Set<string>();
+        for (const endpoint of existing.allEndpoints) {
+            allEndpoints.add(endpoint);
+        }
+        const uploadedFiles = new Map<string, IUploadedFileAPI>();
+
+        for (const member in existing.uploadedFiles) {
+            if (member) {
+                const uploadedFile = existing.uploadedFiles[member];
+                const fileRepr = {} as IUploadedFileAPI;
+                fileRepr.existingEndpoints = uploadedFile.existingEndpoints;
+                fileRepr.fileContent = uploadedFile.fileContent;
+                fileRepr.server = uploadedFile.server;
+                uploadedFiles.set(member, fileRepr);
+            }
+        }
+
+        this.state.apisEditor?.setState({allEndpoints, uploadedFiles});
     }
 
     private importUploadedPDGFConfigs = (testConfig: any) => {
