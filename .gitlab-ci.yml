@@ -8,6 +8,6 @@ lint:
     - BP-TDGT-CI
   script:
     - apk add git
-    - npm install
+    - npm install --verbose
     - npm run test
     - npm run lint
