@@ -112,7 +112,7 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
                 </tr>
                 {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
                     return <tr>
-                        <td rowSpan={2} className="pdgf-config-name">
+                        <td className="pdgf-config-name">
                             <span>{filename}</span>
                             <button
                                 className="delete-data-btn"
