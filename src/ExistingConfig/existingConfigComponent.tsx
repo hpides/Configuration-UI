@@ -77,13 +77,13 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
         const key = event.currentTarget.getAttribute("data-key");
         if (!key) { return; }
 
-        let uploadedFile = this.state.uploadedFiles.get(key)!;
+        const uploadedFile = this.state.uploadedFiles.get(key)!;
         uploadedFile.existingTables.forEach((tablename) => this.state.allTables.delete(tablename));
 
         this.state.uploadedFiles.delete(key);
         this.setState({
             allTables: this.state.allTables,
-            uploadedFiles: this.state.uploadedFiles
+            uploadedFiles: this.state.uploadedFiles,
         });
     }
 
