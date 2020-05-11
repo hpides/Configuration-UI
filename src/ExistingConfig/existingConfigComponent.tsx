@@ -2,6 +2,7 @@ import React from "react";
 import Dropzone from "react-dropzone";
 import Alert from "reactstrap/lib/Alert";
 import "../evaluation/Evaluation.css";
+import "./existingConfigComponent.css";
 export interface IUploadedFile {
     existingTables: string[];
     tableMapping: Map<string, string[]>;
@@ -72,8 +73,23 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
 
     }
 
+    public deleteConfig = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const key = event.currentTarget.getAttribute("data-key");
+        if (!key) { return; }
+
+        const uploadedFile = this.state.uploadedFiles.get(key)!;
+        uploadedFile.existingTables.forEach((tablename) => this.state.allTables.delete(tablename));
+
+        this.state.uploadedFiles.delete(key);
+        this.setState({
+            allTables: this.state.allTables,
+            uploadedFiles: this.state.uploadedFiles,
+        });
+    }
+
     public render() {
-        return <div>
+        return <div className="pdgf-existing-config">
+            <h1>PDGF Configurations</h1>
             <div>
                 {this.state.lastError === "" ? <div/> : <Alert color="danger">
                     Import error: <div dangerouslySetInnerHTML={{__html: this.state.lastError}}/></Alert>}
@@ -90,24 +106,36 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
                     )}
                 </Dropzone>
             </div>
-        <label>Loaded configurations:</label>
-            <ul>
-            {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
-                return <li key={fileIndex}>{filename + " : "}{
-                    <ul>
-                        {Array.from(this.state.uploadedFiles.get(filename)!
-                            .tableMapping.keys()).map((tablename, tableIndex) => {
-                            return <li key={tableIndex}>{"Table: " + tablename +
-                            ", Fields:" + this.state.uploadedFiles.get(filename)!
-                                .tableMapping.get(tablename)!.map((field) => {
-                                // react will separate them by commata
-                                return " " + field;
-                            })}</li>;
-                        })}
-                    </ul>
-                }</li>;
-            })}
-            </ul>
+            <table>
+                <tr>
+                    <th colSpan={2}>Loaded Configurations:</th>
+                </tr>
+                {Array.from(this.state.uploadedFiles.keys()).map((filename, fileIndex) => {
+                    return <tr>
+                        <td className="pdgf-config-name">
+                            <span>{filename}</span>
+                            <button
+                                className="delete-data-btn"
+                                data-key={filename}
+                                onClick={this.deleteConfig}
+                            >&times;</button>
+                        </td>
+                        <td>
+                            <ul>
+                                {Array.from(this.state.uploadedFiles.get(filename)!
+                                    .tableMapping.keys()).map((tablename, tableIndex) => {
+                                        return <li key={tableIndex}>{"Table: " + tablename +
+                                        ", Fields:" + this.state.uploadedFiles.get(filename)!
+                                            .tableMapping.get(tablename)!.map((field) => {
+                                            // react will separate them by commata
+                                            return " " + field;
+                                        })}</li>;
+                                    })}
+                            </ul>
+                        </td>
+                    </tr>;
+                })}
+            </table>
         </div>;
     }
 }
