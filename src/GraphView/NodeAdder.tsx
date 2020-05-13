@@ -46,6 +46,12 @@ class NodeAdder extends React.Component<IProps, {}> {
                     onDragStart={this.handleDragStart}
                     onClick={this.onAddNode}
                 >Warmup End</button>
+                <button
+                    name="ASSIGNMENT"
+                    draggable={true}
+                    onDragStart={this.handleDragStart}
+                    onClick={this.onAddNode}
+                >Assignment</button>
             </div>
         );
     }

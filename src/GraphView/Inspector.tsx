@@ -63,6 +63,9 @@ export class Inspector extends React.Component<IProps, IState> {
     private sendHeaderNames: HTMLInputElement[] = [];
     private receiveHeaderNames: HTMLInputElement[] = [];
     private receiveHeaderValues: HTMLInputElement[] = [];
+
+    private assignmentSources: HTMLInputElement[] = [];
+    private assignmentValues: HTMLInputElement[] = [];
     constructor(props: any) {
         super(props);
 
@@ -675,6 +678,46 @@ export class Inspector extends React.Component<IProps, IState> {
                     // the above action does not trigger React to re-render although we need to here
                     this.forceUpdate();
                 }}>Add header to receive</button>);
+            } else if (key === "assignments") {
+                inputs.push(<label key={key} data-tip="Names to obe copied into a new key in the token. Left is the source key, right is the target key in the token.">
+                    Assignments
+                </label>);
+                const values: any = node.getAttribute(key);
+
+                const valueTable =
+                <table key={key + "table"}>
+                    <tbody>
+                    <tr><td>Source</td><td>Target</td></tr>
+                        {Object.keys(values).map((value) =>
+                            <tr key={value}>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.assignmentSources.push(ref);
+                                            ref.value = value;
+                                        }
+                                    }} onBlur={(e) => this.processInspectorBlur()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                                <td>
+                                    <input type="text" ref={(ref) => {
+                                        if (ref) {
+                                            this.assignmentValues.push(ref);
+                                            ref.value = node.getAttribute(key)[value];
+                                        }
+                                    }} onBlur={(e) => this.processInspectorBlur()}
+                                       onFocus={this.props.disableDeleteKey}/>
+                                </td>
+                            </tr>,
+                        )}
+                    </tbody>
+                </table>;
+                inputs.push(valueTable);
+                inputs.push(<button key={key + "button"} onClick={() => {
+                    node.getAttribute(key)[""] = "";
+                    // the above action does not trigger React to re-render although we need to here
+                    this.forceUpdate();
+                }}>Add assignment</button>);
             } else if (key === "table") {
                 // tablename has to be a selection box
 
@@ -849,6 +892,7 @@ export class Inspector extends React.Component<IProps, IState> {
         this.updateStaticValues();
         this.updateSendHeaders();
         this.updateReceiveHeaders();
+        this.updateAssignments();
     }
 
     private toggleTimeAggregation = (): void => {
@@ -936,4 +980,15 @@ export class Inspector extends React.Component<IProps, IState> {
         // called in onBlur
         this.props.enableDeleteKey();
     }
+
+    private updateAssignments(): void {
+        const assignments: any = {};
+        for (let i = 0; i < this.assignmentSources.length; i++) {
+            assignments[this.assignmentSources[i].value] = this.assignmentValues[i].value;
+        }
+        this.props.node.setAttribute("assignments", assignments);
+        // called in onBlur
+        this.props.enableDeleteKey();
+    }
+
 }

@@ -14,6 +14,7 @@ import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import { StartNode } from "./../Nodes/StartNode";
 import IDictionary from "./IDictionary";
+import {AssignmentNode} from "../Nodes/AssignmentNode";
 
 export interface ITest {
     repeat: number;
@@ -27,7 +28,7 @@ interface IStory {
     atoms: IBaseAtom[];
 }
 
-export type AtomType = "DATA_GENERATION" | "REQUEST" | "WARMUP_END" | "START" | "DELAY";
+export type AtomType = "DATA_GENERATION" | "REQUEST" | "WARMUP_END" | "START" | "DELAY" | "ASSIGNMENT";
 
 interface IBaseAtom {
     name: string;
@@ -69,6 +70,11 @@ interface IRequestAtom extends IBaseAtom {
 interface IDelayAtom extends IBaseAtom {
     name: string;
     delay: number;
+}
+
+interface IAssignmentAtom extends IBaseAtom {
+    name: string;
+    assignments: any;
 }
 
 interface IAssertion {
@@ -188,6 +194,9 @@ export function ConvertStoryToGraph(disableDeleteKey: () => void, enableDeleteKe
                 break;
             case "DELAY":
                 node = new DelayNode(nodeOptions);
+                break;
+            case "ASSIGNMENT":
+                node = new AssignmentNode(nodeOptions);
                 break;
             case "WARMUP_END":
                 node = new WarmupEndNode(nodeOptions);
@@ -402,6 +411,12 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
                 delay: node.getAttribute("delay"),
                 name: node.getAttribute("name"),
             } as IDelayAtom]};
+        case "ASSIGNMENT":
+            return {atoms: [{
+                    ...baseAtomObj,
+                    assignments: clearEmptyValuesInDict(node.getAttribute("assignments")||{}),
+                    name: node.getAttribute("name"),
+                } as IAssignmentAtom]};
         case "REQUEST":
             const request = {
                 ...baseAtomObj,

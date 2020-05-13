@@ -25,6 +25,7 @@ import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
+import {AssignmentNode} from "./Nodes/AssignmentNode";
 
 interface IStory {
     nodes: Node[];
@@ -115,6 +116,9 @@ export class GraphView extends React.Component<IProps, IState> {
                 break;
             case "DELAY":
                 node = new DelayNode(nodeOptions);
+                break;
+            case "ASSIGNMENT":
+                node = new AssignmentNode(nodeOptions);
                 break;
             case "WARMUP_END":
                 node = new WarmupEndNode(nodeOptions);
