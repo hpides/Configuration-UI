@@ -153,6 +153,7 @@ class App extends React.Component<{}, IState> {
             testConfigJSON.activeInstancesPerSecond = testConfigState.activeInstancesPerSecond;
             testConfigJSON.maximumConcurrentRequests = testConfigState.maximumConcurrentRequests;
             testConfigJSON.noSession = testConfigState.noSession;
+            testConfigJSON.requestDurationThreshold = testConfigState.requestDurationThreshold
         }
         testConfigJSON.stories  = stories;
 
