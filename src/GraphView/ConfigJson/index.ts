@@ -6,6 +6,7 @@ import { fragment } from "xmlbuilder2";
 import { XMLBuilder } from "xmlbuilder2/lib/builder/interfaces";
 import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
 import { GeneratorConfig } from "../Inspector/GeneratorConfig";
+import {AssignmentNode} from "../Nodes/AssignmentNode";
 import {DataGenerationNode} from "../Nodes/DataGenerationNode";
 import {DelayNode} from "../Nodes/DelayNode";
 import {RequestNode} from "../Nodes/RequestNode";
@@ -14,7 +15,6 @@ import { Node } from "./../Nodes/Node";
 import { Node as BaseNode } from "./../Nodes/Node";
 import { StartNode } from "./../Nodes/StartNode";
 import IDictionary from "./IDictionary";
-import {AssignmentNode} from "../Nodes/AssignmentNode";
 
 export interface ITest {
     repeat: number;
@@ -414,7 +414,7 @@ function ConvertNode(idMap: IdMap, node: BaseNode, existingConfig: ExistingConfi
         case "ASSIGNMENT":
             return {atoms: [{
                     ...baseAtomObj,
-                    assignments: clearEmptyValuesInDict(node.getAttribute("assignments")||{}),
+                    assignments: clearEmptyValuesInDict(node.getAttribute("assignments") || {}),
                     name: node.getAttribute("name"),
                 } as IAssignmentAtom]};
         case "REQUEST":

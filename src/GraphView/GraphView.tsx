@@ -19,13 +19,13 @@ import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
 import { Inspector } from "./Inspector";
+import {AssignmentNode} from "./Nodes/AssignmentNode";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
 import { DelayNode } from "./Nodes/DelayNode";
 import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
-import {AssignmentNode} from "./Nodes/AssignmentNode";
 
 interface IStory {
     nodes: Node[];
