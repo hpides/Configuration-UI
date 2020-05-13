@@ -140,6 +140,7 @@ class App extends React.Component<{}, IState> {
         this.graphViews.forEach((graphView) => {
             const story = graphView.exportNodes(null);
             stories.push(story.story);
+            console.log(JSON.stringify(classToPlain(story), null, 4));
             for (const table of story.pdgfTables) {
                 pdgfTables.push(table);
             }

@@ -19,6 +19,7 @@ import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
 import { Inspector } from "./Inspector";
+import {AssignmentNode} from "./Nodes/AssignmentNode";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
 import { DelayNode } from "./Nodes/DelayNode";
 import { Node } from "./Nodes/Node";
@@ -115,6 +116,9 @@ export class GraphView extends React.Component<IProps, IState> {
                 break;
             case "DELAY":
                 node = new DelayNode(nodeOptions);
+                break;
+            case "ASSIGNMENT":
+                node = new AssignmentNode(nodeOptions);
                 break;
             case "WARMUP_END":
                 node = new WarmupEndNode(nodeOptions);
