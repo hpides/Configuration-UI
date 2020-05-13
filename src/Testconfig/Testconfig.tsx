@@ -9,6 +9,7 @@ interface IState {
     noSession: boolean;
     repeat: string;
     scaleFactor: string;
+    requestDurationThreshold: number;
 }
 /*tslint:disable:no-console*/
 export class Testconfig extends React.Component<{}, IState> {
@@ -20,6 +21,7 @@ export class Testconfig extends React.Component<{}, IState> {
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
             noSession: localStorage.getItem("maximumConcurrentRequests") === "true",
             repeat : localStorage.getItem("repeat") || "",
+            requestDurationThreshold : +(localStorage.getItem("requestDurationThreshold") || "-1"),
             scaleFactor : localStorage.getItem("scaleFactor") || "",
         };
     }
@@ -32,6 +34,7 @@ export class Testconfig extends React.Component<{}, IState> {
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
             noSession : localStorage.getItem("noSession") === "true",
             repeat : localStorage.getItem("repeat") || "",
+            requestDurationThreshold : +(localStorage.getItem("requestDurationThreshold") || "-1"),
             scaleFactor : localStorage.getItem("scaleFactor") || "",
         });
     }
@@ -108,6 +111,21 @@ export class Testconfig extends React.Component<{}, IState> {
                             id="maximumConcurrentRequests"
                             name="maximumConcurrentRequests"
                             value={this.state.maximumConcurrentRequests}
+                        />
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-25">
+                        <label data-tip="Requests which take longer than this in milliseconds fail an implicit assertion. Also, if this test is used in CLI mode, this influences the return code. Set to -1 to never apply."
+                            htmlFor="requestDurationThreshold">Maximum request duration</label>
+                    </div>
+                    <div className="col-75">
+                        <input
+                            onChange={this.inputChanged}
+                            type="text"
+                            id="requestDurationThreshold"
+                            name="requestDurationThreshold"
+                            value={this.state.requestDurationThreshold}
                         />
                     </div>
                 </div>
