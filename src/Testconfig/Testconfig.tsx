@@ -21,8 +21,8 @@ export class Testconfig extends React.Component<{}, IState> {
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
             noSession: localStorage.getItem("maximumConcurrentRequests") === "true",
             repeat : localStorage.getItem("repeat") || "",
-            scaleFactor : localStorage.getItem("scaleFactor") || "",
             requestDurationThreshold : +(localStorage.getItem("requestDurationThreshold") || "-1"),
+            scaleFactor : localStorage.getItem("scaleFactor") || "",
         };
     }
 
@@ -34,8 +34,8 @@ export class Testconfig extends React.Component<{}, IState> {
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
             noSession : localStorage.getItem("noSession") === "true",
             repeat : localStorage.getItem("repeat") || "",
-            scaleFactor : localStorage.getItem("scaleFactor") || "",
             requestDurationThreshold : +(localStorage.getItem("requestDurationThreshold") || "-1"),
+            scaleFactor : localStorage.getItem("scaleFactor") || "",
         });
     }
 
