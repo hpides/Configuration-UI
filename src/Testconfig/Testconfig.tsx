@@ -6,6 +6,7 @@ import "./Testconfig.css";
 interface IState {
     activeInstancesPerSecond: string;
     maximumConcurrentRequests: string;
+    name: string;
     noSession: boolean;
     repeat: string;
     scaleFactor: string;
@@ -19,6 +20,7 @@ export class Testconfig extends React.Component<{}, IState> {
         this.state = {
             activeInstancesPerSecond : localStorage.getItem("activeInstancesPerSecond") || "",
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
+            name : localStorage.getItem("name") || "",
             noSession: localStorage.getItem("maximumConcurrentRequests") === "true",
             repeat : localStorage.getItem("repeat") || "",
             requestDurationThreshold : +(localStorage.getItem("requestDurationThreshold") || "-1"),
@@ -32,6 +34,7 @@ export class Testconfig extends React.Component<{}, IState> {
         this.setState({
             activeInstancesPerSecond : localStorage.getItem("activeInstancesPerSecond") || "",
             maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
+            name : localStorage.getItem("name") || "",
             noSession : localStorage.getItem("noSession") === "true",
             repeat : localStorage.getItem("repeat") || "",
             requestDurationThreshold : +(localStorage.getItem("requestDurationThreshold") || "-1"),
@@ -126,6 +129,21 @@ export class Testconfig extends React.Component<{}, IState> {
                             id="requestDurationThreshold"
                             name="requestDurationThreshold"
                             value={this.state.requestDurationThreshold}
+                        />
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-25">
+                        <label data-tip="(Optional) name for this test. Will be shown in the evaluation view when test is running or finished."
+                            htmlFor="name">Test name</label>
+                    </div>
+                    <div className="col-75">
+                        <input
+                            onChange={this.inputChanged}
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={this.state.name}
                         />
                     </div>
                 </div>
