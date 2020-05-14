@@ -3,6 +3,7 @@ export interface TestConfig {
     scaleFactor: number;
     activeInstancesPerSecond: number;
     maximumConcurrentRequests: number;
+    name: string | undefined | null,
     stories: Story[]; 
 }
 

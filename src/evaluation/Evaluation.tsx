@@ -187,7 +187,7 @@ class TestListItem extends Component<TestListItemProps> {
         const t = this.props.testData;
         return (
             <div key={t.id} onClick={this.handleClick}>
-                {t.id + ": Running=" + t.isActive}
+                {t.id + "("+(t.testConfig.name || "name unknown")+"): Running=" + t.isActive}
             </div>
         );
     }
