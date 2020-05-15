@@ -86,14 +86,14 @@ export class GraphView extends React.Component<IProps, IState> {
 
         this.setState({selectedNode: undefined});
         // else the tooltips are gone for some reason
-        setTimeout(()=>{
+        setTimeout(() => {
             nodes.forEach((node: Node) => {
                 if (node.isSelected()) {
                     this.setState({selectedNode: node});
                     return;
                 }
             });
-        }, 100)
+        }, 100);
     }
 
     public addNode = (type: string, point?: Point) => {
