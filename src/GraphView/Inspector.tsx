@@ -435,7 +435,8 @@ export class Inspector extends React.Component<IProps, IState> {
 
             } else if (key === "receiveCookies" || key === "sendCookies") {
                 const description = (key === "receiveCookies") ? "Cookies to extract" : "Cookies to send";
-                inputs.push(<label key={key} data-tip={(key === "receiveCookies") ? "Cookies from the result which will be stored in the Token." : "Cookies from the token to send in the request."}>{description}</label>);
+                inputs.push(<label key={key} data-tip={((key === "receiveCookies") ? "Cookies from the result which will be stored in the Token. Entered cookie name can be a Regex, in which case the first cookie from the result in arbitrary order that matches the expression will be chosen."
+                    : "Cookies from the token to send in the request. Entered token name can be a Regex, in which case the first cookie from the token in arbitrary order that matches the expression will be chosen.")}>{description}</label>);
                 const cookies: any = node.getAttribute(key);
 
                 const cookieTable =
