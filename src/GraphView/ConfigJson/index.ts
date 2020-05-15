@@ -69,7 +69,7 @@ interface IRequestAtom extends IBaseAtom {
 
 interface IDelayAtom extends IBaseAtom {
     name: string;
-    delay: number;
+    delay: string;
 }
 
 interface IAssignmentAtom extends IBaseAtom {
