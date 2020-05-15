@@ -26,7 +26,6 @@ import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
-
 interface IStory {
     nodes: Node[];
     startNode?: StartNode;
@@ -86,13 +85,15 @@ export class GraphView extends React.Component<IProps, IState> {
         const nodes = this.state.nodes;
 
         this.setState({selectedNode: undefined});
-
-        nodes.forEach((node: Node) => {
-            if (node.isSelected()) {
-                this.setState({selectedNode: node});
-                return;
-            }
-        });
+        // else the tooltips are gone for some reason
+        setTimeout(()=>{
+            nodes.forEach((node: Node) => {
+                if (node.isSelected()) {
+                    this.setState({selectedNode: node});
+                    return;
+                }
+            });
+        }, 100)
     }
 
     public addNode = (type: string, point?: Point) => {
