@@ -88,6 +88,12 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
     }
 
     public render() {
+        let noConfig;
+        if (this.state.uploadedFiles.size === 0) {
+            noConfig = <tr>
+                <td colSpan={2}>No Configurations</td>
+            </tr>;
+        }
         return <div className="pdgf-existing-config">
             <h1>PDGF Configurations</h1>
             <div>
@@ -135,6 +141,7 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
                         </td>
                     </tr>;
                 })}
+                {noConfig}
             </table>
         </div>;
     }
