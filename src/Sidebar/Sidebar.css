@@ -115,3 +115,50 @@
     border: solid 1px white;
     display: block;
 }
+
+.sidebar .stories-list li {
+    height: 39px;
+    width: 100%;
+}
+
+.sidebar .stories-list button {
+    width: 80%;
+    display: inline-block;
+}
+
+.sidebar .stories-list button.delete-data-btn {
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease 0s;
+}
+.sidebar .stories-list li:hover .delete-data-btn:before {
+    opacity: 1.0;
+    right: 15px;
+}
+.sidebar .stories-list button.delete-data-btn:before {
+    content: "\00d7";
+    position: absolute;
+    border-radius: 50px;
+    top: 3px;
+    background-color:#d3584b;
+	border:1px solid #b04c41;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:26px;
+    padding:0px 7px;
+	text-decoration:none;
+    margin: 0;
+    right: -15px;
+    height: 30px;
+    width: 15px;
+    transition: all 0.3s ease 0s;
+    opacity: 0;
+}
+.sidebar .stories-list button.delete-data-btn:hover:before {
+	background-color:#b04c41;
+}

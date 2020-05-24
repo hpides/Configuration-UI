@@ -75,6 +75,18 @@ export class Sidebar extends React.Component<IProps, IState> {
         this.setState({stories: this.state.stories});
     }
 
+    public deleteStory = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const story = event.currentTarget.getAttribute("data-key");
+        if (!story) {
+            return;
+        }
+        const storyIndex = this.state.stories.indexOf(story);
+        if (storyIndex > -1) {
+            this.state.stories.splice(storyIndex, 1);
+            this.setState({stories: this.state.stories});
+        }
+    }
+
     public renderStoryListItem(story: string): JSX.Element {
         let content = <button
             className={story === this.state.activeStory ? "active" : ""}
@@ -102,6 +114,11 @@ export class Sidebar extends React.Component<IProps, IState> {
 
         return <li key={story}>
            {content}
+           <button
+                        className="delete-data-btn"
+                        data-key={story}
+                        onClick={this.deleteStory}
+                    >&times;</button>
         </li>;
     }
 
