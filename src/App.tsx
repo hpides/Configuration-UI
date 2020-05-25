@@ -21,7 +21,7 @@ import {Views} from "./Views";
 export interface IState {
     currentView: Views;
     currentStory: string | null;
-    readonly stories: string[];
+    stories: string[];
     pdgfRunning: boolean;
     currentTestId: string | undefined;
     existingConfigComponent: ExistingConfigComponent | null;
@@ -134,39 +134,19 @@ class App extends React.Component<{}, IState> {
 
     }
 
-    public deleteStory = (storyName: string) => {
-        const graphViews: GraphView[] = [];
-        this.graphViews.forEach((view) => {
-            if (view.getStory() !== storyName) {
-                graphViews.push(view);
-            }
-        })
-
-        this.graphViews = graphViews;
-
-        const stories: string[] = [];
-        this.state.stories.forEach((story) => {
-            if (story !== storyName) {
-                stories.push(story);
-            }
-        })
-
-        let currentStory = this.state.currentStory;
-        if (currentStory === storyName) {
-            currentStory = null;
-        }
-        currentStory = null;
-        this.setState({stories, currentStory});
-
-        console.log(this.state.stories);
-        console.log(this.graphViews);
+    public deleteStory = (storyIndex: number) => {
+        this.state.stories.splice(storyIndex, 1);
+        this.graphViews.splice(storyIndex, 1);
+        this.setState({
+            stories: this.state.stories,
+            currentStory: null,
+        });
     }
 
     public export = (): void => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
         console.log("Exporting");
-        console.log(this.graphViews)
         this.graphViews.forEach((graphView) => {
             const story = graphView.exportNodes(null);
             stories.push(story.story);
@@ -296,9 +276,6 @@ class App extends React.Component<{}, IState> {
     }
 
     public render() {
-        console.log("Render");
-        console.log(this.graphViews);
-        console.log(this.state.stories);
         this.graphViews.forEach((view) => {
             const active = this.state.currentView === Views.UserStories && this.state.currentStory !== null && view.getStory() === this.state.currentStory;
             view.setVisibility(active);

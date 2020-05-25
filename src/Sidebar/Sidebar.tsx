@@ -11,7 +11,7 @@ interface IProps {
     currentView: Views;
     changeView: (view: Views, story: string | null) => void;
     renameStory: (oldName: string, newName: string) => void;
-    deleteStory: (storyName: string) => void;
+    deleteStory: (storxIndex: number) => void;
     _keyhandler: {
         disableDeleteKey: () => void,
         enableDeleteKey: () => void,
@@ -84,9 +84,9 @@ export class Sidebar extends React.Component<IProps, IState> {
         const storyIndex = this.state.stories.indexOf(story);
         if (storyIndex > -1) {
             this.state.stories.splice(storyIndex, 1);
+            this.props.deleteStory(storyIndex);
             this.setState({stories: this.state.stories, activeStory: null});
         }
-        this.props.deleteStory(story);
     }
 
     public renderStoryListItem(story: string): JSX.Element {
