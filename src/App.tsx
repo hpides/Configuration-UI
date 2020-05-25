@@ -138,8 +138,8 @@ class App extends React.Component<{}, IState> {
         this.state.stories.splice(storyIndex, 1);
         this.graphViews.splice(storyIndex, 1);
         this.setState({
-            stories: this.state.stories,
             currentStory: null,
+            stories: this.state.stories,
         });
     }
 
