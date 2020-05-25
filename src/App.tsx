@@ -123,7 +123,6 @@ class App extends React.Component<{}, IState> {
             }
         });
 
-        this.forceUpdate();
 
         let currentStory = this.state.currentStory;
         if (currentStory === oldName) {
@@ -134,26 +133,17 @@ class App extends React.Component<{}, IState> {
 
     }
 
-    public deleteStory = (storyIndex: number) => {
-        this.state.stories.splice(storyIndex, 1);
-        this.graphViews.splice(storyIndex, 1);
-        this.setState({
-            currentStory: null,
-            stories: this.state.stories,
-        });
-        //this re-populates the graphViews
-        this.forceUpdate()
-    }
-
     public export = (): void => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
         console.log("Exporting");
         this.graphViews.forEach((graphView) => {
             const story = graphView.exportNodes(null);
-            stories.push(story.story);
-            for (const table of story.pdgfTables) {
-                pdgfTables.push(table);
+            if(story.story.name !== "") {
+                stories.push(story.story);
+                for (const table of story.pdgfTables) {
+                    pdgfTables.push(table);
+                }
             }
         });
         const testConfigJSON: any = {};
@@ -318,7 +308,6 @@ class App extends React.Component<{}, IState> {
                     <Sidebar currentView={this.state.currentView}
                              changeView={this.changeView}
                              renameStory={this.renameStory}
-                             deleteStory={this.deleteStory}
                              _keyhandler={this.keyhandler}
                              ref={(ref) => this.sidebar = ref}
                     />
