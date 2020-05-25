@@ -59,8 +59,13 @@ export class Sidebar extends React.Component<IProps, IState> {
         const oldIndex = Number(event.currentTarget.name);
         const oldName = this.state.stories[oldIndex];
         const newName = event.currentTarget.value;
-
-        this.doRename(oldName, newName, oldIndex);
+        //empty names are reserved for deleted stories, so disallow entering them
+        if(newName === ""){
+            alert("Empty story names are forbidden!");
+        }
+        else {
+            this.doRename(oldName, newName, oldIndex);
+        }
     }
 
     private doRename = (oldName: string, newName: string, oldIndex: number) => {

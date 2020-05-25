@@ -139,6 +139,7 @@ class App extends React.Component<{}, IState> {
         console.log("Exporting");
         this.graphViews.forEach((graphView) => {
             const story = graphView.exportNodes(null);
+            //stories with empty names count as deleted
             if(story.story.name !== "") {
                 stories.push(story.story);
                 for (const table of story.pdgfTables) {
@@ -352,7 +353,9 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            {[...Array(this.state.stories.length)].map((story, index) => <div key={story}
+                            {
+                                //this makes sure that even when a story is renamed it is not re-created by mapping GraphViews to the indices instead of the names
+                                [...Array(this.state.stories.length)].map((story, index) => <div key={story}
                                                                                 style={this.graphViews[index] && this.state.currentStory === this.graphViews[index].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
                                 <GraphView existingConfig={this.state.existingConfigComponent || new ExistingConfigComponent({})} existingApi={this.state.apisEditor || new ApisEditor({})} ref={(ref) => {
                                     // story names can change at any time. Using them as props will destroy the graph view, so set it here instead
