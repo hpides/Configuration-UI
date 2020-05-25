@@ -59,23 +59,12 @@ export class Sidebar extends React.Component<IProps, IState> {
         const oldIndex = Number(event.currentTarget.name);
         const oldName = this.state.stories[oldIndex];
         const newName = event.currentTarget.value;
-        //empty names are reserved for deleted stories, so disallow entering them
-        if(newName === ""){
+        // empty names are reserved for deleted stories, so disallow entering them
+        if (newName === "") {
             alert("Empty story names are forbidden!");
-        }
-        else {
+        } else {
             this.doRename(oldName, newName, oldIndex);
         }
-    }
-
-    private doRename = (oldName: string, newName: string, oldIndex: number) => {
-        this.props.renameStory(oldName, newName);
-
-        // eslint-disable-next-line
-        this.state.stories[oldIndex] = newName;
-        this.setState({stories: this.state.stories, activeStory: newName});
-
-        this.forceUpdate();
     }
 
     public addStory = (story?: string) => {
@@ -91,14 +80,14 @@ export class Sidebar extends React.Component<IProps, IState> {
         }
         const storyIndex = this.state.stories.indexOf(story);
         if (storyIndex > -1) {
-            this.doRename(story, "", storyIndex)
+            this.doRename(story, "", storyIndex);
         }
     }
 
     public renderStoryListItem(story: string): JSX.Element {
-        //do not show deleted story
-        if(story === ""){
-            return <div/>
+        // do not show deleted story
+        if (story === "") {
+            return <div/>;
         }
         let content = <button
             className={story === this.state.activeStory ? "active" : ""}
@@ -177,6 +166,16 @@ export class Sidebar extends React.Component<IProps, IState> {
                 </ul>
             </div>
         );
+    }
+
+    private doRename = (oldName: string, newName: string, oldIndex: number) => {
+        this.props.renameStory(oldName, newName);
+
+        // eslint-disable-next-line
+        this.state.stories[oldIndex] = newName;
+        this.setState({stories: this.state.stories, activeStory: newName});
+
+        this.forceUpdate();
     }
 
     private changeActiveStory(newStory: string) {
