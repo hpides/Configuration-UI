@@ -141,6 +141,8 @@ class App extends React.Component<{}, IState> {
             currentStory: null,
             stories: this.state.stories,
         });
+        //this re-populates the graphViews
+        this.forceUpdate()
     }
 
     public export = (): void => {
@@ -361,12 +363,12 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            {[...Array(this.state.stories.length)].map((item, story) => <div key={story}
-                                                                                style={this.graphViews[story] && this.state.currentStory === this.graphViews[story].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            {this.state.stories.map((story, index) => <div key={story}
+                                                                                style={this.graphViews[index] && this.state.currentStory === this.graphViews[index].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
                                 <GraphView existingConfig={this.state.existingConfigComponent || new ExistingConfigComponent({})} existingApi={this.state.apisEditor || new ApisEditor({})} ref={(ref) => {
                                     // story names can change at any time. Using them as props will destroy the graph view, so set it here instead
                                     if (ref) {
-                                        ref.setStory(this.state.stories[story]);
+                                        ref.setStory(this.state.stories[index]);
                                         let exists = false;
                                         // we do not want the same reference twice
                                         for (const view of this.graphViews) {
