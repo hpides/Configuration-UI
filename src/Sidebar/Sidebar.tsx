@@ -59,14 +59,12 @@ export class Sidebar extends React.Component<IProps, IState> {
         const oldIndex = Number(event.currentTarget.name);
         const oldName = this.state.stories[oldIndex];
         const newName = event.currentTarget.value;
-
-        this.props.renameStory(oldName, newName);
-
-        // eslint-disable-next-line
-        this.state.stories[oldIndex] = newName;
-        this.setState({stories: this.state.stories, activeStory: newName});
-
-        this.forceUpdate();
+        // empty names are reserved for deleted stories, so disallow entering them
+        if (newName === "") {
+            alert("Empty story names are forbidden!");
+        } else {
+            this.doRename(oldName, newName, oldIndex);
+        }
     }
 
     public addStory = (story?: string) => {
@@ -75,7 +73,22 @@ export class Sidebar extends React.Component<IProps, IState> {
         this.setState({stories: this.state.stories});
     }
 
+    public deleteStory = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const story = event.currentTarget.getAttribute("data-key");
+        if (!story) {
+            return;
+        }
+        const storyIndex = this.state.stories.indexOf(story);
+        if (storyIndex > -1) {
+            this.doRename(story, "", storyIndex);
+        }
+    }
+
     public renderStoryListItem(story: string): JSX.Element {
+        // do not show deleted story
+        if (story === "") {
+            return <div/>;
+        }
         let content = <button
             className={story === this.state.activeStory ? "active" : ""}
             onClick={(event) => this.changeActiveStory(story)}
@@ -102,6 +115,11 @@ export class Sidebar extends React.Component<IProps, IState> {
 
         return <li key={story}>
            {content}
+           <button
+                        className="delete-data-btn"
+                        data-key={story}
+                        onClick={this.deleteStory}
+                    >&times;</button>
         </li>;
     }
 
@@ -148,6 +166,16 @@ export class Sidebar extends React.Component<IProps, IState> {
                 </ul>
             </div>
         );
+    }
+
+    private doRename = (oldName: string, newName: string, oldIndex: number) => {
+        this.props.renameStory(oldName, newName);
+
+        // eslint-disable-next-line
+        this.state.stories[oldIndex] = newName;
+        this.setState({stories: this.state.stories, activeStory: newName});
+
+        this.forceUpdate();
     }
 
     private changeActiveStory(newStory: string) {

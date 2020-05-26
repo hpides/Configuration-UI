@@ -21,7 +21,7 @@ import {Views} from "./Views";
 export interface IState {
     currentView: Views;
     currentStory: string | null;
-    readonly stories: string[];
+    stories: string[];
     pdgfRunning: boolean;
     currentTestId: string | undefined;
     existingConfigComponent: ExistingConfigComponent | null;
@@ -36,7 +36,7 @@ class App extends React.Component<{}, IState> {
 
     public testConfig: Testconfig | null = null;
 
-    private readonly graphViews: GraphView[] = [];
+    private graphViews: GraphView[] = [];
 
     private sidebar: Sidebar | null = null;
     private  requestGeneratorHost: string | null;
@@ -123,8 +123,6 @@ class App extends React.Component<{}, IState> {
             }
         });
 
-        this.forceUpdate();
-
         let currentStory = this.state.currentStory;
         if (currentStory === oldName) {
             currentStory = newName;
@@ -137,11 +135,15 @@ class App extends React.Component<{}, IState> {
     public export = (): void => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
+        console.log("Exporting");
         this.graphViews.forEach((graphView) => {
             const story = graphView.exportNodes(null);
-            stories.push(story.story);
-            for (const table of story.pdgfTables) {
-                pdgfTables.push(table);
+            // stories with empty names count as deleted
+            if (story.story.name !== "") {
+                stories.push(story.story);
+                for (const table of story.pdgfTables) {
+                    pdgfTables.push(table);
+                }
             }
         });
         const testConfigJSON: any = {};
@@ -350,12 +352,14 @@ class App extends React.Component<{}, IState> {
                         </div>
                         <div
                             style={this.state.currentView === Views.UserStories ? {visibility: "visible"} : {visibility: "hidden", height: 0}}>
-                            {[...Array(this.state.stories.length)].map((item, story) => <div key={story}
-                                                                                style={this.graphViews[story] && this.state.currentStory === this.graphViews[story].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
+                            {
+                                // this makes sure that even when a story is renamed it is not re-created by mapping GraphViews to the indices instead of the names
+                                [...Array(this.state.stories.length)].map((story, index) => <div key={story}
+                                                                                style={this.graphViews[index] && this.state.currentStory === this.graphViews[index].getStory() ? {visibility: "visible"} : {visibility: "hidden"}}>
                                 <GraphView existingConfig={this.state.existingConfigComponent || new ExistingConfigComponent({})} existingApi={this.state.apisEditor || new ApisEditor({})} ref={(ref) => {
                                     // story names can change at any time. Using them as props will destroy the graph view, so set it here instead
                                     if (ref) {
-                                        ref.setStory(this.state.stories[story]);
+                                        ref.setStory(this.state.stories[index]);
                                         let exists = false;
                                         // we do not want the same reference twice
                                         for (const view of this.graphViews) {
