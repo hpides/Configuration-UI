@@ -1,6 +1,5 @@
 import React from "react";
 import Dropzone from "react-dropzone";
-import Alert from "reactstrap/lib/Alert";
 import YAML from "yaml";
 import "./ApisEditor.css";
 import {ServerChooser} from "./ServerChooser";
@@ -77,9 +76,11 @@ export class ApisEditor extends React.Component<{}, IState> {
             return;
         }
 
-        this.state.lastUploadedFile.server = server;
-        this.state.uploadedFiles.set(this.state.lastFilename, this.state.lastUploadedFile);
-        this.state.lastUploadedFile.existingEndpoints.forEach(
+        const lastUploadedFile = this.state.lastUploadedFile;
+
+        lastUploadedFile.server = server;
+        this.state.uploadedFiles.set(this.state.lastFilename, lastUploadedFile);
+        lastUploadedFile.existingEndpoints.forEach(
             (value) => this.state.allEndpoints.add(server + value),
         );
         this.setState({
