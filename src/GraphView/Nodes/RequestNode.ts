@@ -7,7 +7,6 @@ import {
     ResponseCodeAssertion, XPATHAssertion,
 } from "../Inspector/AssertionConfig";
 import { Node } from "./Node";
-
 import {classToPlain} from "class-transformer";
 import "reflect-metadata";
 

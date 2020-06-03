@@ -1,6 +1,7 @@
 import { DefaultNodeModel, DefaultNodeModelOptions, PortModelAlignment } from "@projectstorm/react-diagrams";
 import { AtomType } from "./../ConfigJson";
 import { AcyclicPort } from "./AcyclicPort";
+
 export abstract class Node extends DefaultNodeModel {
 
     // true if this node has been visited by the export process

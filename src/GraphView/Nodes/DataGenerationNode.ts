@@ -1,15 +1,16 @@
-import {DefaultNodeModelOptions} from "@projectstorm/react-diagrams";
-import {classToPlain, Type} from "class-transformer";
+import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
+import { classToPlain, Type } from "class-transformer";
 import "reflect-metadata";
-import {ExistingConfigComponent} from "../../ExistingConfig/existingConfigComponent";
-import {AtomType} from "../ConfigJson";
+import { ExistingConfigComponent } from "../../ExistingConfig/existingConfigComponent";
+import { AtomType } from "../ConfigJson";
 import {
     ExistingDataConfig,
     GeneratorConfig,
     RandomSentence,
     RandomStringGeneratorConfig,
 } from "../Inspector/GeneratorConfig";
-import {Node} from "./Node";
+import { Node } from "./Node";
+
 /*tslint:disable:max-classes-per-file*/
 /*tslint:disable:variable-name*/
 class DataToGenerate {
@@ -23,6 +24,7 @@ class DataToGenerate {
 }
 
 export class DataGenerationNode extends Node {
+
     get keyhandler(): { disableDeleteKey: () => void; enableDeleteKey: () => void } {
         return this._keyhandler;
     }
@@ -45,12 +47,12 @@ export class DataGenerationNode extends Node {
 
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void,
                 existingConfig: ExistingConfigComponent, options?: DefaultNodeModelOptions) {
+                    
         super(options);
 
         this.attributes.name = "Data Generation";
         this.attributes.dataToGenerate = JSON.stringify(classToPlain(this._dataToGenerate));
         this.attributes.data = [];
-
         this.attributes.table = null;
         this.attributes.staticValues = {};
         this._keyhandler = {
