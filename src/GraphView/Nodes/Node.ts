@@ -3,8 +3,7 @@ import { AtomType } from "./../ConfigJson";
 import { AcyclicPort } from "./AcyclicPort";
 export abstract class Node extends DefaultNodeModel {
 
-    /*
-    true if this node has been visited by the export process*/
+    // true if this node has been visited by the export process
     public visited: boolean = false;
     protected attributes: { [key: string]: any };
 
@@ -46,7 +45,6 @@ export abstract class Node extends DefaultNodeModel {
     }
 
     public addPorts() {
-
         const inPort = new AcyclicPort({
             alignment: PortModelAlignment.LEFT,
             in: true,
@@ -83,5 +81,4 @@ export abstract class Node extends DefaultNodeModel {
     }
 
     public abstract getAtomType(): AtomType;
-
 }

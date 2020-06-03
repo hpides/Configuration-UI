@@ -1,31 +1,23 @@
-import createEngine, {
-    DefaultNodeModelOptions,
-    DiagramEngine,
-    DiagramModel,
-} from "@projectstorm/react-diagrams";
-import React from "react";
-import "./GraphView.css";
-import NodeAdder from "./NodeAdder";
-
 import { Point } from "@projectstorm/geometry";
-import {
-    BaseEvent,
-    CanvasWidget,
-    DeleteItemsAction,
-} from "@projectstorm/react-canvas-core";
+import { BaseEvent, CanvasWidget, DeleteItemsAction } from "@projectstorm/react-canvas-core";
+import createEngine, { DefaultNodeModelOptions, DiagramEngine, DiagramModel } from "@projectstorm/react-diagrams";
 import { LinkModel} from "@projectstorm/react-diagrams-core";
 import { DefaultPortModel } from "@projectstorm/react-diagrams-defaults";
+import React from "react";
 import { ApisEditor } from "../ApisEditor/ApisEditor";
-import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
+import { ExistingConfigComponent } from "../ExistingConfig/existingConfigComponent";
 import { ConvertGraphToStory, ConvertStoryToGraph } from "./ConfigJson";
+import "./GraphView.css";
 import { Inspector } from "./Inspector";
-import {AssignmentNode} from "./Nodes/AssignmentNode";
+import NodeAdder from "./NodeAdder";
+import { AssignmentNode } from "./Nodes/AssignmentNode";
 import { DataGenerationNode } from "./Nodes/DataGenerationNode";
 import { DelayNode } from "./Nodes/DelayNode";
 import { Node } from "./Nodes/Node";
 import { RequestNode } from "./Nodes/RequestNode";
 import { StartNode } from "./Nodes/StartNode";
 import { WarmupEndNode } from "./Nodes/WarmupEndNode";
+
 interface IStory {
     nodes: Node[];
     startNode?: StartNode;
@@ -49,10 +41,9 @@ export class GraphView extends React.Component<IProps, IState> {
     public model: DiagramModel;
     private readonly deleteAction = new DeleteItemsAction({ keyCodes: [8]});
     private storyName: string;
-
     private allowDeletingStartNode = false;
-
     private waitingForSetState = false;
+
     constructor(props: IProps) {
         super(props);
 
@@ -76,7 +67,6 @@ export class GraphView extends React.Component<IProps, IState> {
         const start = this.addNode("START");
         this.waitingForSetState = true;
         this.setState({ startNode: start as StartNode }, () => {this.waitingForSetState = false; });
-
     }
 
     public handleSelectionChanged = (event: BaseEvent) => {
@@ -168,11 +158,7 @@ export class GraphView extends React.Component<IProps, IState> {
     public exportNodes = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>|null): any => {
         const startNode = this.state.startNode;
         if (startNode) {
-            const story = ConvertGraphToStory("Rail", 1, startNode, this.state.nodes, this.props.existingConfig);
-            story.story.name = this.storyName;
-            story.story.scalePercentage = this.state.scalePercentage;
-
-            return story;
+            return ConvertGraphToStory(this.storyName, this.state.scalePercentage, startNode, this.state.nodes, this.props.existingConfig);
         }
         return {};
 
