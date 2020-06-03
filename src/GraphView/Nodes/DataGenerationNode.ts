@@ -47,7 +47,7 @@ export class DataGenerationNode extends Node {
 
     constructor(disableDeleteKey: () => void, enableDeleteKey: () => void,
                 existingConfig: ExistingConfigComponent, options?: DefaultNodeModelOptions) {
-                    
+
         super(options);
 
         this.attributes.name = "Data Generation";

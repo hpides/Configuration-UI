@@ -2,7 +2,7 @@ import { DefaultPortModel, PortModel } from "@projectstorm/react-diagrams";
 import { Node } from "./Node";
 
 export class AcyclicPort extends DefaultPortModel {
-    
+
     public canLinkToPort(port: PortModel): boolean {
         if (!(port instanceof AcyclicPort)) {
             return super.canLinkToPort(port);
