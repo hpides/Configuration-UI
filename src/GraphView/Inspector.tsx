@@ -764,7 +764,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 const preset = <div className="preset-select">
                     <select value="EMPTY" name="addrPreset"
                         onChange={(event) => {
-                            addrInputRef.value = event.currentTarget.value;
+                            this.props.onValueChanged(addrInputRef.name, event.currentTarget.value);
                         }}
                     >
                         <option value="EMPTY" disabled>Choose Preset</option>
