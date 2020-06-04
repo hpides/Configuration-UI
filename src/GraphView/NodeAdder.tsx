@@ -7,51 +7,44 @@ interface IProps {
 
 class NodeAdder extends React.Component<IProps, {}> {
 
+    static nodeTypes = [
+        {key: "DATA_GENERATION", title: "Generate Data"},
+        {key: "REQUEST", title: "Request"},
+        {key: "DELAY", title: "Delay"},
+        {key: "WARMUP_END", title: "Warmup End"},
+        {key: "ASSIGNMENT", title: "Assignment"}
+    ];
+
     public onAddNode = (event: React.MouseEvent<HTMLButtonElement>) => {
         const name = event.currentTarget.getAttribute("name");
         if (name) {
             this.props.onAddNode(name);
         }
     }
+
     public handleDragStart = (event: React.DragEvent<HTMLButtonElement>) => {
         const name = event.currentTarget.getAttribute("name");
         if (name) {
             event.dataTransfer.setData("tdgt-node-type", name);
         }
     }
+
     public render() {
+        let buttons: JSX.Element[] = [];
+        NodeAdder.nodeTypes.forEach((type) => {
+            buttons.push(
+                <button
+                    name={type.key}
+                    draggable={true}
+                    onDragStart={this.handleDragStart}
+                    onClick={this.onAddNode}
+                >{type.title}</button>
+            );
+        });
+        
         return (
             <div className="nodeadder">
-                <button
-                    draggable={true}
-                    name="DATA_GENERATION"
-                    onDragStart={this.handleDragStart}
-                    onClick={this.onAddNode}
-                >Generate Data</button>
-                <button
-                    name="REQUEST"
-                    draggable={true}
-                    onDragStart={this.handleDragStart}
-                    onClick={this.onAddNode}
-                >Request</button>
-                <button
-                    name="DELAY"
-                    draggable={true}
-                    onDragStart={this.handleDragStart}
-                    onClick={this.onAddNode}
-                >Delay</button>
-                <button
-                    name="WARMUP_END"
-                    draggable={true}
-                    onDragStart={this.handleDragStart}
-                    onClick={this.onAddNode}
-                >Warmup End</button>
-                <button
-                    name="ASSIGNMENT"
-                    draggable={true}
-                    onDragStart={this.handleDragStart}
-                    onClick={this.onAddNode}
-                >Assignment</button>
+                {buttons}
             </div>
         );
     }
