@@ -11,7 +11,8 @@
     border: 3px solid #565d6a;
     border-radius: 10px;
     max-height: calc(100% - 80px);
-    overflow: scroll;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .inspector .inputs-container {
