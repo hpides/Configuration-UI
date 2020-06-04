@@ -234,7 +234,8 @@ export class MqttWorker extends Component<ITestConfig, IMqttWorkerState> {
                 const date = new Date(0);
                 date.setUTCMilliseconds(creationTime);
                 let troughputOverall = 0;
-                const nodeNumber = object.hasOwnProperty("nodeNumber") ? object.nodeNumber : 0;
+                // legacy messages call it nodeNUmber, new messages node
+                const nodeNumber = object.hasOwnProperty("nodeNumber") ? object.nodeNumber : (object.hasOwnProperty("node") ? object.node : "unknown node");
                 object = object.times;
                 // tslint required checking the existence of the iterator value in every loop
                 for (const adress in object) {
