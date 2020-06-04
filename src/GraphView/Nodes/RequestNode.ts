@@ -1,4 +1,6 @@
 import { DefaultNodeModelOptions } from "@projectstorm/react-diagrams";
+import { classToPlain } from "class-transformer";
+import "reflect-metadata";
 import { AtomType } from "../ConfigJson";
 import {
     AssertionConfig,
@@ -7,9 +9,6 @@ import {
     ResponseCodeAssertion, XPATHAssertion,
 } from "../Inspector/AssertionConfig";
 import { Node } from "./Node";
-
-import {classToPlain} from "class-transformer";
-import "reflect-metadata";
 
 interface IBasicAuth {
     user: string;
