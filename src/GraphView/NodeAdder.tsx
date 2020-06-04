@@ -7,12 +7,12 @@ interface IProps {
 
 class NodeAdder extends React.Component<IProps, {}> {
 
-    static nodeTypes = [
+    public static nodeTypes = [
         {key: "DATA_GENERATION", title: "Generate Data"},
         {key: "REQUEST", title: "Request"},
         {key: "DELAY", title: "Delay"},
         {key: "WARMUP_END", title: "Warmup End"},
-        {key: "ASSIGNMENT", title: "Assignment"}
+        {key: "ASSIGNMENT", title: "Assignment"},
     ];
 
     public onAddNode = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -30,7 +30,7 @@ class NodeAdder extends React.Component<IProps, {}> {
     }
 
     public render() {
-        let buttons: JSX.Element[] = [];
+        const buttons: JSX.Element[] = [];
         NodeAdder.nodeTypes.forEach((type) => {
             buttons.push(
                 <button
@@ -38,10 +38,10 @@ class NodeAdder extends React.Component<IProps, {}> {
                     draggable={true}
                     onDragStart={this.handleDragStart}
                     onClick={this.onAddNode}
-                >{type.title}</button>
+                >{type.title}</button>,
             );
         });
-        
+
         return (
             <div className="nodeadder">
                 {buttons}
