@@ -23,7 +23,9 @@ export class Evaluation extends Component<IProps, IAppState> {
     private currentId?: string = undefined;
 
     private performanceDataStorageHost: string | null;
-
+    
+    private alreadyLoadingTests: number = 0;
+    
     public constructor(props: IProps) {
         super(props);
         this.performanceDataStorageHost = null;
@@ -106,6 +108,12 @@ export class Evaluation extends Component<IProps, IAppState> {
     }
 
     private loadTests() {
+        // make sure not to start processing this method when responses are still outstanding. Else one would
+        // effectively stresstest performance data storage
+        if (this.alreadyLoadingTests > 0) {
+            return;
+        }
+        this.alreadyLoadingTests = 2;
         // user might not have prefixed host with http://
         if (this.performanceDataStorageHost && !this.performanceDataStorageHost.startsWith("http://")) {
             this.performanceDataStorageHost = "http://" + this.performanceDataStorageHost;
@@ -119,7 +127,10 @@ export class Evaluation extends Component<IProps, IAppState> {
                 console.error("Error: " + error + " for url: " + this.performanceDataStorageHost + "/tests/running");
                 this.setState({pdsIsUp: false});
             },
-        );
+        ).finally(() => {
+            // no need to synchronise, since no parallel threads are used
+            this.alreadyLoadingTests--;
+        });
         axios.request<string[]>({
             url: this.performanceDataStorageHost + "/tests/finished",
         }).then((response) => {
@@ -137,7 +148,10 @@ export class Evaluation extends Component<IProps, IAppState> {
                 console.error("Error: " + error + " for url: " + this.performanceDataStorageHost + "/tests/finished");
                 this.setState({pdsIsUp: false});
             },
-        );
+        ).finally(() => {
+            // no need to synchronise, since no parallel threads are used
+            this.alreadyLoadingTests--;
+        });;
     }
 
     private isIncluded(id: string, ids: string[]): boolean {
