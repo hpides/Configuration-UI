@@ -23,9 +23,9 @@ export class Evaluation extends Component<IProps, IAppState> {
     private currentId?: string = undefined;
 
     private performanceDataStorageHost: string | null;
-    
+
     private alreadyLoadingTests: number = 0;
-    
+
     public constructor(props: IProps) {
         super(props);
         this.performanceDataStorageHost = null;
@@ -151,7 +151,7 @@ export class Evaluation extends Component<IProps, IAppState> {
         ).finally(() => {
             // no need to synchronise, since no parallel threads are used
             this.alreadyLoadingTests--;
-        });;
+        });
     }
 
     private isIncluded(id: string, ids: string[]): boolean {
