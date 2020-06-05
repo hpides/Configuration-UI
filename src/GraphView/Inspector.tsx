@@ -339,21 +339,30 @@ export class Inspector extends React.Component<IProps, IState> {
         }
 
         return (
-            <div className={"data-generation-table" + locked}>
-                <table>
-                    <tbody>
-                    <tr>
-                        <th>Key</th>
-                        <th colSpan={2}>Generator</th>
-                    </tr>
-                    {rows}
-                    </tbody>
-                </table>
-                <button
-                    onClick={this.addGenerator}
-                >Add Data
-                </button>
-            </div>
+            <AccordionItem>
+                <AccordionItemHeading>
+                    <AccordionItemButton>
+                        Data
+                    </AccordionItemButton>
+                </AccordionItemHeading>
+                <AccordionItemPanel>
+                    <div className={"data-generation-table" + locked}>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <th>Key</th>
+                                <th colSpan={2}>Generator</th>
+                            </tr>
+                            {rows}
+                            </tbody>
+                        </table>
+                        <button
+                            onClick={this.addGenerator}
+                        >Add Data
+                        </button>
+                    </div>
+                </AccordionItemPanel>
+            </AccordionItem>
         );
     }
 
@@ -397,20 +406,29 @@ export class Inspector extends React.Component<IProps, IState> {
         }
 
         return(
-            <div className="data-generation-table">
-                <table>
-                    <tbody>
-                        <tr>
-                            <th>Name</th>
-                            <th colSpan={2}>Assertion</th>
-                        </tr>
-                        {rows}
-                    </tbody>
-                </table>
-                <button
-                    onClick={this.addAssertion}
-                >Add Assertion</button>
-            </div>
+            <AccordionItem>
+                <AccordionItemHeading>
+                    <AccordionItemButton>
+                        Assertions
+                    </AccordionItemButton>
+                </AccordionItemHeading>
+                <AccordionItemPanel>
+                    <div className="data-generation-table">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>Name</th>
+                                    <th colSpan={2}>Assertion</th>
+                                </tr>
+                                {rows}
+                            </tbody>
+                        </table>
+                        <button
+                            onClick={this.addAssertion}
+                        >Add Assertion</button>
+                    </div>
+                </AccordionItemPanel>
+            </AccordionItem>
         );
     }
 
@@ -932,7 +950,9 @@ export class Inspector extends React.Component<IProps, IState> {
         }
 
         const table = this.renderTable();
+        if (table) inputs.push(table);
         const assertionsTable = this.renderAssertions();
+        if (assertionsTable) inputs.push(assertionsTable);
 
         let generatorAdder;
         if (this.state.addingGenerator) {
@@ -977,8 +997,6 @@ export class Inspector extends React.Component<IProps, IState> {
                         {inputs}
                     </Accordion>
                 </div>
-                {table}
-                {assertionsTable}
                 {generatorAdder}
                 {authAdder}
                 {assertionAdder}
