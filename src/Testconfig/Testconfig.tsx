@@ -149,7 +149,7 @@ export class Testconfig extends React.Component<{}, IState> {
                 </div>
                 <div className="row">
                     <div className="col-25">
-                        <label htmlFor="noSession">Global Session Pooling Disabled</label>
+                        <label htmlFor="noSession">Global Session Pooling enabled</label>
                     </div>
                     <div className="col-75">
                         <input
