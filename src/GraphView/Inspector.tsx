@@ -1,10 +1,17 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import React from "react";
+import {
+    Accordion,
+    AccordionItem,
+    AccordionItemButton,
+    AccordionItemHeading,
+    AccordionItemPanel,
+} from "react-accessible-accordion";
 import ReactTooltip from "react-tooltip";
 import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
-import "./Inspector.css";
 import "./accordion.css";
+import "./Inspector.css";
 import {AssertionAdder} from "./Inspector/AssertionAdder";
 import {
     ContentNotEmptyAssertion,
@@ -20,13 +27,6 @@ import {ExistingDataConfig, GeneratorConfig} from "./Inspector/GeneratorConfig";
 import {DataGenerationNode} from "./Nodes/DataGenerationNode";
 import {Node} from "./Nodes/Node";
 import {RequestNode} from "./Nodes/RequestNode";
-import {
-    Accordion,
-    AccordionItem,
-    AccordionItemHeading,
-    AccordionItemButton,
-    AccordionItemPanel,
-} from 'react-accessible-accordion';
 
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
@@ -463,7 +463,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     <AccordionItemPanel>
                         {authButton}
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
 
             } else if (key === "receiveCookies" || key === "sendCookies") {
                 const description = (key === "receiveCookies") ? "Cookies to extract" : "Cookies to send";
@@ -706,7 +706,7 @@ export class Inspector extends React.Component<IProps, IState> {
                             this.forceUpdate();
                         }}>Add header to send</button>
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
             } else if (key === "receiveHeaders") {
                 const values: any = node.getAttribute(key);
 
@@ -752,7 +752,7 @@ export class Inspector extends React.Component<IProps, IState> {
                             this.forceUpdate();
                         }}>Add header to receive</button>
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
             } else if (key === "assignments") {
                 const values: any = node.getAttribute(key);
 
@@ -798,7 +798,7 @@ export class Inspector extends React.Component<IProps, IState> {
                             this.forceUpdate();
                         }}>Add assignment</button>
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
             } else if (key === "table") {
                 // tablename has to be a selection box
 
@@ -857,7 +857,7 @@ export class Inspector extends React.Component<IProps, IState> {
                         {input}
                         {preset}
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
 
             } else if (key === "requestParams") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -872,7 +872,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     <AccordionItemPanel>
                         {input}
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
 
             } else if (key === "delay") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -887,7 +887,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     <AccordionItemPanel>
                         {input}
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
 
             } else if (key === "requestJSONObject") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -902,7 +902,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     <AccordionItemPanel>
                         {input}
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
 
             } else if (key === "responseJSONObject") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -917,7 +917,7 @@ export class Inspector extends React.Component<IProps, IState> {
                     <AccordionItemPanel>
                         {input}
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
             } else if (key === "timeAggregation") {
                 const box = <label>Aggregate recorded times:
                     <input key={key + "box"} type="checkbox" checked={node.getAttribute(key) !== false}
@@ -936,14 +936,14 @@ export class Inspector extends React.Component<IProps, IState> {
                     <AccordionItemPanel>
                         {input}
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
             }
         }
 
         const table = this.renderTable();
-        if (table) inputs.push(table);
+        if (table) { inputs.push(table); }
         const assertionsTable = this.renderAssertions();
-        if (assertionsTable) inputs.push(assertionsTable);
+        if (assertionsTable) { inputs.push(assertionsTable); }
 
         let generatorAdder;
         if (this.state.addingGenerator) {
