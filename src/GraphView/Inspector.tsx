@@ -784,15 +784,6 @@ export class Inspector extends React.Component<IProps, IState> {
                         )}
                     </tbody>
                 </table>;
-                inputs.push(<label key={key} data-tip="Names to obe copied into a new key in the token. Left is the source key, right is the target key in the token.">
-                Assignments
-            </label>);
-                inputs.push(valueTable);
-                inputs.push(<button key={key + "button"} onClick={() => {
-                    node.getAttribute(key)[""] = "";
-                    // the above action does not trigger React to re-render although we need to here
-                    this.forceUpdate();
-                }}>Add assignment</button>);
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip="Names to obe copied into a new key in the token. Left is the source key, right is the target key in the token.">
