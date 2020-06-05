@@ -125,6 +125,10 @@
     top: 30px;
 }
 
+.inspector .preset-select select:hover {
+    background-color: #545d6f;
+}
+
 .inspector .preset-select {
     width: 100%;
 }

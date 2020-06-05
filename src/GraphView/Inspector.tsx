@@ -4,6 +4,7 @@ import ReactTooltip from "react-tooltip";
 import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
 import "./Inspector.css";
+import "./accordion.css";
 import {AssertionAdder} from "./Inspector/AssertionAdder";
 import {
     ContentNotEmptyAssertion,
@@ -19,6 +20,13 @@ import {ExistingDataConfig, GeneratorConfig} from "./Inspector/GeneratorConfig";
 import {DataGenerationNode} from "./Nodes/DataGenerationNode";
 import {Node} from "./Nodes/Node";
 import {RequestNode} from "./Nodes/RequestNode";
+import {
+    Accordion,
+    AccordionItem,
+    AccordionItemHeading,
+    AccordionItemButton,
+    AccordionItemPanel,
+} from 'react-accessible-accordion';
 
 interface IProps {
     onValueChanged: (key: string, value: string) => void;
@@ -416,9 +424,11 @@ export class Inspector extends React.Component<IProps, IState> {
             if (key === "requestParams" || key === "responseJSONObject") {
                 note += " (comma separated)";
             }
-            const label = <label key={key}>
-                {key + note}
-            </label>;
+            const label = <AccordionItemHeading>
+                <AccordionItemButton>
+                    {key + note}
+                </AccordionItemButton>
+            </AccordionItemHeading>;
 
             if (key === "basicAuth") {
 
@@ -831,8 +841,12 @@ export class Inspector extends React.Component<IProps, IState> {
                                      value={node.getAttribute(key)}
                                      onChange={this.inputChanged}
                 />;
-                inputs.push(label);
-                inputs.push(input);
+                inputs.push(<AccordionItem>
+                    {label}
+                    <AccordionItemPanel>
+                        {input}
+                    </AccordionItemPanel>
+                </AccordionItem>)
 
             }
         }
@@ -879,7 +893,9 @@ export class Inspector extends React.Component<IProps, IState> {
                 <ReactTooltip />
                 <h3>Inspector</h3>
                 <div className="inputs-container">
-                    {inputs}
+                    <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
+                        {inputs}
+                    </Accordion>
                 </div>
                 {table}
                 {assertionsTable}
