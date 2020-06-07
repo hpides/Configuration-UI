@@ -12,6 +12,7 @@
     border-radius: 10px;
     max-height: calc(100% - 80px);
     overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-width: thin;
 }
 
@@ -36,9 +37,7 @@
     background-color: white;
     color: black;
     border-collapse: collapse;
-    margin-left: 10px;
-    margin-right: 10px;
-    width: calc(100% - 20px);
+    width: 100%;
 }
 
 .inspector .data-generation-table table th {
@@ -80,7 +79,7 @@
 
 .inspector .data-generation-table table tr:hover .delete-data-btn:before {
     opacity: 1.0;
-    right: 15px;
+    right: 25px;
 }
 
 .inspector .delete-data-btn:before {

@@ -315,13 +315,11 @@ export class Inspector extends React.Component<IProps, IState> {
                 <tr key={i} data-key={keys[i]} onClick={this.editGenerator}>
                     <td>{keys[i]}</td>
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
-                    <td>
                     <button
                         className="delete-data-btn"
                         data-key={keys[i]}
                         onClick={this.deleteGenerator}
-                    >&times;</button>
-                    </td>
+                    ></button>
                 </tr>,
             );
         }
@@ -336,6 +334,11 @@ export class Inspector extends React.Component<IProps, IState> {
         // --> make sure they are not locked away
         if (node.getAttribute("table") !== null && isExistingConfig) {
             locked = " locked";
+        }
+        if (rows.length === 0) {
+            rows.push(<tr>
+                <td className="centered" colSpan={2}>No Data</td>
+            </tr>);
         }
 
         return (
