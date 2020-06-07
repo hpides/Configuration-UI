@@ -621,10 +621,20 @@ export class Inspector extends React.Component<IProps, IState> {
             } else if (key === "staticValues") {
                 const values: any = node.getAttribute(key);
 
-                const valueTable =
+                let noValues;
+                if (Object.keys(values).length === 0) {
+                    noValues = <tr>
+                        <td className="centered" colSpan={2}>No Values</td>
+                    </tr>;
+                }
+
+                const valueTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Token key</td><td>Value</td></tr>
+                    <tr>
+                        <th>Token key</th>
+                        <th colSpan={2}>Value</th>
+                    </tr>
                         {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
@@ -647,8 +657,9 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noValues}
                     </tbody>
-                </table>;
+                </table></div>;
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip="Values to put into the token for every run">

@@ -40,6 +40,13 @@
     width: 100%;
 }
 
+.inspector .data-generation-table input {
+    min-width: initial;
+    margin: 0;
+    color: rgb(38, 88, 114);
+    border-color: rgb(106, 136, 152);
+}
+
 .inspector .data-generation-table table th {
     height: 30px;
     border-bottom: 2px solid black;
