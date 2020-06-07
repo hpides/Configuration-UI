@@ -290,7 +290,7 @@ export class Inspector extends React.Component<IProps, IState> {
         node.removeAssertion(Number(index));
         event.stopPropagation();
         this.forceUpdate();
-    };
+    }
 
     public handleAddAuthDialog = (user: string, password: string) => {
         if (!(this.props.node instanceof RequestNode)) {
@@ -422,7 +422,7 @@ export class Inspector extends React.Component<IProps, IState> {
         if (rows.length === 0) {
             rows.push(<tr>
                 <td className="centered" colSpan={2}>No Assertions</td>
-            </tr>)
+            </tr>);
         }
 
         return(
@@ -493,7 +493,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 if (Object.keys(cookies).length === 0) {
                     noCookies = <tr>
                         <td className="centered" colSpan={2}>No Cookies</td>
-                    </tr>
+                    </tr>;
                 }
 
                 const cookieTable = <div className="data-generation-table">
@@ -561,7 +561,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 if (Object.keys(tokens).length === 0) {
                     noFields = <tr>
                         <td className="centered" colSpan={2}>No Fields</td>
-                    </tr>
+                    </tr>;
                 }
 
                 const cookieTable = <div className="data-generation-table">

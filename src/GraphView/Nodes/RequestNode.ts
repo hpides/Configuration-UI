@@ -104,5 +104,5 @@ export class RequestNode extends Node {
 
     public removeAssertion(index: number) {
         this.attributes.assertions.splice(index, 1);
-    }    
+    }
 }
