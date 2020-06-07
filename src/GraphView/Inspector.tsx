@@ -277,7 +277,20 @@ export class Inspector extends React.Component<IProps, IState> {
     }
 
     // tslint:disable-next-line
-    public deleteAssertion = (event: React.MouseEvent<HTMLButtonElement>) => {};
+    public deleteAssertion = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (!(this.props.node instanceof RequestNode)) {
+            return;
+        }
+
+        const node: RequestNode = this.props.node;
+
+        const index = event.currentTarget.getAttribute("data-index");
+        if (!index) { return; }
+
+        node.removeAssertion(Number(index));
+        event.stopPropagation();
+        this.forceUpdate();
+    };
 
     public handleAddAuthDialog = (user: string, password: string) => {
         if (!(this.props.node instanceof RequestNode)) {
@@ -397,15 +410,19 @@ export class Inspector extends React.Component<IProps, IState> {
                 <tr key={i} data-index={i} onClick={this.editAssertion}>
                     <td>{assertion.name}</td>
                     <td>{assertionText}</td>
-                    <td>
                     <button
                         className="delete-data-btn"
                         data-index={i}
                         onClick={this.deleteAssertion}
-                    >&times;</button>
-                    </td>
+                    ></button>
                 </tr>,
             );
+        }
+
+        if (rows.length === 0) {
+            rows.push(<tr>
+                <td className="centered" colSpan={2}>No Assertions</td>
+            </tr>)
         }
 
         return(
@@ -472,10 +489,20 @@ export class Inspector extends React.Component<IProps, IState> {
                 const description = (key === "receiveCookies") ? "Cookies to extract" : "Cookies to send";
                 const cookies: any = node.getAttribute(key);
 
-                const cookieTable =
+                let noCookies;
+                if (Object.keys(cookies).length === 0) {
+                    noCookies = <tr>
+                        <td className="centered" colSpan={2}>No Cookies</td>
+                    </tr>
+                }
+
+                const cookieTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>{(key === "receiveCookies") ? "Response Cookie" : "Token key"}</td><td>{(key === "receiveCookies") ? "Token key" : "Request Cookie"}</td></tr>
+                    <tr>
+                        <th>{(key === "receiveCookies") ? "Response Cookie" : "Token key"}</th>
+                        <th colSpan={2}>{(key === "receiveCookies") ? "Token key" : "Request Cookie"}</th>
+                    </tr>
                         {Object.keys(cookies).map((cookie) =>
                             <tr key={cookie}>
                                 <td>
@@ -508,8 +535,9 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noCookies}
                     </tbody>
-                </table>;
+                </table></div>;
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip={((key === "receiveCookies") ? "Cookies from the result which will be stored in the Token. Entered cookie name can be a Regex, in which case the first cookie from the result in arbitrary order that matches the expression will be chosen."
@@ -529,10 +557,20 @@ export class Inspector extends React.Component<IProps, IState> {
             } else if (key === "tokenNames") {
                 const tokens: any = node.getAttribute(key);
 
-                const cookieTable =
+                let noFields;
+                if (Object.keys(tokens).length === 0) {
+                    noFields = <tr>
+                        <td className="centered" colSpan={2}>No Fields</td>
+                    </tr>
+                }
+
+                const cookieTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Field name</td><td>Token key</td></tr>
+                    <tr>
+                        <th>Field name</th>
+                        <th colSpan={2}>Token key</th>
+                    </tr>
                         {Object.keys(tokens).map((token) =>
                             <tr key={token}>
                                 <td>
@@ -555,8 +593,9 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noFields}
                     </tbody>
-                </table>;
+                </table></div>;
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip="Convenience wrapper for custom xpath. E.g. if '_csrf' is entered, the XPATH expression '//input[@type = 'hidden'][@name = 'csrf']/@value' will be evaluated as described below.">
@@ -575,10 +614,20 @@ export class Inspector extends React.Component<IProps, IState> {
             } else if (key === "xpaths") {
                 const xpaths: any = node.getAttribute(key);
 
-                const xpathTable =
+                let noXpaths;
+                if (Object.keys(xpaths).length === 0) {
+                    noXpaths = <tr>
+                        <td className="centered" colSpan={2}>No Expressions</td>
+                    </tr>;
+                }
+
+                const xpathTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>XPATH statement</td><td>Token key</td></tr>
+                    <tr>
+                        <th>XPATH statement</th>
+                        <th colSpan={2}>Token key</th>
+                    </tr>
                         {Object.keys(xpaths).map((xpath) =>
                             <tr key={xpath}>
                                 <td>
@@ -601,8 +650,9 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noXpaths}
                     </tbody>
-                </table>;
+                </table></div>;
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip="XPATH expressions on the left will be evaluated for the returned page. The extracted string (first hit) will be stored in the token under the key on the right.">
@@ -678,10 +728,20 @@ export class Inspector extends React.Component<IProps, IState> {
             } else if (key === "sendHeaders") {
                 const values: any = node.getAttribute(key);
 
-                const valueTable =
+                let noValues;
+                if (Object.keys(values).length === 0) {
+                    noValues = <tr>
+                        <td className="centered" colSpan={2}>No Headers</td>
+                    </tr>;
+                }
+
+                const valueTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Expression</td><td>Header names</td></tr>
+                    <tr>
+                        <th>Expression</th>
+                        <th colSpan={2}>Header names</th>
+                    </tr>
                         {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
@@ -704,8 +764,9 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noValues}
                     </tbody>
-                </table>;
+                </table></div>;
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip="Left input fields require the text for the header and might use variable expansion. Right side is respective Header name.">
@@ -724,10 +785,20 @@ export class Inspector extends React.Component<IProps, IState> {
             } else if (key === "receiveHeaders") {
                 const values: any = node.getAttribute(key);
 
-                const valueTable =
+                let noValues;
+                if (Object.keys(values).length === 0) {
+                    noValues = <tr>
+                        <td className="centered" colSpan={2}>No Headers</td>
+                    </tr>;
+                }
+
+                const valueTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Header name</td><td>Name in token</td></tr>
+                    <tr>
+                        <th>Header name</th>
+                        <th colSpan={2}>Name in token</th>
+                    </tr>
                         {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
@@ -750,8 +821,9 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noValues}
                     </tbody>
-                </table>;
+                </table></div>;
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip="Names to be extracted from the response and stored into the token. Left is the response name, right is the target name in the token.">
