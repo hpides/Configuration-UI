@@ -842,10 +842,20 @@ export class Inspector extends React.Component<IProps, IState> {
             } else if (key === "assignments") {
                 const values: any = node.getAttribute(key);
 
-                const valueTable =
+                let noValues;
+                if (Object.keys(values).length === 0) {
+                    noValues = <tr>
+                        <td className="centered" colSpan={2}>No Assignments</td>
+                    </tr>;
+                }
+
+                const valueTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Source</td><td>Target</td></tr>
+                    <tr>
+                        <th>Source</th>
+                        <th colSpan={2}>Target</th>
+                    </tr>
                         {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
@@ -868,8 +878,9 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noValues}
                     </tbody>
-                </table>;
+                </table></div>;
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip="Names to obe copied into a new key in the token. Left is the source key, right is the target key in the token.">
