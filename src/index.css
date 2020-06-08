@@ -106,3 +106,7 @@ input[type="checkbox"]:checked+label::before {
 .dropzone:hover {
   background-color: #414654;
 }
+
+.centered {
+  text-align: center;
+}

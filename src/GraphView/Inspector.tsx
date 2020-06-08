@@ -1,8 +1,16 @@
 import {DiagramModel} from "@projectstorm/react-diagrams";
 import React from "react";
+import {
+    Accordion,
+    AccordionItem,
+    AccordionItemButton,
+    AccordionItemHeading,
+    AccordionItemPanel,
+} from "react-accessible-accordion";
 import ReactTooltip from "react-tooltip";
 import { ApisEditor } from "../ApisEditor/ApisEditor";
 import {ExistingConfigComponent} from "../ExistingConfig/existingConfigComponent";
+import "./accordion.css";
 import "./Inspector.css";
 import {AssertionAdder} from "./Inspector/AssertionAdder";
 import {
@@ -269,7 +277,20 @@ export class Inspector extends React.Component<IProps, IState> {
     }
 
     // tslint:disable-next-line
-    public deleteAssertion = (event: React.MouseEvent<HTMLButtonElement>) => {};
+    public deleteAssertion = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (!(this.props.node instanceof RequestNode)) {
+            return;
+        }
+
+        const node: RequestNode = this.props.node;
+
+        const index = event.currentTarget.getAttribute("data-index");
+        if (!index) { return; }
+
+        node.removeAssertion(Number(index));
+        event.stopPropagation();
+        this.forceUpdate();
+    }
 
     public handleAddAuthDialog = (user: string, password: string) => {
         if (!(this.props.node instanceof RequestNode)) {
@@ -307,13 +328,11 @@ export class Inspector extends React.Component<IProps, IState> {
                 <tr key={i} data-key={keys[i]} onClick={this.editGenerator}>
                     <td>{keys[i]}</td>
                     <td>{node.dataToGenerate.value.get(keys[i])!.getTypeString()}</td>
-                    <td>
                     <button
                         className="delete-data-btn"
                         data-key={keys[i]}
                         onClick={this.deleteGenerator}
-                    >&times;</button>
-                    </td>
+                    ></button>
                 </tr>,
             );
         }
@@ -329,23 +348,37 @@ export class Inspector extends React.Component<IProps, IState> {
         if (node.getAttribute("table") !== null && isExistingConfig) {
             locked = " locked";
         }
+        if (rows.length === 0) {
+            rows.push(<tr>
+                <td className="centered" colSpan={2}>No Data</td>
+            </tr>);
+        }
 
         return (
-            <div className={"data-generation-table" + locked}>
-                <table>
-                    <tbody>
-                    <tr>
-                        <th>Key</th>
-                        <th colSpan={2}>Generator</th>
-                    </tr>
-                    {rows}
-                    </tbody>
-                </table>
-                <button
-                    onClick={this.addGenerator}
-                >Add Data
-                </button>
-            </div>
+            <AccordionItem>
+                <AccordionItemHeading>
+                    <AccordionItemButton>
+                        Data
+                    </AccordionItemButton>
+                </AccordionItemHeading>
+                <AccordionItemPanel>
+                    <div className={"data-generation-table" + locked}>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <th>Key</th>
+                                <th colSpan={2}>Generator</th>
+                            </tr>
+                            {rows}
+                            </tbody>
+                        </table>
+                        <button
+                            onClick={this.addGenerator}
+                        >Add Data
+                        </button>
+                    </div>
+                </AccordionItemPanel>
+            </AccordionItem>
         );
     }
 
@@ -377,32 +410,45 @@ export class Inspector extends React.Component<IProps, IState> {
                 <tr key={i} data-index={i} onClick={this.editAssertion}>
                     <td>{assertion.name}</td>
                     <td>{assertionText}</td>
-                    <td>
                     <button
                         className="delete-data-btn"
                         data-index={i}
                         onClick={this.deleteAssertion}
-                    >&times;</button>
-                    </td>
+                    ></button>
                 </tr>,
             );
         }
 
+        if (rows.length === 0) {
+            rows.push(<tr>
+                <td className="centered" colSpan={2}>No Assertions</td>
+            </tr>);
+        }
+
         return(
-            <div className="data-generation-table">
-                <table>
-                    <tbody>
-                        <tr>
-                            <th>Name</th>
-                            <th colSpan={2}>Assertion</th>
-                        </tr>
-                        {rows}
-                    </tbody>
-                </table>
-                <button
-                    onClick={this.addAssertion}
-                >Add Assertion</button>
-            </div>
+            <AccordionItem>
+                <AccordionItemHeading>
+                    <AccordionItemButton>
+                        Assertions
+                    </AccordionItemButton>
+                </AccordionItemHeading>
+                <AccordionItemPanel>
+                    <div className="data-generation-table">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>Name</th>
+                                    <th colSpan={2}>Assertion</th>
+                                </tr>
+                                {rows}
+                            </tbody>
+                        </table>
+                        <button
+                            onClick={this.addAssertion}
+                        >Add Assertion</button>
+                    </div>
+                </AccordionItemPanel>
+            </AccordionItem>
         );
     }
 
@@ -416,9 +462,11 @@ export class Inspector extends React.Component<IProps, IState> {
             if (key === "requestParams" || key === "responseJSONObject") {
                 note += " (comma separated)";
             }
-            const label = <label key={key}>
-                {key + note}
-            </label>;
+            const label = <AccordionItemHeading>
+                <AccordionItemButton>
+                    {key + note}
+                </AccordionItemButton>
+            </AccordionItemHeading>;
 
             if (key === "basicAuth") {
 
@@ -430,19 +478,31 @@ export class Inspector extends React.Component<IProps, IState> {
                 const authButton = <button key={i}
                                            onClick={this.addAuth}
                 >{buttonString}</button>;
-                inputs.push(label);
-                inputs.push(authButton);
+                inputs.push(<AccordionItem>
+                    {label}
+                    <AccordionItemPanel>
+                        {authButton}
+                    </AccordionItemPanel>
+                </AccordionItem>);
 
             } else if (key === "receiveCookies" || key === "sendCookies") {
                 const description = (key === "receiveCookies") ? "Cookies to extract" : "Cookies to send";
-                inputs.push(<label key={key} data-tip={((key === "receiveCookies") ? "Cookies from the result which will be stored in the Token. Entered cookie name can be a Regex, in which case the first cookie from the result in arbitrary order that matches the expression will be chosen."
-                    : "Cookies from the token to send in the request. Entered token name can be a Regex, in which case the first cookie from the token in arbitrary order that matches the expression will be chosen.")}>{description}</label>);
                 const cookies: any = node.getAttribute(key);
 
-                const cookieTable =
+                let noCookies;
+                if (Object.keys(cookies).length === 0) {
+                    noCookies = <tr>
+                        <td className="centered" colSpan={2}>No Cookies</td>
+                    </tr>;
+                }
+
+                const cookieTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>{(key === "receiveCookies") ? "Response Cookie" : "Token key"}</td><td>{(key === "receiveCookies") ? "Token key" : "Request Cookie"}</td></tr>
+                    <tr>
+                        <th>{(key === "receiveCookies") ? "Response Cookie" : "Token key"}</th>
+                        <th colSpan={2}>{(key === "receiveCookies") ? "Token key" : "Request Cookie"}</th>
+                    </tr>
                         {Object.keys(cookies).map((cookie) =>
                             <tr key={cookie}>
                                 <td>
@@ -475,22 +535,42 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noCookies}
                     </tbody>
-                </table>;
-                inputs.push(cookieTable);
-                inputs.push(<button key={key + "button"} onClick={() => {
-                    node.getAttribute(key)[""] = "";
-                    // the above action does not trigger React to re-render although we need to here
-                    this.forceUpdate();
-                }}>Add Cookie</button>);
+                </table></div>;
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip={((key === "receiveCookies") ? "Cookies from the result which will be stored in the Token. Entered cookie name can be a Regex, in which case the first cookie from the result in arbitrary order that matches the expression will be chosen."
+                : "Cookies from the token to send in the request. Entered token name can be a Regex, in which case the first cookie from the token in arbitrary order that matches the expression will be chosen.")}>
+                            {description}
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        {cookieTable}
+                        <button key={key + "button"} onClick={() => {
+                            node.getAttribute(key)[""] = "";
+                            // the above action does not trigger React to re-render although we need to here
+                            this.forceUpdate();
+                        }}>Add Cookie</button>
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (key === "tokenNames") {
-                inputs.push(<label key={key} data-tip="Convenience wrapper for custom xpath. E.g. if '_csrf' is entered, the XPATH expression '//input[@type = 'hidden'][@name = 'csrf']/@value' will be evaluated as described below.">Hidden fields to extract</label>);
                 const tokens: any = node.getAttribute(key);
 
-                const cookieTable =
+                let noFields;
+                if (Object.keys(tokens).length === 0) {
+                    noFields = <tr>
+                        <td className="centered" colSpan={2}>No Fields</td>
+                    </tr>;
+                }
+
+                const cookieTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Field name</td><td>Token key</td></tr>
+                    <tr>
+                        <th>Field name</th>
+                        <th colSpan={2}>Token key</th>
+                    </tr>
                         {Object.keys(tokens).map((token) =>
                             <tr key={token}>
                                 <td>
@@ -513,22 +593,41 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noFields}
                     </tbody>
-                </table>;
-                inputs.push(cookieTable);
-                inputs.push(<button key={key + "button"} onClick={() => {
-                    node.getAttribute(key)[""] = "";
-                    // the above action does not trigger React to re-render although we need to here
-                    this.forceUpdate();
-                }}>Add hidden field</button>);
+                </table></div>;
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip="Convenience wrapper for custom xpath. E.g. if '_csrf' is entered, the XPATH expression '//input[@type = 'hidden'][@name = 'csrf']/@value' will be evaluated as described below.">
+                            Hidden fields to extract
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        {cookieTable}
+                        <button key={key + "button"} onClick={() => {
+                            node.getAttribute(key)[""] = "";
+                            // the above action does not trigger React to re-render although we need to here
+                            this.forceUpdate();
+                        }}>Add hidden field</button>
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (key === "xpaths") {
-                inputs.push(<label key={key} data-tip="XPATH expressions on the left will be evaluated for the returned page. The extracted string (first hit) will be stored in the token under the key on the right.">Custom values from the page (XPATH)</label>);
                 const xpaths: any = node.getAttribute(key);
 
-                const xpathTable =
+                let noXpaths;
+                if (Object.keys(xpaths).length === 0) {
+                    noXpaths = <tr>
+                        <td className="centered" colSpan={2}>No Expressions</td>
+                    </tr>;
+                }
+
+                const xpathTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>XPATH statement</td><td>Token key</td></tr>
+                    <tr>
+                        <th>XPATH statement</th>
+                        <th colSpan={2}>Token key</th>
+                    </tr>
                         {Object.keys(xpaths).map((xpath) =>
                             <tr key={xpath}>
                                 <td>
@@ -551,24 +650,41 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noXpaths}
                     </tbody>
-                </table>;
-                inputs.push(xpathTable);
-                inputs.push(<button key={key + "button"} onClick={() => {
-                    node.getAttribute(key)[""] = "";
-                    // the above action does not trigger React to re-render although we need to here
-                    this.forceUpdate();
-                }}>Add XPath expression</button>);
+                </table></div>;
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip="XPATH expressions on the left will be evaluated for the returned page. The extracted string (first hit) will be stored in the token under the key on the right.">
+                            Custom values from the page (XPATH)
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        {xpathTable}
+                        <button key={key + "button"} onClick={() => {
+                            node.getAttribute(key)[""] = "";
+                            // the above action does not trigger React to re-render although we need to here
+                            this.forceUpdate();
+                        }}>Add XPath expression</button>
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (key === "staticValues") {
-                inputs.push(<label key={key} data-tip="Values to put into the token for every run">
-                    Static values for every run
-                </label>);
                 const values: any = node.getAttribute(key);
 
-                const valueTable =
+                let noValues;
+                if (Object.keys(values).length === 0) {
+                    noValues = <tr>
+                        <td className="centered" colSpan={2}>No Values</td>
+                    </tr>;
+                }
+
+                const valueTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Token key</td><td>Value</td></tr>
+                    <tr>
+                        <th>Token Key</th>
+                        <th colSpan={2}>Value</th>
+                    </tr>
                         {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
@@ -591,24 +707,41 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noValues}
                     </tbody>
-                </table>;
-                inputs.push(valueTable);
-                inputs.push(<button key={key + "button"} onClick={() => {
-                    node.getAttribute(key)[""] = "";
-                    // the above action does not trigger React to re-render although we need to here
-                    this.forceUpdate();
-                }}>Add static value</button>);
+                </table></div>;
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip="Values to put into the token for every run">
+                            Static Values for every Run
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        {valueTable}
+                        <button key={key + "button"} onClick={() => {
+                            node.getAttribute(key)[""] = "";
+                            // the above action does not trigger React to re-render although we need to here
+                            this.forceUpdate();
+                        }}>Add Static Value</button>
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (key === "sendHeaders") {
-                inputs.push(<label key={key} data-tip="Left input fields require the text for the header and might use variable expansion. Right side is respective Header name.">
-                    Headers to send
-                </label>);
                 const values: any = node.getAttribute(key);
 
-                const valueTable =
+                let noValues;
+                if (Object.keys(values).length === 0) {
+                    noValues = <tr>
+                        <td className="centered" colSpan={2}>No Headers</td>
+                    </tr>;
+                }
+
+                const valueTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Expression</td><td>Header names</td></tr>
+                    <tr>
+                        <th>Expression</th>
+                        <th colSpan={2}>Header names</th>
+                    </tr>
                         {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
@@ -631,24 +764,41 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noValues}
                     </tbody>
-                </table>;
-                inputs.push(valueTable);
-                inputs.push(<button key={key + "button"} onClick={() => {
-                    node.getAttribute(key)[""] = "";
-                    // the above action does not trigger React to re-render although we need to here
-                    this.forceUpdate();
-                }}>Add header to send</button>);
+                </table></div>;
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip="Left input fields require the text for the header and might use variable expansion. Right side is respective Header name.">
+                            Headers to send
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        {valueTable}
+                                <button key={key + "button"} onClick={() => {
+                            node.getAttribute(key)[""] = "";
+                            // the above action does not trigger React to re-render although we need to here
+                            this.forceUpdate();
+                        }}>Add header to send</button>
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (key === "receiveHeaders") {
-                inputs.push(<label key={key} data-tip="Names to be extracted from the response and stored into the token. Left is the response name, right is the target name in the token.">
-                    Headers to receive
-                </label>);
                 const values: any = node.getAttribute(key);
 
-                const valueTable =
+                let noValues;
+                if (Object.keys(values).length === 0) {
+                    noValues = <tr>
+                        <td className="centered" colSpan={2}>No Headers</td>
+                    </tr>;
+                }
+
+                const valueTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Header name</td><td>Name in token</td></tr>
+                    <tr>
+                        <th>Header name</th>
+                        <th colSpan={2}>Name in token</th>
+                    </tr>
                         {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
@@ -671,24 +821,41 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noValues}
                     </tbody>
-                </table>;
-                inputs.push(valueTable);
-                inputs.push(<button key={key + "button"} onClick={() => {
-                    node.getAttribute(key)[""] = "";
-                    // the above action does not trigger React to re-render although we need to here
-                    this.forceUpdate();
-                }}>Add header to receive</button>);
+                </table></div>;
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip="Names to be extracted from the response and stored into the token. Left is the response name, right is the target name in the token.">
+                            Headers to receive
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        {valueTable}
+                        <button key={key + "button"} onClick={() => {
+                            node.getAttribute(key)[""] = "";
+                            // the above action does not trigger React to re-render although we need to here
+                            this.forceUpdate();
+                        }}>Add header to receive</button>
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (key === "assignments") {
-                inputs.push(<label key={key} data-tip="Names to obe copied into a new key in the token. Left is the source key, right is the target key in the token.">
-                    Assignments
-                </label>);
                 const values: any = node.getAttribute(key);
 
-                const valueTable =
+                let noValues;
+                if (Object.keys(values).length === 0) {
+                    noValues = <tr>
+                        <td className="centered" colSpan={2}>No Assignments</td>
+                    </tr>;
+                }
+
+                const valueTable = <div className="data-generation-table">
                 <table key={key + "table"}>
                     <tbody>
-                    <tr><td>Source</td><td>Target</td></tr>
+                    <tr>
+                        <th>Source</th>
+                        <th colSpan={2}>Target</th>
+                    </tr>
                         {Object.keys(values).map((value) =>
                             <tr key={value}>
                                 <td>
@@ -711,14 +878,24 @@ export class Inspector extends React.Component<IProps, IState> {
                                 </td>
                             </tr>,
                         )}
+                        {noValues}
                     </tbody>
-                </table>;
-                inputs.push(valueTable);
-                inputs.push(<button key={key + "button"} onClick={() => {
-                    node.getAttribute(key)[""] = "";
-                    // the above action does not trigger React to re-render although we need to here
-                    this.forceUpdate();
-                }}>Add assignment</button>);
+                </table></div>;
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip="Names to obe copied into a new key in the token. Left is the source key, right is the target key in the token.">
+                            Assignments
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        {valueTable}
+                        <button key={key + "button"} onClick={() => {
+                            node.getAttribute(key)[""] = "";
+                            // the above action does not trigger React to re-render although we need to here
+                            this.forceUpdate();
+                        }}>Add assignment</button>
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (key === "table") {
                 // tablename has to be a selection box
 
@@ -771,9 +948,13 @@ export class Inspector extends React.Component<IProps, IState> {
                         {endpointOptions}
                     </select>
                 </div>;
-                inputs.push(label);
-                inputs.push(input);
-                inputs.push(preset);
+                inputs.push(<AccordionItem>
+                    {label}
+                    <AccordionItemPanel>
+                        {input}
+                        {preset}
+                    </AccordionItemPanel>
+                </AccordionItem>);
 
             } else if (key === "requestParams") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -783,8 +964,12 @@ export class Inspector extends React.Component<IProps, IState> {
                                      value={node.getAttribute(key)}
                                      onChange={this.inputChanged}
                 />;
-                inputs.push(label);
-                inputs.push(input);
+                inputs.push(<AccordionItem>
+                    {label}
+                    <AccordionItemPanel>
+                        {input}
+                    </AccordionItemPanel>
+                </AccordionItem>);
 
             } else if (key === "delay") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -794,8 +979,12 @@ export class Inspector extends React.Component<IProps, IState> {
                                      value={node.getAttribute(key)}
                                      onChange={this.inputChanged}
                 />;
-                inputs.push(label);
-                inputs.push(input);
+                inputs.push(<AccordionItem>
+                    {label}
+                    <AccordionItemPanel>
+                        {input}
+                    </AccordionItemPanel>
+                </AccordionItem>);
 
             } else if (key === "requestJSONObject") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -805,8 +994,12 @@ export class Inspector extends React.Component<IProps, IState> {
                                      value={node.getAttribute(key)}
                                      onChange={this.inputChanged}
                 />;
-                inputs.push(label);
-                inputs.push(input);
+                inputs.push(<AccordionItem>
+                    {label}
+                    <AccordionItemPanel>
+                        {input}
+                    </AccordionItemPanel>
+                </AccordionItem>);
 
             } else if (key === "responseJSONObject") {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
@@ -816,14 +1009,34 @@ export class Inspector extends React.Component<IProps, IState> {
                                      value={node.getAttribute(key)}
                                      onChange={this.inputChanged}
                 />;
-                inputs.push(label);
-                inputs.push(input);
+                inputs.push(<AccordionItem>
+                    {label}
+                    <AccordionItemPanel>
+                        {input}
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (key === "timeAggregation") {
-                const box = <label>Aggregate recorded times:
-                    <input key={key + "box"} type="checkbox" checked={node.getAttribute(key) !== false}
-                           onChange={this.toggleTimeAggregation} />
-                </label>;
-                inputs.push(<label key={key} data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>{box}</label>);
+                const box = <input
+                                id={key + "box"}
+                                key={key + "box"}
+                                type="checkbox"
+                                checked={node.getAttribute(key) !== false}
+                                onChange={this.toggleTimeAggregation}
+                />;
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>
+                            Aggregate Recorded Times
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        <div>
+                            {box}
+                            <label htmlFor={key + "box"}></label>
+                            <label htmlFor={key + "box"} className="checkbox-label">Aggregate Recorded Times</label>
+                        </div>
+                    </AccordionItemPanel>
+                </AccordionItem>);
             } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
@@ -831,14 +1044,19 @@ export class Inspector extends React.Component<IProps, IState> {
                                      value={node.getAttribute(key)}
                                      onChange={this.inputChanged}
                 />;
-                inputs.push(label);
-                inputs.push(input);
-
+                inputs.push(<AccordionItem>
+                    {label}
+                    <AccordionItemPanel>
+                        {input}
+                    </AccordionItemPanel>
+                </AccordionItem>);
             }
         }
 
         const table = this.renderTable();
+        if (table) { inputs.push(table); }
         const assertionsTable = this.renderAssertions();
+        if (assertionsTable) { inputs.push(assertionsTable); }
 
         let generatorAdder;
         if (this.state.addingGenerator) {
@@ -879,10 +1097,10 @@ export class Inspector extends React.Component<IProps, IState> {
                 <ReactTooltip />
                 <h3>Inspector</h3>
                 <div className="inputs-container">
-                    {inputs}
+                    <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
+                        {inputs}
+                    </Accordion>
                 </div>
-                {table}
-                {assertionsTable}
                 {generatorAdder}
                 {authAdder}
                 {assertionAdder}
