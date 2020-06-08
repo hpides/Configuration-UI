@@ -682,7 +682,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 <table key={key + "table"}>
                     <tbody>
                     <tr>
-                        <th>Token key</th>
+                        <th>Token Key</th>
                         <th colSpan={2}>Value</th>
                     </tr>
                         {Object.keys(values).map((value) =>
@@ -713,7 +713,7 @@ export class Inspector extends React.Component<IProps, IState> {
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip="Values to put into the token for every run">
-                            Static values for every run
+                            Static Values for every Run
                         </AccordionItemButton>
                     </AccordionItemHeading>
                     <AccordionItemPanel>
@@ -722,7 +722,7 @@ export class Inspector extends React.Component<IProps, IState> {
                             node.getAttribute(key)[""] = "";
                             // the above action does not trigger React to re-render although we need to here
                             this.forceUpdate();
-                        }}>Add static value</button>
+                        }}>Add Static Value</button>
                     </AccordionItemPanel>
                 </AccordionItem>);
             } else if (key === "sendHeaders") {
@@ -1016,11 +1016,23 @@ export class Inspector extends React.Component<IProps, IState> {
                     </AccordionItemPanel>
                 </AccordionItem>);
             } else if (key === "timeAggregation") {
-                const box = <label>Aggregate recorded times:
-                    <input key={key + "box"} type="checkbox" checked={node.getAttribute(key) !== false}
+                const box = <input id={key + "box"} key={key + "box"} type="checkbox" checked={node.getAttribute(key) !== false}
                            onChange={this.toggleTimeAggregation} />
-                </label>;
-                inputs.push(<label key={key} data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>{box}</label>);
+                //inputs.push(<label key={key} data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>{box}</label>);
+                inputs.push(<AccordionItem>
+                    <AccordionItemHeading>
+                        <AccordionItemButton data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>
+                            Aggregate Recorded Times
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        <div>
+                            {box}
+                            <label htmlFor={key + "box"}></label>
+                            <label htmlFor={key + "box"} className="checkbox-label">Aggregate Recorded Times</label>
+                        </div>
+                    </AccordionItemPanel>
+                </AccordionItem>)
             } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
