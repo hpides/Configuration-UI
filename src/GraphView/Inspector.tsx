@@ -1016,9 +1016,13 @@ export class Inspector extends React.Component<IProps, IState> {
                     </AccordionItemPanel>
                 </AccordionItem>);
             } else if (key === "timeAggregation") {
-                const box = <input id={key + "box"} key={key + "box"} type="checkbox" checked={node.getAttribute(key) !== false}
-                           onChange={this.toggleTimeAggregation} />
-                //inputs.push(<label key={key} data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>{box}</label>);
+                const box = <input
+                                id={key + "box"}
+                                key={key + "box"}
+                                type="checkbox"
+                                checked={node.getAttribute(key) !== false}
+                                onChange={this.toggleTimeAggregation}
+                />;
                 inputs.push(<AccordionItem>
                     <AccordionItemHeading>
                         <AccordionItemButton data-tip={"If checked, recorded times for third endpoint are shown under their  unescaped name. You might want to disable this for debugging to see the replaced URLs."}>
@@ -1032,7 +1036,7 @@ export class Inspector extends React.Component<IProps, IState> {
                             <label htmlFor={key + "box"} className="checkbox-label">Aggregate Recorded Times</label>
                         </div>
                     </AccordionItemPanel>
-                </AccordionItem>)
+                </AccordionItem>);
             } else if (!(key === "id" || key === "dataToGenerate" || key === "assertions" || key === "data")) {
                 const input = <input onFocus={this.props.disableDeleteKey} onBlur={this.props.enableDeleteKey} key={i}
                                      type="text"
