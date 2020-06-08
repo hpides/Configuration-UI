@@ -100,4 +100,8 @@ export class RequestNode extends Node {
         this.attributes.assertions.push(assertion);
         this.setAttribute("assertions", JSON.stringify(classToPlain(this.attributes.assertions)));
     }
+
+    public removeAssertion(index: number) {
+        this.attributes.assertions.splice(index, 1);
+    }
 }
