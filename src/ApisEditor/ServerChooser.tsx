@@ -71,6 +71,7 @@ export class ServerChooser extends React.Component<IProps, IState> {
                 <div className="generator-adder-background"/>
                 <div className="generator-adder">
                     <h3>Choose Server</h3>
+                    <p>Choose which server to use for this API or enter a URL</p>
                     <fieldset className="server-list">
                         <ul>
                             {servers}
