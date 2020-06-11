@@ -680,8 +680,8 @@ public render() {
     }
 
     private abortTest = () => {
-        if(this.mqtt) {
-            this.mqtt.publish(this.controlTopic, "abort "+this.props.testId, () => {alert("Aborted test!")})
+        if (this.mqtt) {
+            this.mqtt.publish(this.controlTopic, "abort " + this.props.testId, () => {alert("Aborted test!"); });
         }
     }
 }
