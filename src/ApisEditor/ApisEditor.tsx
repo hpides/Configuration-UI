@@ -52,7 +52,9 @@ export class ApisEditor extends React.Component<{}, IState> {
         const endpoints = Object.keys(paths);
 
         const serverUrls: string[] = [];
-        servers.forEach((server: any) => serverUrls.push(server.url));
+        if (servers) {
+            servers.forEach((server: any) => serverUrls.push(server.url));
+        }
 
         const uploadedFileRepr: IUploadedFile = {
             existingEndpoints: [],
@@ -88,6 +90,7 @@ export class ApisEditor extends React.Component<{}, IState> {
             choosingServer: false,
             lastFilename: null,
             lastUploadedFile: null,
+            serversToChoose: [],
             uploadedFiles: this.state.uploadedFiles,
         });
     }
@@ -97,6 +100,7 @@ export class ApisEditor extends React.Component<{}, IState> {
             choosingServer: false,
             lastFilename: null,
             lastUploadedFile: null,
+            serversToChoose: [],
         });
     }
 
