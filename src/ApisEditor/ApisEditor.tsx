@@ -90,8 +90,8 @@ export class ApisEditor extends React.Component<{}, IState> {
             choosingServer: false,
             lastFilename: null,
             lastUploadedFile: null,
-            uploadedFiles: this.state.uploadedFiles,
             serversToChoose: [],
+            uploadedFiles: this.state.uploadedFiles,
         });
     }
 
