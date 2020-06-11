@@ -396,7 +396,7 @@ public render() {
         date.setUTCMilliseconds(+this.props.testId);
         const dateString = date.toLocaleString();
         if (this.state.current_state === teststate.RUNNING) {
-            alert = <Alert color="primary">Test running (Test {dateString})</Alert>;
+            alert = <Alert color="primary">Test running (Test {dateString}) <br/> <Button onClick={this.abortTest}>Abort test</Button></Alert>;
         }
         if (this.state.current_state === teststate.FINISHED) {
             alert = <Alert color="primary">Test finished (Test {dateString})<br/> <Button active={this.state.reportReady && !this.state.preparingReport} onClick={this.downloadReport}>Download report</Button> <ClipLoader loading={this.state.preparingReport}/></Alert>;
@@ -677,5 +677,11 @@ public render() {
             ret = ret + item;
         });
         return ret;
+    }
+
+    private abortTest = () => {
+        if (this.mqtt) {
+            this.mqtt.publish(this.controlTopic, "abort " + this.props.testId, () => {alert("Aborted test!"); });
+        }
     }
 }
