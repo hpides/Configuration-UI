@@ -136,7 +136,7 @@ class App extends React.Component<{}, IState> {
         this.export();
         const config = this.lastExport.json;
         const element = document.createElement("a");
-        const file = new Blob([config], {type: 'application/json'});
+        const file = new Blob([config], {type: "application/json"});
         element.href = URL.createObjectURL(file);
         element.download = ("TDGT_Configuration.json");
         document.body.appendChild(element);
