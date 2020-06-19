@@ -72,7 +72,7 @@ export class Sidebar extends React.Component<IProps, IState> {
         if (story) {
             storyName = story;
         } else {
-            let storyNumber = this.state.stories.length;
+            let storyNumber = 1;
             do {
                 storyName = "Story #" + storyNumber.toString();
                 storyNumber++;
