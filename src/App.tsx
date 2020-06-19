@@ -54,6 +54,8 @@ class App extends React.Component<{}, IState> {
     private lastConfig?: any = null;
     private lastConfigAPI?: any = null;
 
+    private readonly inputUploadJSONRef: React.RefObject<HTMLInputElement>;
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -82,6 +84,7 @@ class App extends React.Component<{}, IState> {
             this.export();
             localStorage.setItem("lastConfig", this.lastExport.json);
         };
+        this.inputUploadJSONRef = React.createRef();
     }
 
     public componentDidMount() {
@@ -202,6 +205,21 @@ class App extends React.Component<{}, IState> {
         this.lastExport = {json: JSON.stringify(classToPlain(testConfigJSON)), xml: root.end({prettyPrint: true}).toString(), id: Date.now()};
     }
 
+    public uploadJSON = (event: any): void => {
+
+        event.preventDefault();
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const text = e.target?.result?.toString();
+            console.log("improting");
+            console.log(text);
+            if (text) {
+                this.import(JSON.parse(text));
+            }
+        };
+        reader.readAsText(event.target.files[0]);
+    }
+
     public import = (testConfig: any): void => {
         const stories: any[] = testConfig.stories;
         for (const story of stories) {
@@ -297,18 +315,19 @@ class App extends React.Component<{}, IState> {
             <div className="App">
                 <header className="App-header">
                     <h1>TDGT Configuration</h1>
+                    <input type="file" ref={this.inputUploadJSONRef} accept="application/json" onChange={this.uploadJSON} style={{display: "none"}}/>
                     <button onClick={this.downloadJSON}>Export</button>
                     <button
-                        onClick={(event) => this.import(JSON.parse(prompt("Array of stories JSON please:") || "[]"))}>Import
+                        onClick={(event) => this.inputUploadJSONRef.current?.click()}>Import
                     </button>
 
-                    <button onClick={this.startTest}>Start test</button>
+                    <button onClick={this.startTest}>Start Test</button>
                     <button onClick={() => {
                         // else the handler would immediately re-add the export to localstorage
                         window.removeEventListener("beforeunload", this.unloadHandler);
                         window.localStorage.removeItem("lastConfig");
                         window.location.reload();
-                    }}>Discard current configuration</button>
+                    }}>Discard Current Configuration</button>
                     <img src={logo} className="App-logo" alt="logo"/>
                     <div style={this.state.pdgfRunning ? {visibility: "visible"} : {visibility: "hidden"}}>
                         PDGF running
