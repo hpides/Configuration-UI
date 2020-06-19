@@ -68,7 +68,16 @@ export class Sidebar extends React.Component<IProps, IState> {
     }
 
     public addStory = (story?: string) => {
-        const storyName: string = (story) ? story : "Story #" + this.state.stories.length.toString();
+        let storyName: string;
+        if (story) {
+            storyName = story;
+        } else {
+            let storyNumber = this.state.stories.length;
+            do {
+                storyName = "Story #" + storyNumber.toString();
+                storyNumber++;
+            } while (this.state.stories.indexOf(storyName) !== -1);
+        }
         this.state.stories.push(storyName);
         this.setState({stories: this.state.stories});
     }
