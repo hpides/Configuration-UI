@@ -132,6 +132,17 @@ class App extends React.Component<{}, IState> {
 
     }
 
+    public downloadJSON = (): void => {
+        this.export();
+        const config = this.lastExport.json;
+        const element = document.createElement("a");
+        const file = new Blob([config], {type: 'application/json'});
+        element.href = URL.createObjectURL(file);
+        element.download = ("TDGT_Configuration.json");
+        document.body.appendChild(element);
+        element.click();
+    }
+
     public export = (): void => {
         const stories: any[] = [];
         const pdgfTables: XMLBuilder[] = [];
@@ -286,7 +297,7 @@ class App extends React.Component<{}, IState> {
             <div className="App">
                 <header className="App-header">
                     <h1>TDGT Configuration</h1>
-                    <button onClick={this.export}>Export</button>
+                    <button onClick={this.downloadJSON}>Export</button>
                     <button
                         onClick={(event) => this.import(JSON.parse(prompt("Array of stories JSON please:") || "[]"))}>Import
                     </button>
