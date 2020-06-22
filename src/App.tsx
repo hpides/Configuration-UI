@@ -314,7 +314,7 @@ class App extends React.Component<{}, IState> {
         return (
             <div className="App">
                 <header className="App-header">
-                    <h1>TDGT Configuration</h1>
+                    <h1>WALT Configuration</h1>
                     <input type="file" ref={this.inputUploadJSONRef} accept="application/json" onChange={this.uploadJSON} style={{display: "none"}}/>
                     <button onClick={this.downloadJSON}>Export</button>
                     <button
