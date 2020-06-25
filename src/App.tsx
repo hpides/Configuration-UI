@@ -275,24 +275,30 @@ class App extends React.Component<{}, IState> {
             }} as AxiosRequestConfig;
 
         // they all need to be re-generated since they might be new or PDGF data have been deleted
+        let pdgfOutput:string[] = [];
         if (this.state.existingConfigComponent) {
             for (const fileName of Array.from(this.state.existingConfigComponent.state.uploadedFiles.keys())) {
                 const file = this.state.existingConfigComponent.state.uploadedFiles.get(fileName)!;
+                pdgfOutput.push("<b>Generating data for imported schema "+fileName+"</b>");
                 const existingConfigResponse = await axios.post(this.requestGeneratorHost + "/uploadPDGF/distributed", file.fileContent, axiosParams);
+                pdgfOutput = pdgfOutput.concat(existingConfigResponse.data.replace(/</g, "&lt;").replace(/>/g, "&gt;").split("\n"));
                 // do not start test if PDGF failed
                 if (existingConfigResponse.status !== 200) {
                     alert("PDGF return status: " + existingConfigResponse.status);
-                    this.setState({pdgfRunning: false});
+                    // so users can see the error
+                    this.setState({pdgfOutput: pdgfOutput, pdgfRunning: false, currentView: Views.PDGFOutput});
                     return;
                 }
             }
         }
         const response = await axios.post(this.requestGeneratorHost + "/uploadPDGF/distributed", config.xml, axiosParams);
+        pdgfOutput.push("<b>Generating data for self-generated schema</b>");
+        pdgfOutput = pdgfOutput.concat(response.data.replace(/</g, "&lt;").replace(/>/g, "&gt;").split("\n"));
         if (response.status === 200) {
-            this.setState({pdgfOutput: response.data.replace(/</g, "&lt;").replace(/>/g, "&gt;").split("\n"), currentView: Views.PDGFOutput, pdgfRunning: false});
+            this.setState({pdgfOutput: pdgfOutput, currentView: Views.PDGFOutput, pdgfRunning: false});
         } else {
             alert("PDGF return status: " + response.status);
-            this.setState({pdgfRunning: false});
+            this.setState({pdgfOutput: pdgfOutput, currentView: Views.PDGFOutput, pdgfRunning: false});
         }
     }
 
