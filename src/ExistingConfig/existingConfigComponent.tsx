@@ -95,7 +95,7 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
             </tr>;
         }
         let pdgfuiLink = <b>PDGF-UI</b>;
-        if (process.env.REACT_APP_DOCKERISED === "true" ){
+        if (process.env.REACT_APP_DOCKERISED === "true" ) {
             pdgfuiLink = <a href="/pdgfui/">PDGF-UI</a>;
         }
         return <div className="pdgf-existing-config">
