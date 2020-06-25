@@ -112,6 +112,7 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
                     )}
                 </Dropzone>
             </div>
+            You can create PDGF schemata using the provided <a href="/pdgfui/">PDGF-UI</a>.
             <table>
                 <tr>
                     <th colSpan={2}>Loaded Configurations:</th>
