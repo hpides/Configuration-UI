@@ -94,6 +94,10 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
                 <td colSpan={2}>No Configurations</td>
             </tr>;
         }
+        let pdgfuiLink = <b>PDGF-UI</b>;
+        if (process.env.REACT_APP_DOCKERISED === "true" ){
+            pdgfuiLink = <a href="/pdgfui/">PDGF-UI</a>;
+        }
         return <div className="pdgf-existing-config">
             <h1>PDGF Configurations</h1>
             <div>
@@ -112,7 +116,7 @@ export class ExistingConfigComponent extends React.Component<{}, IState> {
                     )}
                 </Dropzone>
             </div>
-            You can create PDGF schemata using the provided <a href="/pdgfui/">PDGF-UI</a>.
+            You can create PDGF schemata using the provided {pdgfuiLink}.
             <table>
                 <tr>
                     <th colSpan={2}>Loaded Configurations:</th>
