@@ -3,28 +3,28 @@ import React from "react";
 import ReactTooltip from "react-tooltip";
 import "./Testconfig.css";
 
-interface IState {
-    activeInstancesPerSecond: string;
-    maximumConcurrentRequests: string;
+export interface ITestConfigState {
+    activeInstancesPerSecond: number;
+    maximumConcurrentRequests: number;
     name: string;
     noSession: boolean;
-    repeat: string;
-    scaleFactor: string;
+    repeat: number;
+    scaleFactor: number;
     requestDurationThreshold: number;
 }
 /*tslint:disable:no-console*/
-export class Testconfig extends React.Component<{}, IState> {
+export class Testconfig extends React.Component<{}, ITestConfigState> {
     constructor(props: any) {
         super(props);
 
         this.state = {
-            activeInstancesPerSecond : localStorage.getItem("activeInstancesPerSecond") || "",
-            maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
+            activeInstancesPerSecond : Number(localStorage.getItem("activeInstancesPerSecond") || "-1"),
+            maximumConcurrentRequests : Number(localStorage.getItem("maximumConcurrentRequests") || "-1"),
             name : localStorage.getItem("name") || "",
             noSession: localStorage.getItem("maximumConcurrentRequests") === "true",
-            repeat : localStorage.getItem("repeat") || "",
-            requestDurationThreshold : +(localStorage.getItem("requestDurationThreshold") || "-1"),
-            scaleFactor : localStorage.getItem("scaleFactor") || "",
+            repeat : Number(localStorage.getItem("repeat") || "-1"),
+            requestDurationThreshold : Number(localStorage.getItem("requestDurationThreshold") || "-1"),
+            scaleFactor : Number(localStorage.getItem("scaleFactor") || "-1"),
         };
     }
 
@@ -32,13 +32,13 @@ export class Testconfig extends React.Component<{}, IState> {
         console.log(event.currentTarget.name + " is " + event.currentTarget.value);
         localStorage.setItem(event.currentTarget.name, event.currentTarget.value + "");
         this.setState({
-            activeInstancesPerSecond : localStorage.getItem("activeInstancesPerSecond") || "",
-            maximumConcurrentRequests : localStorage.getItem("maximumConcurrentRequests") || "",
+            activeInstancesPerSecond : Number(localStorage.getItem("activeInstancesPerSecond") || "-1"),
+            maximumConcurrentRequests : Number(localStorage.getItem("maximumConcurrentRequests") || "-1"),
             name : localStorage.getItem("name") || "",
             noSession : localStorage.getItem("noSession") === "true",
-            repeat : localStorage.getItem("repeat") || "",
-            requestDurationThreshold : +(localStorage.getItem("requestDurationThreshold") || "-1"),
-            scaleFactor : localStorage.getItem("scaleFactor") || "",
+            repeat : Number(localStorage.getItem("repeat") || "-1"),
+            requestDurationThreshold : Number(localStorage.getItem("requestDurationThreshold") || "-1"),
+            scaleFactor : Number(localStorage.getItem("scaleFactor") || "-1"),
         });
     }
 
@@ -46,7 +46,7 @@ export class Testconfig extends React.Component<{}, IState> {
         this.setState(plainToClassFromExist(this.state, state));
     }
 
-    public export = (): IState => {
+    public export = (): ITestConfigState => {
         return this.state;
     }
 
@@ -63,7 +63,7 @@ export class Testconfig extends React.Component<{}, IState> {
                     <div className="col-75">
                         <input
                             onChange={this.inputChanged}
-                            type="text"
+                            type="number"
                             id="repeat"
                             name="repeat"
                             value={this.state.repeat}
@@ -79,7 +79,7 @@ export class Testconfig extends React.Component<{}, IState> {
                     <div className="col-75">
                         <input
                             onChange={this.inputChanged}
-                            type="text"
+                            type="number"
                             id="scaleFactor"
                             name="scaleFactor"
                             value={this.state.scaleFactor}
@@ -95,7 +95,7 @@ export class Testconfig extends React.Component<{}, IState> {
                     <div className="col-75">
                         <input
                             onChange={this.inputChanged}
-                            type="text"
+                            type="number"
                             id="activeInstancesPerSecond"
                             name="activeInstancesPerSecond"
                             value={this.state.activeInstancesPerSecond}
@@ -110,7 +110,7 @@ export class Testconfig extends React.Component<{}, IState> {
                     <div className="col-75">
                         <input
                             onChange={this.inputChanged}
-                            type="text"
+                            type="number"
                             id="maximumConcurrentRequests"
                             name="maximumConcurrentRequests"
                             value={this.state.maximumConcurrentRequests}
@@ -125,7 +125,7 @@ export class Testconfig extends React.Component<{}, IState> {
                     <div className="col-75">
                         <input
                             onChange={this.inputChanged}
-                            type="text"
+                            type="number"
                             id="requestDurationThreshold"
                             name="requestDurationThreshold"
                             value={this.state.requestDurationThreshold}
