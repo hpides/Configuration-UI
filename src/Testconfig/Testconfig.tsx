@@ -3,7 +3,7 @@ import React from "react";
 import ReactTooltip from "react-tooltip";
 import "./Testconfig.css";
 
-export interface TestConfigState {
+export interface ITestConfigState {
     activeInstancesPerSecond: number;
     maximumConcurrentRequests: number;
     name: string;
@@ -13,7 +13,7 @@ export interface TestConfigState {
     requestDurationThreshold: number;
 }
 /*tslint:disable:no-console*/
-export class Testconfig extends React.Component<{}, TestConfigState> {
+export class Testconfig extends React.Component<{}, ITestConfigState> {
     constructor(props: any) {
         super(props);
 
@@ -46,7 +46,7 @@ export class Testconfig extends React.Component<{}, TestConfigState> {
         this.setState(plainToClassFromExist(this.state, state));
     }
 
-    public export = (): TestConfigState => {
+    public export = (): ITestConfigState => {
         return this.state;
     }
 

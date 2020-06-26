@@ -16,7 +16,7 @@ import {ExistingConfigComponent, IUploadedFile} from "./ExistingConfig/existingC
 import {GraphView} from "./GraphView/GraphView";
 import logo from "./logo.svg";
 import {Sidebar} from "./Sidebar/Sidebar";
-import {Testconfig , TestConfigState} from "./Testconfig/Testconfig";
+import {ITestConfigState , Testconfig} from "./Testconfig/Testconfig";
 import {Views} from "./Views";
 export interface IState {
     currentView: Views;
@@ -35,6 +35,8 @@ export interface IState {
 class App extends React.Component<{}, IState> {
 
     public testConfig: Testconfig | null = null;
+
+    public readonly requiredTestAttributes = ["repeat", "scaleFactor"];
 
     private graphViews: GraphView[] = [];
 
@@ -145,9 +147,6 @@ class App extends React.Component<{}, IState> {
         document.body.appendChild(element);
         element.click();
     }
-
-
-    readonly requiredTestAttributes = ["repeat", "scaleFactor"];
     /**
      * Prepares test configuration and the implicit PDGF schema. Warns the user if test attributes are not sufficient.
      * @attribute failureMessageSuffix additional last line for the warning dialog
@@ -182,11 +181,11 @@ class App extends React.Component<{}, IState> {
         }
         let requiredAttributesSet = true;
         let failureMessage = "Warning: the following required test attributes are not set or invalid:\n";
-        for(let attribute of this.requiredTestAttributes){
+        for (const attribute of this.requiredTestAttributes) {
             const value = testConfigJSON[attribute];
-            if(value === undefined || value === null || value === "" || value < 0){
-                failureMessage = failureMessage.concat(attribute).concat(" (should be a positive integer)\n")
-                requiredAttributesSet = false
+            if (value === undefined || value === null || value === "" || value < 0) {
+                failureMessage = failureMessage.concat(attribute).concat(" (should be a positive integer)\n");
+                requiredAttributesSet = false;
             }
         }
         testConfigJSON.stories  = stories;
@@ -221,8 +220,8 @@ class App extends React.Component<{}, IState> {
 
         // make sure to remove excluded attributes before export
         this.lastExport = {json: JSON.stringify(classToPlain(testConfigJSON)), xml: root.end({prettyPrint: true}).toString(), id: Date.now()};
-        if(!requiredAttributesSet){
-            alert(failureMessage.concat(failureMessageSuffix === ""? "" : "\n".concat(failureMessageSuffix)));
+        if (!requiredAttributesSet) {
+            alert(failureMessage.concat(failureMessageSuffix === "" ? "" : "\n".concat(failureMessageSuffix)));
         }
         return requiredAttributesSet;
     }
@@ -289,7 +288,7 @@ class App extends React.Component<{}, IState> {
         if (this.requestGeneratorHost && !this.requestGeneratorHost.startsWith("http://")) {
             this.requestGeneratorHost = "http://" + this.requestGeneratorHost;
         }
-        if(!this.export("Not starting test since required attributes are not set!")){
+        if (!this.export("Not starting test since required attributes are not set!")) {
             return;
         }
         const config = this.lastExport;
