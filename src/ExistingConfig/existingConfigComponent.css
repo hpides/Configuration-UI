@@ -32,6 +32,11 @@
     margin-top: 10px;
 }
 
+.pdfg-existing-config a:link, a:visited, a:hover, a:active {
+    color: white;
+    font-weight: bold;
+}
+
 .pdgf-existing-config .delete-data-btn {
     display: inline-block;
     width: 0px;

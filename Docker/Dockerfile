@@ -19,7 +19,7 @@ RUN npm install
 RUN npm install react-scripts -g
 
 COPY . .
-
+ENV REACT_APP_DOCKERISED=true
 #creates a static asset containing all html, css, javascript that can be served by a simple webserver
 RUN npm run build
 
