@@ -39,7 +39,7 @@ spec:
     spec:
       containers:
         - name: configui
-          image: localhost:5000/configui:${tag}
+          image: ${image}:${tag}
           resources:
             requests:
               memory: "64Mi"
